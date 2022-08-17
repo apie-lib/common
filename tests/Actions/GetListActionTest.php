@@ -7,7 +7,7 @@ use Apie\Core\Context\ApieContext;
 use Apie\Core\Lists\ItemHashmap;
 use Apie\Fixtures\Entities\UserWithAddress;
 use Apie\Serializer\Lists\SerializedList;
-use Apie\Tests\Common\Concerns\ProvidesApieFacade;
+use Apie\Common\Tests\Concerns\ProvidesApieFacade;
 use PHPUnit\Framework\TestCase;
 
 class GetListActionTest extends TestCase

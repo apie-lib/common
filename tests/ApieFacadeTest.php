@@ -3,7 +3,7 @@ namespace Apie\Tests\Common;
 
 use Apie\Common\Actions\CreateObjectAction;
 use Apie\Core\Context\ApieContext;
-use Apie\Tests\Common\Concerns\ProvidesApieFacade;
+use Apie\Common\Tests\Concerns\ProvidesApieFacade;
 use PHPUnit\Framework\TestCase;
 
 class ApieFacadeTest extends TestCase

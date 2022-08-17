@@ -25,6 +25,7 @@
     "apie/serializer": "self.version"
   },
   "require-dev": {
+    "apie/composite-value-objects": "self.version",
     "apie/fixtures": "self.version",
     "phpunit/phpunit": "^9.5",
     "phpspec/prophecy-phpunit": "^2.0"

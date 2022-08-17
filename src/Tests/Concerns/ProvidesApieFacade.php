@@ -1,5 +1,5 @@
 <?php
-namespace Apie\Tests\Common\Concerns;
+namespace Apie\Common\Tests\Concerns;
 
 use Apie\Common\ApieFacade;
 use Apie\Common\ApieFacadeAction;
