@@ -1,0 +1,84 @@
+<?php
+namespace Apie\Tests\Common\Concerns;
+
+use Apie\Common\ApieFacade;
+use Apie\Common\ApieFacadeAction;
+use Apie\Core\Actions\HasActionDefinition;
+use Apie\Core\Actions\HasRouteDefinition;
+use Apie\Core\BoundedContext\BoundedContext;
+use Apie\Core\BoundedContext\BoundedContextHashmap;
+use Apie\Core\BoundedContext\BoundedContextId;
+use Apie\Core\Context\ApieContext;
+use Apie\Core\Enums\RequestMethod;
+use Apie\Core\Repositories\InMemory\InMemoryRepository;
+use Apie\Core\RouteDefinitions\ActionHashmap;
+use Apie\Core\RouteDefinitions\RouteDefinitionProviderInterface;
+use Apie\Core\ValueObjects\UrlRouteDefinition;
+use Apie\Fixtures\BoundedContextFactory;
+use Apie\Serializer\Serializer;
+use LogicException;
+
+trait ProvidesApieFacade
+{
+    /** @param class-string<ApieFacadeAction> $apieFacadeActionClass */
+    public function givenAnApieFacade(string $apieFacadeActionClass, ?BoundedContextHashmap $boundedContextHashmap = null): ApieFacade
+    {
+        $routeDefinitionProvider = new class($apieFacadeActionClass) implements RouteDefinitionProviderInterface {
+            /** @param class-string<ApieFacadeAction> $apieFacadeActionClass */
+            public function __construct(private readonly string $apieFacadeActionClass)
+            {
+            }
+
+            public function getActionsForBoundedContext(BoundedContext $boundedContext, ApieContext $apieContext): ActionHashmap
+            {
+                $routeDefinition =  new class($this->apieFacadeActionClass) implements HasRouteDefinition, HasActionDefinition {
+                    /** @param class-string<ApieFacadeAction> $apieFacadeActionClass */
+                    public function __construct(private readonly string $apieFacadeActionClass)
+                    {
+                    }
+
+                    public function getMethod(): RequestMethod
+                    {
+                        return RequestMethod::GET;
+                    }
+                    
+                    public function getUrl(): UrlRouteDefinition
+                    {
+                        return new UrlRouteDefinition('/test');
+                    }
+                
+                    public function getController(): string
+                    {
+                        throw new LogicException('not implemented');
+                    }
+                    public function getRouteAttributes(): array
+                    {
+                        return [];
+                    }
+
+                    public function getAction(): string
+                    {
+                        return $this->apieFacadeActionClass;
+                    }
+
+                    public function getOperationId(): string
+                    {
+                        return 'test';
+                    }
+                };
+                return new ActionHashmap(
+                    [
+                        'test' => $routeDefinition
+                    ]
+                );
+            }
+        };
+
+        return new ApieFacade(
+            $routeDefinitionProvider,
+            $boundedContextHashmap ?? BoundedContextFactory::createHashmap(),
+            Serializer::create(),
+            new InMemoryRepository(new BoundedContextId('default'))
+        );
+    }
+}
