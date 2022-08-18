@@ -11,6 +11,7 @@ use Apie\Core\Exceptions\InvalidTypeException;
 use Apie\Core\Lists\ItemHashmap;
 use ReflectionClass;
 use ReflectionMethod;
+use ReflectionNamedType;
 
 /**
  * Runs a method from  a resource (and persist resource afterwards).
@@ -52,9 +53,14 @@ final class RunItemMethodAction implements ApieFacadeAction
 
     public static function shouldReturnResource(ReflectionMethod $method): bool
     {
+        $returnType = $method->getReturnType();
+        if ($returnType instanceof ReflectionNamedType && 'void' === $returnType->getName()) {
+            return true;
+        }
         if ($method->getNumberOfParameters() === 0) {
             return false;
         }
+                
         return str_starts_with($method->name, 'add') || str_starts_with($method->name, 'remove');
     }
 
