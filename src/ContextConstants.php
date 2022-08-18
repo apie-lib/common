@@ -2,8 +2,8 @@
 namespace Apie\Common;
 
 use Apie\Common\Actions\RunAction;
+use Apie\Common\Actions\RunItemMethodAction;
 use Apie\Core\Actions\HasRouteDefinition;
-use Apie\Core\ContextBuilders\ContextBuilderInterface;
 
 /**
  * Contains a list of context key constants as used for ApieContext and in route definitions (which are copied to
@@ -23,6 +23,12 @@ final class ContextConstants
      * Name of resource entity. Used by getting and creating resources of a specific class.
      */
     public const RESOURCE_NAME = 'resourceName';
+
+    /**
+     * Id of resource. This one is often filled in the routing placeholder.
+     */
+    public const RESOURCE_ID = 'id';
+
     /**
      * Internal operation id of action used.
      *
@@ -37,8 +43,16 @@ final class ContextConstants
     public const SERVICE_CLASS = 'serviceClass';
 
     /**
+     * Used for picking the right class of a method.
+     *
+     * @see RunItemMethodAction
+     */
+    public const METHOD_CLASS = 'methodClass';
+
+    /**
      * Used for running a specific method call.
      * @see RunAction
+     * @see RunItemMethodAction
      */
     public const METHOD_NAME = 'methodName';
 

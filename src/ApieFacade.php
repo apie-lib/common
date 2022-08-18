@@ -5,6 +5,8 @@ use Apie\Core\BoundedContext\BoundedContext;
 use Apie\Core\BoundedContext\BoundedContextHashmap;
 use Apie\Core\BoundedContext\BoundedContextId;
 use Apie\Core\Context\ApieContext;
+use Apie\Core\Entities\EntityInterface;
+use Apie\Core\Identifiers\IdentifierInterface;
 use Apie\Core\Lists\ItemHashmap;
 use Apie\Core\Lists\ItemList;
 use Apie\Core\Repositories\ApieRepository;
@@ -38,6 +40,16 @@ final class ApieFacade
         }
 
         return $this->apieRepository->all($class);
+    }
+
+    /**
+     * @template T of EntityInterface
+     * @param IdentifierInterface<T> $identifier
+     * @return T
+     */
+    public function find(IdentifierInterface $identifier): EntityInterface
+    {
+        return $this->apieRepository->find($identifier);
     }
 
     public function normalize(mixed $object, ApieContext $apieContext): string|int|float|bool|ItemList|ItemHashmap|null
