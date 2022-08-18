@@ -26,17 +26,16 @@ final class RunItemMethodAction implements ApieFacadeAction
      */
     public function __invoke(ApieContext $context, array $rawContents): ItemHashmap
     {
-        $resourceClass = $context->getContext(ContextConstants::RESOURCE_NAME);
+        $resourceClass = new ReflectionClass($context->getContext(ContextConstants::RESOURCE_NAME));
         $id = $context->getContext(ContextConstants::RESOURCE_ID);
-        if (!is_a($resourceClass, EntityInterface::class, true)) {
-            throw new InvalidTypeException($resourceClass, 'EntityInterface');
+        if (!$resourceClass->implementsInterface(EntityInterface::class)) {
+            throw new InvalidTypeException($resourceClass->name, 'EntityInterface');
         }
         $resource = $this->apieFacade->find(Utils::entityClassToIdentifier($resourceClass)->newInstance($id));
         $method = new ReflectionMethod(
             $context->getContext(ContextConstants::METHOD_CLASS),
             $context->getContext(ContextConstants::METHOD_NAME)
         );
-        $refl = new ReflectionClass($resource);
         $result = $this->apieFacade->denormalizeOnMethodCall(
             $context->getContext(ContextConstants::RAW_CONTENTS),
             $resource,
