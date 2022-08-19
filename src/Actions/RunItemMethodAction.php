@@ -4,11 +4,10 @@ namespace Apie\Common\Actions;
 use Apie\Common\ApieFacade;
 use Apie\Common\ApieFacadeAction;
 use Apie\Common\ContextConstants;
-use Apie\Common\Utils;
 use Apie\Core\Context\ApieContext;
 use Apie\Core\Entities\EntityInterface;
 use Apie\Core\Exceptions\InvalidTypeException;
-use Apie\Core\Lists\ItemHashmap;
+use Apie\Core\IdentifierUtils;
 use ReflectionClass;
 use ReflectionMethod;
 use ReflectionNamedType;
@@ -24,25 +23,32 @@ final class RunItemMethodAction implements ApieFacadeAction
     /**
      * @param array<string|int, mixed> $rawContents
      */
-    public function __invoke(ApieContext $context, array $rawContents): ItemHashmap
+    public function __invoke(ApieContext $context, array $rawContents): mixed
     {
         $resourceClass = new ReflectionClass($context->getContext(ContextConstants::RESOURCE_NAME));
-        $id = $context->getContext(ContextConstants::RESOURCE_ID);
         if (!$resourceClass->implementsInterface(EntityInterface::class)) {
             throw new InvalidTypeException($resourceClass->name, 'EntityInterface');
         }
-        $resource = $this->apieFacade->find(Utils::entityClassToIdentifier($resourceClass)->newInstance($id));
         $method = new ReflectionMethod(
             $context->getContext(ContextConstants::METHOD_CLASS),
             $context->getContext(ContextConstants::METHOD_NAME)
         );
+        if ($method->isStatic()) {
+            $resource = null;
+        } else {
+            $id = $context->getContext(ContextConstants::RESOURCE_ID);
+            $resource = $this->apieFacade->find(IdentifierUtils::entityClassToIdentifier($resourceClass)->newInstance($id));
+        }
+
         $result = $this->apieFacade->denormalizeOnMethodCall(
-            $context->getContext(ContextConstants::RAW_CONTENTS),
+            $rawContents,
             $resource,
             $method,
             $context
         );
-        // TODO: persist $resource
+        if ($resource !== null) {
+            $resource = $this->apieFacade->persistExisting($resource);
+        }
         if (self::shouldReturnResource($method)) {
             $result = $resource;
         }
@@ -50,6 +56,12 @@ final class RunItemMethodAction implements ApieFacadeAction
         return $this->apieFacade->normalize($result, $context);
     }
 
+    /**
+     * Returns true if we should not return the return value of the method, but should return the return value of the resource.
+     * This is the case if:
+     * - The method returns void
+     * - The method call starts with 'add' or 'remove' and has arguments.
+     */
     public static function shouldReturnResource(ReflectionMethod $method): bool
     {
         $returnType = $method->getReturnType();
@@ -63,6 +75,9 @@ final class RunItemMethodAction implements ApieFacadeAction
         return str_starts_with($method->name, 'add') || str_starts_with($method->name, 'remove');
     }
 
+    /**
+     * Returns a string how we should display the method. For example we remove 'add' or 'remove' from the string.
+     */
     public static function getDisplayNameForMethod(ReflectionMethod $method): string
     {
         if ($method->getNumberOfParameters() > 0) {

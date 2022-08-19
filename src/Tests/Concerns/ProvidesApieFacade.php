@@ -9,8 +9,8 @@ use Apie\Core\BoundedContext\BoundedContext;
 use Apie\Core\BoundedContext\BoundedContextHashmap;
 use Apie\Core\BoundedContext\BoundedContextId;
 use Apie\Core\Context\ApieContext;
+use Apie\Core\Datalayers\InMemory\InMemoryDatalayer;
 use Apie\Core\Enums\RequestMethod;
-use Apie\Core\Repositories\InMemory\InMemoryRepository;
 use Apie\Core\RouteDefinitions\ActionHashmap;
 use Apie\Core\RouteDefinitions\RouteDefinitionProviderInterface;
 use Apie\Core\ValueObjects\UrlRouteDefinition;
@@ -18,6 +18,18 @@ use Apie\Fixtures\BoundedContextFactory;
 use Apie\Serializer\Serializer;
 use LogicException;
 
+/**
+ * Creates an Apie Facade for testing actions.
+ *
+ * In tests you would write it often like this:
+ * ```php
+ * $apieFacade = $this->givenAnApieFacade(ActionClass::class);
+ * $context = new ApieContext();
+ * $action = $apieFacade->getAction('default', 'test', $context);
+ * ```
+ *
+ * @codeCoverageIgnore
+ */
 trait ProvidesApieFacade
 {
     /** @param class-string<ApieFacadeAction> $apieFacadeActionClass */
@@ -78,7 +90,7 @@ trait ProvidesApieFacade
             $routeDefinitionProvider,
             $boundedContextHashmap ?? BoundedContextFactory::createHashmap(),
             Serializer::create(),
-            new InMemoryRepository(new BoundedContextId('default'))
+            new InMemoryDatalayer(new BoundedContextId('default'))
         );
     }
 }

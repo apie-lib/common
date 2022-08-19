@@ -25,7 +25,7 @@ final class CreateObjectAction implements ApieFacadeAction
             $context->getContext(ContextConstants::RESOURCE_NAME),
             $context
         );
-        // TODO: persistence layer
+        $resource = $this->apieFacade->persistNew($resource);
         return $this->apieFacade->normalize($resource, $context);
     }
 }

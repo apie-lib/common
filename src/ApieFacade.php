@@ -5,12 +5,12 @@ use Apie\Core\BoundedContext\BoundedContext;
 use Apie\Core\BoundedContext\BoundedContextHashmap;
 use Apie\Core\BoundedContext\BoundedContextId;
 use Apie\Core\Context\ApieContext;
+use Apie\Core\Datalayers\ApieDatalayer;
+use Apie\Core\Datalayers\Lists\LazyLoadedList;
 use Apie\Core\Entities\EntityInterface;
 use Apie\Core\Identifiers\IdentifierInterface;
 use Apie\Core\Lists\ItemHashmap;
 use Apie\Core\Lists\ItemList;
-use Apie\Core\Repositories\ApieRepository;
-use Apie\Core\Repositories\Lists\LazyLoadedList;
 use Apie\Core\RouteDefinitions\ActionHashmap;
 use Apie\Core\RouteDefinitions\RouteDefinitionProviderInterface;
 use Apie\Serializer\Serializer;
@@ -24,7 +24,7 @@ final class ApieFacade
         private RouteDefinitionProviderInterface $routeDefinitionProvider,
         private BoundedContextHashmap $boundedContextHashmap,
         private Serializer $serializer,
-        private ApieRepository $apieRepository
+        private ApieDatalayer $apieDatalayer
     ) {
     }
 
@@ -39,7 +39,7 @@ final class ApieFacade
             $class = new ReflectionClass($class);
         }
 
-        return $this->apieRepository->all($class);
+        return $this->apieDatalayer->all($class);
     }
 
     /**
@@ -49,7 +49,27 @@ final class ApieFacade
      */
     public function find(IdentifierInterface $identifier): EntityInterface
     {
-        return $this->apieRepository->find($identifier);
+        return $this->apieDatalayer->find($identifier);
+    }
+
+    /**
+     * @template T of EntityInterface
+     * @param T $entity
+     * @return T
+     */
+    public function persistNew(EntityInterface $entity): EntityInterface
+    {
+        return $this->apieDatalayer->persistNew($entity);
+    }
+
+    /**
+     * @template T of EntityInterface
+     * @param T $entity
+     * @return T
+     */
+    public function persistExisting(EntityInterface $entity): EntityInterface
+    {
+        return $this->apieDatalayer->persistExisting($entity);
     }
 
     public function normalize(mixed $object, ApieContext $apieContext): string|int|float|bool|ItemList|ItemHashmap|null

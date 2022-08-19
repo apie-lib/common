@@ -4,11 +4,12 @@ namespace Apie\Common\Actions;
 use Apie\Common\ApieFacade;
 use Apie\Common\ApieFacadeAction;
 use Apie\Common\ContextConstants;
-use Apie\Common\Utils;
 use Apie\Core\Context\ApieContext;
 use Apie\Core\Entities\EntityInterface;
 use Apie\Core\Exceptions\InvalidTypeException;
+use Apie\Core\IdentifierUtils;
 use Apie\Core\Lists\ItemHashmap;
+use ReflectionClass;
 
 /**
  * Action to get a single item resource.
@@ -23,12 +24,12 @@ final class GetItemAction implements ApieFacadeAction
      */
     public function __invoke(ApieContext $context, array $rawContents): ItemHashmap
     {
-        $resourceClass = $context->getContext(ContextConstants::RESOURCE_NAME);
+        $resourceClass = new ReflectionClass($context->getContext(ContextConstants::RESOURCE_NAME));
         $id = $context->getContext(ContextConstants::RESOURCE_ID);
-        if (!is_a($resourceClass, EntityInterface::class, true)) {
-            throw new InvalidTypeException($resourceClass, 'EntityInterface');
+        if (!$resourceClass->implementsInterface(EntityInterface::class)) {
+            throw new InvalidTypeException($resourceClass->name, 'EntityInterface');
         }
-        $result = $this->apieFacade->find(Utils::entityClassToIdentifier($resourceClass)->newInstance($id));
+        $result = $this->apieFacade->find(IdentifierUtils::entityClassToIdentifier($resourceClass)->newInstance($id));
         return $this->apieFacade->normalize($result, $context);
     }
 }
