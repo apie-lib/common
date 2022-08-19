@@ -4,6 +4,7 @@ namespace Apie\Tests\Common\Actions;
 use Apie\Common\Actions\RunItemMethodAction;
 use Apie\Common\ContextConstants;
 use Apie\Common\Tests\Concerns\ProvidesApieFacade;
+use Apie\Core\BoundedContext\BoundedContextId;
 use Apie\Core\Context\ApieContext;
 use Apie\Fixtures\Entities\UserWithAddress;
 use Apie\Fixtures\ValueObjects\AddressWithZipcodeCheck;
@@ -25,13 +26,14 @@ class RunItemMethodActionTest extends TestCase
             new DatabaseText('Washington DC')
         ));
         $entity->setPassword(new Password('Strong-Password32'));
-        $testItem->persistNew($entity);
+        $testItem->persistNew($entity, new BoundedContextId('default'));
 
         $context = new ApieContext([
             ContextConstants::RESOURCE_NAME => UserWithAddress::class,
             ContextConstants::RESOURCE_ID => $entity->getId()->toNative(),
             ContextConstants::METHOD_CLASS => UserWithAddress::class,
             ContextConstants::METHOD_NAME => 'verifyAuthentication',
+            ContextConstants::BOUNDED_CONTEXT_ID => 'default',
         ]);
         /** @var RunItemMethodAction $action */
         $action = $testItem->getAction('default', 'test', $context);

@@ -19,6 +19,7 @@ class RunActionTest extends TestCase
         $context = new ApieContext([
             ContextConstants::SERVICE_CLASS => StaticActionExample::class,
             ContextConstants::METHOD_NAME => 'secretCode',
+            ContextConstants::BOUNDED_CONTEXT_ID => 'default',
         ]);
         /** @var RunAction $action */
         $action = $testItem->getAction('default', 'test', $context);

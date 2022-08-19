@@ -19,6 +19,7 @@ class GetListActionTest extends TestCase
         $testItem = $this->givenAnApieFacade(GetListAction::class);
         $context = new ApieContext([
             ContextConstants::RESOURCE_NAME => UserWithAddress::class,
+            ContextConstants::BOUNDED_CONTEXT_ID => 'default',
         ]);
         /** @var GetListAction $action */
         $action = $testItem->getAction('default', 'test', $context);

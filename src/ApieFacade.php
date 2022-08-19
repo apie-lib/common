@@ -28,18 +28,26 @@ final class ApieFacade
     ) {
     }
 
+    private function getBoundedContext(BoundedContext|BoundedContextId $boundedContext): BoundedContext
+    {
+        if ($boundedContext instanceof BoundedContext) {
+            return $boundedContext;
+        }
+        return $this->boundedContextHashmap[$boundedContext->toNative()];
+    }
+
     /**
      * @template T of EntityInterface
      * @param class-string<T>|ReflectionClass<T> $class
      * @return LazyLoadedList<T>
      */
-    public function all(string|ReflectionClass $class): LazyLoadedList
+    public function all(string|ReflectionClass $class, BoundedContext|BoundedContextId $boundedContext): LazyLoadedList
     {
         if (is_string($class)) {
             $class = new ReflectionClass($class);
         }
 
-        return $this->apieDatalayer->all($class);
+        return $this->apieDatalayer->all($class, $this->getBoundedContext($boundedContext));
     }
 
     /**
@@ -47,9 +55,9 @@ final class ApieFacade
      * @param IdentifierInterface<T> $identifier
      * @return T
      */
-    public function find(IdentifierInterface $identifier): EntityInterface
+    public function find(IdentifierInterface $identifier, BoundedContext|BoundedContextId $boundedContext): EntityInterface
     {
-        return $this->apieDatalayer->find($identifier);
+        return $this->apieDatalayer->find($identifier, $this->getBoundedContext($boundedContext));
     }
 
     /**
@@ -57,9 +65,9 @@ final class ApieFacade
      * @param T $entity
      * @return T
      */
-    public function persistNew(EntityInterface $entity): EntityInterface
+    public function persistNew(EntityInterface $entity, BoundedContext|BoundedContextId $boundedContext): EntityInterface
     {
-        return $this->apieDatalayer->persistNew($entity);
+        return $this->apieDatalayer->persistNew($entity, $this->getBoundedContext($boundedContext));
     }
 
     /**
@@ -67,9 +75,9 @@ final class ApieFacade
      * @param T $entity
      * @return T
      */
-    public function persistExisting(EntityInterface $entity): EntityInterface
+    public function persistExisting(EntityInterface $entity, BoundedContext|BoundedContextId $boundedContext): EntityInterface
     {
-        return $this->apieDatalayer->persistExisting($entity);
+        return $this->apieDatalayer->persistExisting($entity, $this->getBoundedContext($boundedContext));
     }
 
     public function normalize(mixed $object, ApieContext $apieContext): string|int|float|bool|ItemList|ItemHashmap|null
@@ -99,7 +107,9 @@ final class ApieFacade
     }
 
     /**
-     * @param class-string<ApieFacadeAction> $classAction
+     * @template T of ApieFacadeAction
+     * @param class-string<T> $classAction
+     * @return T
      */
     private function createAction(string $classAction): ApieFacadeAction
     {

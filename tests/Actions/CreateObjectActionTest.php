@@ -18,6 +18,7 @@ class CreateObjectActionTest extends TestCase
         $testItem = $this->givenAnApieFacade(CreateObjectAction::class);
         $context = new ApieContext([
             ContextConstants::RESOURCE_NAME => UserWithAddress::class,
+            ContextConstants::BOUNDED_CONTEXT_ID => 'default',
         ]);
         /** @var CreateObjectAction $action */
         $action = $testItem->getAction('default', 'test', $context);

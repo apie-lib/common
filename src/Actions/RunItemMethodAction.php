@@ -4,6 +4,7 @@ namespace Apie\Common\Actions;
 use Apie\Common\ApieFacade;
 use Apie\Common\ApieFacadeAction;
 use Apie\Common\ContextConstants;
+use Apie\Core\BoundedContext\BoundedContextId;
 use Apie\Core\Context\ApieContext;
 use Apie\Core\Entities\EntityInterface;
 use Apie\Core\Exceptions\InvalidTypeException;
@@ -37,7 +38,10 @@ final class RunItemMethodAction implements ApieFacadeAction
             $resource = null;
         } else {
             $id = $context->getContext(ContextConstants::RESOURCE_ID);
-            $resource = $this->apieFacade->find(IdentifierUtils::entityClassToIdentifier($resourceClass)->newInstance($id));
+            $resource = $this->apieFacade->find(
+                IdentifierUtils::entityClassToIdentifier($resourceClass)->newInstance($id),
+                new BoundedContextId($context->getContext(ContextConstants::BOUNDED_CONTEXT_ID))
+            );
         }
 
         $result = $this->apieFacade->denormalizeOnMethodCall(
@@ -47,7 +51,10 @@ final class RunItemMethodAction implements ApieFacadeAction
             $context
         );
         if ($resource !== null) {
-            $resource = $this->apieFacade->persistExisting($resource);
+            $resource = $this->apieFacade->persistExisting(
+                $resource,
+                new BoundedContextId($context->getContext(ContextConstants::BOUNDED_CONTEXT_ID))
+            );
         }
         if (self::shouldReturnResource($method)) {
             $result = $resource;

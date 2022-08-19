@@ -4,6 +4,7 @@ namespace Apie\Common\Actions;
 use Apie\Common\ApieFacade;
 use Apie\Common\ApieFacadeAction;
 use Apie\Common\ContextConstants;
+use Apie\Core\BoundedContext\BoundedContextId;
 use Apie\Core\Context\ApieContext;
 
 /**
@@ -25,7 +26,7 @@ final class CreateObjectAction implements ApieFacadeAction
             $context->getContext(ContextConstants::RESOURCE_NAME),
             $context
         );
-        $resource = $this->apieFacade->persistNew($resource);
+        $resource = $this->apieFacade->persistNew($resource, new BoundedContextId($context->getContext(ContextConstants::BOUNDED_CONTEXT_ID)));
         return $this->apieFacade->normalize($resource, $context);
     }
 }
