@@ -43,7 +43,7 @@ class GetItemActionTest extends TestCase
             []
         );
 
-        $this->assertInstanceOf(ItemHashmap::class, $response);
+        $this->assertInstanceOf(ItemHashmap::class, $response->getResultAsNativeData());
         $this->assertEquals(
             [
                 'id' => $user->getId()->toNative(),
@@ -54,7 +54,7 @@ class GetItemActionTest extends TestCase
                     'city' => 'New York',
                 ]),
             ],
-            $response->toArray()
+            $response->getResultAsNativeData()->toArray()
         );
     }
 }

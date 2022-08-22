@@ -4,6 +4,7 @@ namespace Apie\Common\Actions;
 use Apie\Common\ApieFacade;
 use Apie\Common\ApieFacadeAction;
 use Apie\Common\ContextConstants;
+use Apie\Core\Actions\ActionResponse;
 use Apie\Core\BoundedContext\BoundedContextId;
 use Apie\Core\Context\ApieContext;
 use Apie\Core\Entities\EntityInterface;
@@ -24,7 +25,7 @@ final class RunItemMethodAction implements ApieFacadeAction
     /**
      * @param array<string|int, mixed> $rawContents
      */
-    public function __invoke(ApieContext $context, array $rawContents): mixed
+    public function __invoke(ApieContext $context, array $rawContents): ActionResponse
     {
         $resourceClass = new ReflectionClass($context->getContext(ContextConstants::RESOURCE_NAME));
         if (!$resourceClass->implementsInterface(EntityInterface::class)) {
@@ -59,8 +60,7 @@ final class RunItemMethodAction implements ApieFacadeAction
         if (self::shouldReturnResource($method)) {
             $result = $resource;
         }
-
-        return $this->apieFacade->normalize($result, $context);
+        return ActionResponse::createRunSuccess($this->apieFacade, $context, $result, $resource);
     }
 
     /**

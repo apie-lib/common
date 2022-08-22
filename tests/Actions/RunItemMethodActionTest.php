@@ -45,6 +45,6 @@ class RunItemMethodActionTest extends TestCase
             ]
         );
 
-        $this->assertTrue($response);
+        $this->assertTrue($response->getResultAsNativeData());
     }
 }

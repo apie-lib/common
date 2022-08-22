@@ -4,6 +4,7 @@ namespace Apie\Common\Actions;
 use Apie\Common\ApieFacade;
 use Apie\Common\ApieFacadeAction;
 use Apie\Common\ContextConstants;
+use Apie\Core\Actions\ActionResponse;
 use Apie\Core\Context\ApieContext;
 use ReflectionMethod;
 
@@ -19,7 +20,7 @@ final class RunAction implements ApieFacadeAction
     /**
      * @param array<string|int, mixed> $rawContents
      */
-    public function __invoke(ApieContext $context, array $rawContents): mixed
+    public function __invoke(ApieContext $context, array $rawContents): ActionResponse
     {
         $method = new ReflectionMethod(
             $context->getContext(ContextConstants::SERVICE_CLASS),
@@ -29,6 +30,6 @@ final class RunAction implements ApieFacadeAction
             ? null
             : $context->getContext($context->getContext(ContextConstants::SERVICE_CLASS));
         $returnValue = $this->apieFacade->denormalizeOnMethodCall($rawContents, $object, $method, $context);
-        return $this->apieFacade->normalize($returnValue, $context);
+        return ActionResponse::createRunSuccess($this->apieFacade, $context, $returnValue, $object);
     }
 }

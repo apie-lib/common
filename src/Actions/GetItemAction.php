@@ -4,12 +4,12 @@ namespace Apie\Common\Actions;
 use Apie\Common\ApieFacade;
 use Apie\Common\ApieFacadeAction;
 use Apie\Common\ContextConstants;
+use Apie\Core\Actions\ActionResponse;
 use Apie\Core\BoundedContext\BoundedContextId;
 use Apie\Core\Context\ApieContext;
 use Apie\Core\Entities\EntityInterface;
 use Apie\Core\Exceptions\InvalidTypeException;
 use Apie\Core\IdentifierUtils;
-use Apie\Core\Lists\ItemHashmap;
 use ReflectionClass;
 
 /**
@@ -23,7 +23,7 @@ final class GetItemAction implements ApieFacadeAction
     /**
      * @param array<string|int, mixed> $rawContents
      */
-    public function __invoke(ApieContext $context, array $rawContents): ItemHashmap
+    public function __invoke(ApieContext $context, array $rawContents): ActionResponse
     {
         $resourceClass = new ReflectionClass($context->getContext(ContextConstants::RESOURCE_NAME));
         $id = $context->getContext(ContextConstants::RESOURCE_ID);
@@ -34,6 +34,6 @@ final class GetItemAction implements ApieFacadeAction
             IdentifierUtils::entityClassToIdentifier($resourceClass)->newInstance($id),
             new BoundedContextId($context->getContext(ContextConstants::BOUNDED_CONTEXT_ID))
         );
-        return $this->apieFacade->normalize($result, $context);
+        return ActionResponse::createRunSuccess($this->apieFacade, $context, $result, $result);
     }
 }

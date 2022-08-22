@@ -35,7 +35,7 @@ class CreateObjectActionTest extends TestCase
             ]
         );
 
-        $this->assertInstanceOf(ItemHashmap::class, $response);
+        $this->assertInstanceOf(ItemHashmap::class, $response->getResultAsNativeData());
         $this->assertEquals(
             [
                 'address' => new ItemHashmap([
@@ -46,7 +46,7 @@ class CreateObjectActionTest extends TestCase
                 ]),
                 'id' => '123e4567-e89b-12d3-a456-426614174000',
             ],
-            $response->toArray()
+            $response->getResultAsNativeData()->toArray()
         );
     }
 }

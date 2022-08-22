@@ -30,7 +30,7 @@ class GetListActionTest extends TestCase
             ]
         );
 
-        $this->assertInstanceOf(ItemHashmap::class, $response);
+        $this->assertInstanceOf(ItemHashmap::class, $response->getResultAsNativeData());
         $this->assertEquals(
             [
                 'totalCount' => 0,
@@ -38,7 +38,7 @@ class GetListActionTest extends TestCase
                 'first' => '/default/UserWithAddress?items_per_page=5',
                 'last' => '/default/UserWithAddress?items_per_page=5',
             ],
-            $response->toArray()
+            $response->getResultAsNativeData()->toArray()
         );
     }
 }

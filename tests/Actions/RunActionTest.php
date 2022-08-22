@@ -29,10 +29,10 @@ class RunActionTest extends TestCase
             ]
         );
 
-        $this->assertInstanceOf(SerializedList::class, $response);
+        $this->assertInstanceOf(SerializedList::class, $response->getResultAsNativeData());
         $this->assertEquals(
             StaticActionExample::secretCode()->toArray(),
-            $response->toArray()
+            $response->getResultAsNativeData()->toArray()
         );
     }
 }

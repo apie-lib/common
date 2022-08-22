@@ -4,6 +4,7 @@ namespace Apie\Common\Actions;
 use Apie\Common\ApieFacade;
 use Apie\Common\ApieFacadeAction;
 use Apie\Common\ContextConstants;
+use Apie\Core\Actions\ActionResponse;
 use Apie\Core\BoundedContext\BoundedContextId;
 use Apie\Core\Context\ApieContext;
 
@@ -19,7 +20,7 @@ final class CreateObjectAction implements ApieFacadeAction
     /**
      * @param array<string|int, mixed> $rawContents
      */
-    public function __invoke(ApieContext $context, array $rawContents): mixed
+    public function __invoke(ApieContext $context, array $rawContents): ActionResponse
     {
         $resource = $this->apieFacade->denormalizeNewObject(
             $rawContents,
@@ -27,6 +28,6 @@ final class CreateObjectAction implements ApieFacadeAction
             $context
         );
         $resource = $this->apieFacade->persistNew($resource, new BoundedContextId($context->getContext(ContextConstants::BOUNDED_CONTEXT_ID)));
-        return $this->apieFacade->normalize($resource, $context);
+        return ActionResponse::createCreationSuccess($this->apieFacade, $context, $resource, $resource);
     }
 }

@@ -37,6 +37,11 @@ final class ContextConstants
     public const OPERATION_ID = 'operationId';
 
     /**
+     * Internal class used for the Apie action.
+     */
+    public const APIE_ACTION = '_apie_action';
+
+    /**
      * Used for running a specific method call.
      * @see RunAction
      */
