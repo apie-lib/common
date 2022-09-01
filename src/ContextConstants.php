@@ -65,4 +65,33 @@ final class ContextConstants
      * Raw contents of POST body or GET parameters.
      */
     public const RAW_CONTENTS = 'raw-contents';
+
+    /**
+     * Added if an OpenAPI spec is generated.
+     */
+    public const OPENAPI = 'openapi';
+
+    /**
+     * Added if a REST API call is done.
+     */
+    public const REST_API='rest';
+
+    /**
+     * Added if CMS request is done.
+     */
+    public const CMS='cms';
+
+    public const CREATE_OBJECT = 'create';
+
+    public const EDIT_OBJECT = 'edit';
+
+    public const REMOVE_OBJECT = 'remove';
+
+    public const GET_ALL_OBJECTS = 'all';
+
+    public const GET_OBJECT = 'get';
+
+    public const RESOURCE_METHOD = 'resource-call';
+
+    public const GLOBAL_METHOD = 'method-call';
 }

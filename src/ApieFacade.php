@@ -1,6 +1,10 @@
 <?php
 namespace Apie\Common;
 
+use Apie\Common\Interfaces\ApieFacadeInterface;
+use Apie\Common\Interfaces\RouteDefinitionProviderInterface;
+use Apie\Common\RouteDefinitions\ActionHashmap;
+use Apie\Core\Actions\ActionInterface;
 use Apie\Core\BoundedContext\BoundedContext;
 use Apie\Core\BoundedContext\BoundedContextHashmap;
 use Apie\Core\BoundedContext\BoundedContextId;
@@ -11,14 +15,12 @@ use Apie\Core\Entities\EntityInterface;
 use Apie\Core\Identifiers\IdentifierInterface;
 use Apie\Core\Lists\ItemHashmap;
 use Apie\Core\Lists\ItemList;
-use Apie\Core\RouteDefinitions\ActionHashmap;
-use Apie\Core\RouteDefinitions\RouteDefinitionProviderInterface;
 use Apie\Serializer\Serializer;
 use LogicException;
 use ReflectionClass;
 use ReflectionMethod;
 
-final class ApieFacade
+final class ApieFacade implements ApieFacadeInterface
 {
     public function __construct(
         private RouteDefinitionProviderInterface $routeDefinitionProvider,
@@ -95,27 +97,32 @@ final class ApieFacade
         return $this->serializer->denormalizeOnMethodCall($input, $object, $method, $apieContext);
     }
 
-    public function getAction(string $boundedContextId, string $operationId, ApieContext $apieContext): ApieFacadeAction
+    /**
+     * @deprecated use createAction instead
+     */
+    public function getAction(string $boundedContextId, string $operationId, ApieContext $apieContext): ActionInterface
     {
         $actions = $this->getActionsForBoundedContext(new BoundedContextId($boundedContextId), $apieContext);
         foreach ($actions as $action) {
             if ($action->getOperationId() === $operationId) {
-                return $this->createAction($action->getAction());
+                return new($action->getAction())($this);
             }
         }
         throw new LogicException(sprintf('"%s" operation id not found!', $operationId));
     }
 
-    /**
-     * @template T of ApieFacadeAction
-     * @param class-string<T> $classAction
-     * @return T
-     */
-    private function createAction(string $classAction): ApieFacadeAction
+    public function createAction(ApieContext $apieContext): ActionInterface
     {
-        return new $classAction($this);
+        if ($apieContext->hasContext(ContextConstants::APIE_ACTION)) {
+            return new ($apieContext->getContext(ContextConstants::APIE_ACTION))($this);
+        }
+
+        return $this->getAction(
+            $apieContext->getContext(ContextConstants::BOUNDED_CONTEXT_ID),
+            $apieContext->getContext(ContextConstants::OPERATION_ID),
+            $apieContext,
+        );
     }
-    
 
     public function getActionsForBoundedContext(BoundedContextId|BoundedContext $boundedContext, ApieContext $apieContext): ActionHashmap
     {

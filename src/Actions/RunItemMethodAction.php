@@ -1,15 +1,18 @@
 <?php
 namespace Apie\Common\Actions;
 
-use Apie\Common\ApieFacade;
-use Apie\Common\ApieFacadeAction;
 use Apie\Common\ContextConstants;
 use Apie\Core\Actions\ActionResponse;
+use Apie\Core\Actions\ActionResponseStatus;
+use Apie\Core\Actions\ActionResponseStatusList;
+use Apie\Core\Actions\ApieFacadeInterface;
+use Apie\Core\Actions\MethodActionInterface;
 use Apie\Core\BoundedContext\BoundedContextId;
 use Apie\Core\Context\ApieContext;
 use Apie\Core\Entities\EntityInterface;
 use Apie\Core\Exceptions\InvalidTypeException;
 use Apie\Core\IdentifierUtils;
+use Apie\Core\Lists\StringList;
 use ReflectionClass;
 use ReflectionMethod;
 use ReflectionNamedType;
@@ -17,11 +20,12 @@ use ReflectionNamedType;
 /**
  * Runs a method from  a resource (and persist resource afterwards).
  */
-final class RunItemMethodAction implements ApieFacadeAction
+final class RunItemMethodAction implements MethodActionInterface
 {
-    public function __construct(private readonly ApieFacade $apieFacade)
+    public function __construct(private readonly ApieFacadeInterface $apieFacade)
     {
     }
+
     /**
      * @param array<string|int, mixed> $rawContents
      */
@@ -96,5 +100,74 @@ final class RunItemMethodAction implements ApieFacadeAction
             }
         }
         return $method->name;
+    }
+
+    public static function getInputType(ReflectionClass $class, ?ReflectionMethod $method = null): ReflectionMethod
+    {
+        assert($method instanceof ReflectionMethod);
+        return $method;
+    }
+
+    public static function getOutputType(ReflectionClass $class, ?ReflectionMethod $method = null): ReflectionMethod|ReflectionClass
+    {
+        assert($method instanceof ReflectionMethod);
+        if (RunItemMethodAction::shouldReturnResource($method)) {
+            return $class;
+        }
+        return $method;
+    }
+
+    public static function getPossibleActionResponseStatuses(?ReflectionMethod $method = null): ActionResponseStatusList
+    {
+        assert($method instanceof ReflectionMethod);
+        $list = [ActionResponseStatus::SUCCESS];
+
+        if (!empty($method->getParameters())) {
+            $list[] = ActionResponseStatus::CLIENT_ERROR;
+        }
+        if (!$method->isStatic()) {
+            $list[] = ActionResponseStatus::NOT_FOUND;
+        }
+        return new ActionResponseStatusList($list);
+    }
+
+    public static function getDescription(ReflectionClass $class, ?ReflectionMethod $method = null): string
+    {
+        assert($method instanceof ReflectionMethod);
+        $name = self::getDisplayNameForMethod($method);
+        if (str_starts_with($method->name, 'add')) {
+            return 'Adds ' . $name . ' to ' . $class->getShortName();
+        }
+        if (str_starts_with($method->name, 'remove')) {
+            return 'Removes ' . $name . ' from ' . $class->getShortName();
+        }
+        return 'Runs method ' . $name . ' on a ' . $class->getShortName() . ' with a specific id';
+    }
+
+    public function getOperationId(): string
+    {
+        return 'get-single-' . $this->className->getShortName() . '-run-' . $this->method->name;
+    }
+    
+    public static function getTags(ReflectionClass $class, ?ReflectionMethod $method = null): StringList
+    {
+        $className = $class->getShortName();
+        $declared = $method ? $method->getDeclaringClass()->getShortName() : $className;
+        if ($className !== $declared) {
+            return new StringList([$className, $declared, 'action']);
+        }
+        return new StringList([$className, 'action']);
+    }
+
+    public static function getRouteAttributes(ReflectionClass $class, ?ReflectionMethod $method = null): array
+    {
+        return
+        [
+            ContextConstants::GET_OBJECT => true,
+            ContextConstants::RESOURCE_METHOD => true,
+            ContextConstants::RESOURCE_NAME => $class->name,
+            ContextConstants::METHOD_CLASS => $method->getDeclaringClass()->name,
+            ContextConstants::METHOD_NAME => $method->name,
+        ];
     }
 }

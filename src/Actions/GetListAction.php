@@ -1,22 +1,27 @@
 <?php
 namespace Apie\Common\Actions;
 
-use Apie\Common\ApieFacade;
-use Apie\Common\ApieFacadeAction;
 use Apie\Common\ContextConstants;
+use Apie\Core\Actions\ActionInterface;
 use Apie\Core\Actions\ActionResponse;
+use Apie\Core\Actions\ActionResponseStatus;
+use Apie\Core\Actions\ActionResponseStatusList;
+use Apie\Core\Actions\ApieFacadeInterface;
 use Apie\Core\BoundedContext\BoundedContextId;
 use Apie\Core\Context\ApieContext;
 use Apie\Core\Datalayers\Search\QuerySearch;
+use Apie\Core\Dto\ListOf;
 use Apie\Core\Entities\EntityInterface;
 use Apie\Core\Exceptions\InvalidTypeException;
+use Apie\Core\Lists\StringList;
+use ReflectionClass;
 
 /**
  * Action to get a list of resources.
  */
-final class GetListAction implements ApieFacadeAction
+final class GetListAction implements ActionInterface
 {
-    public function __construct(private readonly ApieFacade $apieFacade)
+    public function __construct(private readonly ApieFacadeInterface $apieFacade)
     {
     }
 
@@ -35,5 +40,41 @@ final class GetListAction implements ApieFacadeAction
         );
         $result = $resource->toPaginatedResult(QuerySearch::fromArray($rawContents));
         return ActionResponse::createRunSuccess($this->apieFacade, $context, $result, $resource);
+    }
+
+    public static function getInputType(ReflectionClass $class): ReflectionClass
+    {
+        return $class;
+    }
+
+    public static function getOutputType(ReflectionClass $class): ListOf
+    {
+        return new ListOf($class);
+    }
+
+    public static function getPossibleActionResponseStatuses(): ActionResponseStatusList
+    {
+        return new ActionResponseStatusList([
+            ActionResponseStatus::SUCCESS
+        ]);
+    }
+
+    public static function getDescription(ReflectionClass $class): string
+    {
+        return 'Gets a list of resource that are an instance of ' . $class->getShortName();
+    }
+    
+    public static function getTags(ReflectionClass $class): StringList
+    {
+        return new StringList([$class->getShortName(), 'resource']);
+    }
+
+    public static function getRouteAttributes(ReflectionClass $class): array
+    {
+        return [
+            ContextConstants::GET_ALL_OBJECTS => true,
+            ContextConstants::GET_OBJECT => true,
+            ContextConstants::RESOURCE_NAME => $class->name,
+        ];
     }
 }

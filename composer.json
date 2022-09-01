@@ -22,7 +22,8 @@
   "require": {
     "php": ">=8.1",
     "apie/core": "self.version",
-    "apie/serializer": "self.version"
+    "apie/serializer": "self.version",
+    "psr/http-message": "^1.0"
   },
   "require-dev": {
     "apie/composite-value-objects": "self.version",

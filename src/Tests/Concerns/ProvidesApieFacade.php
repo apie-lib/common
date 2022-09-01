@@ -2,17 +2,17 @@
 namespace Apie\Common\Tests\Concerns;
 
 use Apie\Common\ApieFacade;
-use Apie\Common\ApieFacadeAction;
-use Apie\Core\Actions\HasActionDefinition;
-use Apie\Core\Actions\HasRouteDefinition;
+use Apie\Common\Interfaces\ApieFacadeInterface;
+use Apie\Common\Interfaces\HasActionDefinition;
+use Apie\Common\Interfaces\HasRouteDefinition;
+use Apie\Common\Interfaces\RouteDefinitionProviderInterface;
+use Apie\Common\RouteDefinitions\ActionHashmap;
 use Apie\Core\BoundedContext\BoundedContext;
 use Apie\Core\BoundedContext\BoundedContextHashmap;
 use Apie\Core\BoundedContext\BoundedContextId;
 use Apie\Core\Context\ApieContext;
 use Apie\Core\Datalayers\InMemory\InMemoryDatalayer;
 use Apie\Core\Enums\RequestMethod;
-use Apie\Core\RouteDefinitions\ActionHashmap;
-use Apie\Core\RouteDefinitions\RouteDefinitionProviderInterface;
 use Apie\Core\ValueObjects\UrlRouteDefinition;
 use Apie\Fixtures\BoundedContextFactory;
 use Apie\Serializer\Serializer;
@@ -33,7 +33,7 @@ use LogicException;
 trait ProvidesApieFacade
 {
     /** @param class-string<ApieFacadeAction> $apieFacadeActionClass */
-    public function givenAnApieFacade(string $apieFacadeActionClass, ?BoundedContextHashmap $boundedContextHashmap = null): ApieFacade
+    public function givenAnApieFacade(string $apieFacadeActionClass, ?BoundedContextHashmap $boundedContextHashmap = null): ApieFacadeInterface
     {
         $routeDefinitionProvider = new class($apieFacadeActionClass) implements RouteDefinitionProviderInterface {
             /** @param class-string<ApieFacadeAction> $apieFacadeActionClass */
