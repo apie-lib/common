@@ -41,11 +41,17 @@ final class GetItemAction implements ActionInterface
         return ActionResponse::createRunSuccess($this->apieFacade, $context, $result, $result);
     }
 
+    /**
+     * @return ReflectionClass<EntityInterface>
+     */
     public static function getInputType(ReflectionClass $class): ReflectionClass
     {
         return $class;
     }
 
+    /**
+     * @return ReflectionClass<EntityInterface>
+     */
     public static function getOutputType(ReflectionClass $class): ReflectionClass
     {
         return $class;

@@ -102,12 +102,14 @@ final class RunItemMethodAction implements MethodActionInterface
         return $method->name;
     }
 
+    /** @param ReflectionClass<object> $class */
     public static function getInputType(ReflectionClass $class, ?ReflectionMethod $method = null): ReflectionMethod
     {
         assert($method instanceof ReflectionMethod);
         return $method;
     }
 
+    /** @param ReflectionClass<object> $class */
     public static function getOutputType(ReflectionClass $class, ?ReflectionMethod $method = null): ReflectionMethod|ReflectionClass
     {
         assert($method instanceof ReflectionMethod);
@@ -131,6 +133,9 @@ final class RunItemMethodAction implements MethodActionInterface
         return new ActionResponseStatusList($list);
     }
 
+    /**
+     * @param ReflectionClass<object> $class
+     */
     public static function getDescription(ReflectionClass $class, ?ReflectionMethod $method = null): string
     {
         assert($method instanceof ReflectionMethod);
@@ -143,12 +148,10 @@ final class RunItemMethodAction implements MethodActionInterface
         }
         return 'Runs method ' . $name . ' on a ' . $class->getShortName() . ' with a specific id';
     }
-
-    public function getOperationId(): string
-    {
-        return 'get-single-' . $this->className->getShortName() . '-run-' . $this->method->name;
-    }
     
+    /**
+     * @param ReflectionClass<object> $class
+     */
     public static function getTags(ReflectionClass $class, ?ReflectionMethod $method = null): StringList
     {
         $className = $class->getShortName();
@@ -159,6 +162,9 @@ final class RunItemMethodAction implements MethodActionInterface
         return new StringList([$className, 'action']);
     }
 
+    /**
+     * @param ReflectionClass<object> $class
+     */
     public static function getRouteAttributes(ReflectionClass $class, ?ReflectionMethod $method = null): array
     {
         return

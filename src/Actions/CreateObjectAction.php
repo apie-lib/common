@@ -7,6 +7,7 @@ use Apie\Core\Actions\ActionResponse;
 use Apie\Core\Actions\ActionResponseStatus;
 use Apie\Core\Actions\ActionResponseStatusList;
 use Apie\Core\Actions\ApieFacadeInterface;
+use Apie\Core\Entities\EntityInterface;
 use Apie\Core\BoundedContext\BoundedContextId;
 use Apie\Core\Context\ApieContext;
 use Apie\Core\Lists\StringList;
@@ -35,11 +36,17 @@ final class CreateObjectAction implements ActionInterface
         return ActionResponse::createCreationSuccess($this->apieFacade, $context, $resource, $resource);
     }
 
+    /**
+     * @return ReflectionClass<EntityInterface>
+     */
     public static function getInputType(ReflectionClass $class): ReflectionClass
     {
         return $class;
     }
 
+    /**
+     * @return ReflectionClass<EntityInterface>
+     */
     public static function getOutputType(ReflectionClass $class): ReflectionClass
     {
         return $class;
