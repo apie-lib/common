@@ -7,9 +7,9 @@ use Apie\Core\Actions\ActionResponse;
 use Apie\Core\Actions\ActionResponseStatus;
 use Apie\Core\Actions\ActionResponseStatusList;
 use Apie\Core\Actions\ApieFacadeInterface;
-use Apie\Core\Entities\EntityInterface;
 use Apie\Core\BoundedContext\BoundedContextId;
 use Apie\Core\Context\ApieContext;
+use Apie\Core\Entities\EntityInterface;
 use Apie\Core\Lists\StringList;
 use ReflectionClass;
 
