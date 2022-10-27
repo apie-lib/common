@@ -6,6 +6,7 @@ use Apie\Common\ContextBuilders\RequestBodyDecoderContextBuilder;
 use Apie\Core\BoundedContext\BoundedContextHashmap;
 use Apie\Core\ContextBuilders\ContextBuilderFactory as ContextBuildersContextBuilderFactory;
 use Apie\Core\ContextBuilders\ContextBuilderInterface;
+use Apie\Core\Session\CsrfTokenProvider;
 use Apie\Serializer\DecoderHashmap;
 
 final class ContextBuilderFactory
@@ -16,11 +17,12 @@ final class ContextBuilderFactory
     public static function create(
         BoundedContextHashmap $boundedContextHashmap,
         DecoderHashmap $decoderHashmap,
+        CsrfTokenProvider $csrfTokenProvider,
         ContextBuilderInterface... $builders
     ): ContextBuildersContextBuilderFactory {
         return new ContextBuildersContextBuilderFactory(
             new BoundedContextProviderContextBuilder($boundedContextHashmap),
-            new RequestBodyDecoderContextBuilder(new RequestBodyDecoder($decoderHashmap)),
+            new RequestBodyDecoderContextBuilder(new RequestBodyDecoder($decoderHashmap, $csrfTokenProvider)),
             ...$builders
         );
     }

@@ -2,14 +2,18 @@
 namespace Apie\Common;
 
 use Apie\Core\Exceptions\InvalidTypeException;
+use Apie\Core\Session\CsrfTokenProvider;
 use Apie\RestApi\Exceptions\InvalidContentTypeException;
 use Apie\Serializer\DecoderHashmap;
+use Apie\Serializer\Encoders\FormSubmitDecoder;
 use Psr\Http\Message\ServerRequestInterface;
 
 final class RequestBodyDecoder
 {
-    public function __construct(private readonly DecoderHashmap $decoderHashmap)
-    {
+    public function __construct(
+        private readonly DecoderHashmap $decoderHashmap,
+        private readonly CsrfTokenProvider $csrfTokenProvider
+    ) {
     }
 
     /**
@@ -30,6 +34,9 @@ final class RequestBodyDecoder
         }
         $decoder = $this->decoderHashmap[$contentType];
         $rawContents = $decoder->decode((string) $request->getBody());
+        if ($decoder instanceof FormSubmitDecoder) {
+            $this->csrfTokenProvider->validateToken($rawContents['_csrf'] ?? 'no token');
+        }
         if (!is_array($rawContents)) {
             throw new InvalidTypeException($rawContents, 'array');
         }
