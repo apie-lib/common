@@ -2,27 +2,22 @@
 namespace Apie\Common;
 
 use Apie\Core\Exceptions\InvalidTypeException;
-use Apie\Core\Session\CsrfTokenProvider;
 use Apie\RestApi\Exceptions\InvalidContentTypeException;
 use Apie\Serializer\DecoderHashmap;
-use Apie\Serializer\Encoders\FormSubmitDecoder;
+use Apie\Serializer\Interfaces\DecoderInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 final class RequestBodyDecoder
 {
     public function __construct(
-        private readonly DecoderHashmap $decoderHashmap,
-        private readonly CsrfTokenProvider $csrfTokenProvider
+        private readonly DecoderHashmap $decoderHashmap
     ) {
     }
 
-    /**
-     * @return array<string|int, mixed>
-     */
-    public function decodeBody(ServerRequestInterface $request): array
+    public function getDecoder(ServerRequestInterface $request): ?DecoderInterface
     {
         if ($request->getMethod() === 'GET') {
-            return $request->getQueryParams();
+            return null;
         }
         $contentTypes = $request->getHeader('Content-Type');
         if (count($contentTypes) !== 1) {
@@ -32,11 +27,20 @@ final class RequestBodyDecoder
         if (!isset($this->decoderHashmap[$contentType])) {
             throw new InvalidContentTypeException($contentType);
         }
-        $decoder = $this->decoderHashmap[$contentType];
-        $rawContents = $decoder->decode((string) $request->getBody());
-        if ($decoder instanceof FormSubmitDecoder) {
-            $this->csrfTokenProvider->validateToken($rawContents['_csrf'] ?? 'no token');
+        return $this->decoderHashmap[$contentType];
+    }
+
+    /**
+     * @return array<string|int, mixed>
+     */
+    public function decodeBody(ServerRequestInterface $request): array
+    {
+        $decoder = $this->getDecoder($request);
+        
+        if (null === $decoder) {
+            return $request->getQueryParams();
         }
+        $rawContents = $decoder->decode((string) $request->getBody());
         if (!is_array($rawContents)) {
             throw new InvalidTypeException($rawContents, 'array');
         }
