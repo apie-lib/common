@@ -92,6 +92,11 @@ final class ApieFacade implements ApieFacadeInterface
         return $this->serializer->denormalizeNewObject($object, $desiredType, $apieContext);
     }
 
+    public function denormalizeOnExistingObject(ItemHashmap $object, object $existingObject, ApieContext $apieContext): mixed
+    {
+        return $this->serializer->denormalizeOnExistingObject($object, $existingObject, $apieContext);
+    }
+
     public function denormalizeOnMethodCall(string|int|float|bool|ItemList|ItemHashmap|array|null $input, ?object $object, ReflectionMethod $method, ApieContext $apieContext): mixed
     {
         return $this->serializer->denormalizeOnMethodCall($input, $object, $method, $apieContext);
