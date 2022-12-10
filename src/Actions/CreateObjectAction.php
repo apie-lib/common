@@ -11,6 +11,7 @@ use Apie\Core\BoundedContext\BoundedContextId;
 use Apie\Core\Context\ApieContext;
 use Apie\Core\Entities\EntityInterface;
 use Apie\Core\Lists\StringList;
+use Exception;
 use ReflectionClass;
 
 /**
@@ -27,11 +28,15 @@ final class CreateObjectAction implements ActionInterface
      */
     public function __invoke(ApieContext $context, array $rawContents): ActionResponse
     {
-        $resource = $this->apieFacade->denormalizeNewObject(
-            $rawContents,
-            $context->getContext(ContextConstants::RESOURCE_NAME),
-            $context
-        );
+        try {
+            $resource = $this->apieFacade->denormalizeNewObject(
+                $rawContents,
+                $context->getContext(ContextConstants::RESOURCE_NAME),
+                $context
+            );
+        } catch (Exception $error) {
+            return ActionResponse::createClientError($this->apieFacade, $context, $error);
+        }
         $resource = $this->apieFacade->persistNew($resource, new BoundedContextId($context->getContext(ContextConstants::BOUNDED_CONTEXT_ID)));
         return ActionResponse::createCreationSuccess($this->apieFacade, $context, $resource, $resource);
     }
