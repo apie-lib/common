@@ -67,6 +67,11 @@ final class ContextConstants
     public const RAW_CONTENTS = 'raw-contents';
 
     /**
+     * Last validation errors
+     */
+    public const VALIDATION_ERRORS = 'validation-errors';
+
+    /**
      * Added if an OpenAPI spec is generated.
      */
     public const OPENAPI = 'openapi';
