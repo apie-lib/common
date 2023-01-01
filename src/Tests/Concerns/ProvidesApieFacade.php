@@ -2,10 +2,12 @@
 namespace Apie\Common\Tests\Concerns;
 
 use Apie\Common\ApieFacade;
+use Apie\Common\Enums\UrlPrefix;
 use Apie\Common\Interfaces\ApieFacadeInterface;
 use Apie\Common\Interfaces\HasActionDefinition;
 use Apie\Common\Interfaces\HasRouteDefinition;
 use Apie\Common\Interfaces\RouteDefinitionProviderInterface;
+use Apie\Common\Lists\UrlPrefixList;
 use Apie\Common\RouteDefinitions\ActionHashmap;
 use Apie\Core\BoundedContext\BoundedContext;
 use Apie\Core\BoundedContext\BoundedContextHashmap;
@@ -76,6 +78,11 @@ trait ProvidesApieFacade
                     public function getOperationId(): string
                     {
                         return 'test';
+                    }
+
+                    public function getUrlPrefixes(): UrlPrefixList
+                    {
+                        return new UrlPrefixList([UrlPrefix::CMS]);
                     }
                 };
                 return new ActionHashmap(

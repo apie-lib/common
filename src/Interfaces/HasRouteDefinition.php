@@ -1,6 +1,7 @@
 <?php
 namespace Apie\Common\Interfaces;
 
+use Apie\Common\Lists\UrlPrefixList;
 use Apie\Core\Enums\RequestMethod;
 use Apie\Core\ValueObjects\UrlRouteDefinition;
 
@@ -21,4 +22,5 @@ interface HasRouteDefinition
      */
     public function getRouteAttributes(): array;
     public function getOperationId(): string;
+    public function getUrlPrefixes(): UrlPrefixList;
 }
