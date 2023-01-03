@@ -1,9 +1,6 @@
 <?php
 namespace Apie\Common\Interfaces;
 
-use Apie\Common\Interfaces\HasActionDefinition;
-use Apie\Common\Interfaces\HasRouteDefinition;
-use Apie\Common\Lists\UrlPrefixList;
 use Apie\Core\Actions\ActionResponseStatusList;
 use Apie\Core\Dto\ListOf;
 use Apie\Core\Lists\StringList;
