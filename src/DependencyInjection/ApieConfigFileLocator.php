@@ -1,24 +1,29 @@
 <?php
 namespace Apie\Common\DependencyInjection;
 
+use Apie\Cms\RouteDefinitions\AbstractCmsRouteDefinition;
 use Apie\CmsApiDropdownOption\Lists\DropdownOptionList;
 use Apie\Common\ApieFacade;
+use Apie\Console\ConsoleCommandFactory;
+use Apie\Core\Context\ApieContext;
 use Apie\Faker\ApieObjectFaker;
+use Apie\HtmlBuilders\FormBuildContext;
 use Apie\RestApi\OpenApi\OpenApiGenerator;
 use Apie\SchemaGenerator\ComponentsBuilderFactory;
 use Apie\Serializer\Serializer;
 use ReflectionClass;
 use Symfony\Component\Config\FileLocator;
-use Symfony\Component\Config\FileLocatorInterface;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
 class ApieConfigFileLocator extends FileLocator
 {
     private $predefined = [
+        'cms.yaml' => [AbstractCmsRouteDefinition::class, '../..'],
         'cms_dropdown.yaml' => [DropdownOptionList::class, '../..'],
         'common.yaml' => [ApieFacade::class, '..'],
+        'console.yaml' => [ConsoleCommandFactory::class, '..'],
+        'core.yaml' => [ApieContext::class, '../..'],
         'faker.yaml' => [ApieObjectFaker::class, '..'],
+        'html_builders.yaml' => [FormBuildContext::class, '..'],
         'rest_api.yaml' => [OpenApiGenerator::class, '../..'],
         'serializer.yaml' => [Serializer::class, '..'],
         'schema_generator.yaml' => [ComponentsBuilderFactory::class, '..']
