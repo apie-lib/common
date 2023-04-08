@@ -1,0 +1,16 @@
+services:
+  Apie\Common\ApieFacade:
+    arguments:
+      - '@apie.route_definitions.provider'
+      - '@Apie\Core\BoundedContext\BoundedContextHashmap'
+      - '@Apie\Serializer\Serializer'
+      - '@Apie\Core\Datalayers\ApieDatalayer'
+  
+  Apie\Common\RequestBodyDecoder:
+    arguments:
+      - '@Apie\Serializer\DecoderHashmap'
+      - '@Apie\Core\Session\CsrfTokenProvider'
+
+  apie:
+    alias: Apie\Common\ApieFacade
+    public: true
