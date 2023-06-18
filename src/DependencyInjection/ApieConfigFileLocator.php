@@ -16,7 +16,10 @@ use Symfony\Component\Config\FileLocator;
 
 class ApieConfigFileLocator extends FileLocator
 {
-    private $predefined = [
+    /**
+     * @var array<string, array{class-string<object>, string}>
+     */
+    private array $predefined = [
         'cms.yaml' => [AbstractCmsRouteDefinition::class, '../..'],
         'cms_dropdown.yaml' => [DropdownOptionList::class, '../..'],
         'common.yaml' => [ApieFacade::class, '..'],
