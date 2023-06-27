@@ -12,6 +12,7 @@ use Apie\RestApi\OpenApi\OpenApiGenerator;
 use Apie\SchemaGenerator\ComponentsBuilderFactory;
 use Apie\Serializer\Serializer;
 use ReflectionClass;
+use ReflectionException;
 use Symfony\Component\Config\FileLocator;
 
 class ApieConfigFileLocator extends FileLocator
@@ -20,16 +21,16 @@ class ApieConfigFileLocator extends FileLocator
      * @var array<string, array{class-string<object>, string}>
      */
     private array $predefined = [
-        'cms.yaml' => [AbstractCmsRouteDefinition::class, '../..'],
-        'cms_dropdown.yaml' => [DropdownOptionList::class, '../..'],
-        'common.yaml' => [ApieFacade::class, '..'],
-        'console.yaml' => [ConsoleCommandFactory::class, '..'],
-        'core.yaml' => [ApieContext::class, '../..'],
-        'faker.yaml' => [ApieObjectFaker::class, '..'],
-        'html_builders.yaml' => [FormBuildContext::class, '..'],
-        'rest_api.yaml' => [OpenApiGenerator::class, '../..'],
-        'serializer.yaml' => [Serializer::class, '..'],
-        'schema_generator.yaml' => [ComponentsBuilderFactory::class, '..']
+        'cms.yaml' => [AbstractCmsRouteDefinition::class, '../..', 'Apie\\Cms\\CmsServiceProvider'],
+        'cms_dropdown.yaml' => [DropdownOptionList::class, '../..', 'Apie\\CmsDropdown\\CmsDropdownServiceProvider'],
+        'common.yaml' => [ApieFacade::class, '..', 'Apie\\Common\\CommonServiceProvider'],
+        'console.yaml' => [ConsoleCommandFactory::class, '..', 'Apie\\Console\\ConsoleServiceProvider'],
+        'core.yaml' => [ApieContext::class, '../..', 'Apie\\Core\\CoreServiceProvider'],
+        'faker.yaml' => [ApieObjectFaker::class, '..', 'Apie\\Faker\\FakerServiceProvider'],
+        'html_builders.yaml' => [FormBuildContext::class, '..', 'Apie\\HtmlBuilders\\HtmlBuilderServiceProvider'],
+        'rest_api.yaml' => [OpenApiGenerator::class, '../..', 'Apie\\RestApi\\RestApiServiceProvider'],
+        'serializer.yaml' => [Serializer::class, '..', 'Apie\\Serializer\\SerializerServiceProvider'],
+        'schema_generator.yaml' => [ComponentsBuilderFactory::class, '..', 'Apie\\SchemaGenerator\\SchemaGeneratorServiceProvider']
     ];
 
     public function __construct(string|array $paths = [])
@@ -49,5 +50,17 @@ class ApieConfigFileLocator extends FileLocator
         $config = $this->predefined[$name];
         $refl = new ReflectionClass($config[0]);
         return dirname(realpath($refl->getFileName())) . DIRECTORY_SEPARATOR . $config[1] . DIRECTORY_SEPARATOR . $name;
+    }
+
+    public function getAllPaths(): array
+    {
+        $result = [];
+        foreach (array_keys($this->predefined) as $name) {
+            try {
+                $result[] = [$this->locate($name), $this->predefined[$name][2]];
+            } catch (ReflectionException) {
+            }
+        }
+        return $result;
     }
 }
