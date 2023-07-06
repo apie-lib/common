@@ -11,6 +11,17 @@ services:
       - '@Apie\Serializer\DecoderHashmap'
       - '@Apie\Core\Session\CsrfTokenProvider'
 
+  apie.bounded_context.hashmap_factory:
+      class: Apie\Common\Wrappers\BoundedContextHashmapFactory
+      arguments:
+        - "%apie.bounded_contexts%"
+
+  Apie\Common\Wrappers\RequestAwareInMemoryDatalayer:
+    arguments:
+      - '@Apie\Common\Interfaces\BoundedContextSelection'
+    tags:
+      - apie.datalayer
+
   apie:
     alias: Apie\Common\ApieFacade
     public: true

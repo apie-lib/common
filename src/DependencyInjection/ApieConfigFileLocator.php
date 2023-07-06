@@ -22,7 +22,7 @@ class ApieConfigFileLocator extends FileLocator
      */
     private array $predefined = [
         'cms.yaml' => [AbstractCmsRouteDefinition::class, '../..', 'Apie\\Cms\\CmsServiceProvider'],
-        'cms_dropdown.yaml' => [DropdownOptionList::class, '../..', 'Apie\\CmsDropdown\\CmsDropdownServiceProvider'],
+        'cms_dropdown.yaml' => [DropdownOptionList::class, '../..', 'Apie\\CmsApiDropdownOption\\CmsDropdownServiceProvider'],
         'common.yaml' => [ApieFacade::class, '..', 'Apie\\Common\\CommonServiceProvider'],
         'console.yaml' => [ConsoleCommandFactory::class, '..', 'Apie\\Console\\ConsoleServiceProvider'],
         'core.yaml' => [ApieContext::class, '../..', 'Apie\\Core\\CoreServiceProvider'],

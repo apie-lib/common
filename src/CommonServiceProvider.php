@@ -35,7 +35,31 @@ class CommonServiceProvider extends ServiceProvider
                 );
             }
         );
-        $this->app->bind(\Apie\Common\ApieFacade::class, 'apie');
+        $this->app->singleton(
+            'apie.bounded_context.hashmap_factory',
+            function ($app) {
+                return new \Apie\Common\Wrappers\BoundedContextHashmapFactory(
+                    $this->parseArgument('%apie.bounded_contexts%')
+                );
+            }
+        );
+        $this->app->singleton(
+            \Apie\Common\Wrappers\RequestAwareInMemoryDatalayer::class,
+            function ($app) {
+                return new \Apie\Common\Wrappers\RequestAwareInMemoryDatalayer(
+                    $app->make(\Apie\Common\Interfaces\BoundedContextSelection::class)
+                );
+            }
+        );
+        \Apie\ServiceProviderGenerator\TagMap::register(
+            $this->app,
+            \Apie\Common\Wrappers\RequestAwareInMemoryDatalayer::class,
+            array(
+              0 => 'apie.datalayer',
+            )
+        );
+        $this->app->tag([\Apie\Common\Wrappers\RequestAwareInMemoryDatalayer::class], 'apie.datalayer');
+        $this->app->bind('apie', \Apie\Common\ApieFacade::class);
         
         
     }

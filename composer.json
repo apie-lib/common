@@ -24,7 +24,8 @@
     "apie/core": "self.version",
     "apie/serializer": "self.version",
     "psr/http-message": "^1.0",
-    "symfony/config": "6.*"
+    "symfony/config": "6.*",
+    "symfony/finder": "6.*"
   },
   "require-dev": {
     "apie/composite-value-objects": "self.version",
