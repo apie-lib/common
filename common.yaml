@@ -6,15 +6,28 @@ services:
       - '@Apie\Serializer\Serializer'
       - '@Apie\Core\Datalayers\ApieDatalayer'
   
+  Apie\Common\RouteDefinitions\PossibleRoutePrefixProvider:
+    arguments:
+      - '%apie.cms.base_url%'
+      - '%apie.rest_api.base_url%'
+
   Apie\Common\RequestBodyDecoder:
     arguments:
       - '@Apie\Serializer\DecoderHashmap'
-      - '@Apie\Core\Session\CsrfTokenProvider'
 
   apie.bounded_context.hashmap_factory:
       class: Apie\Common\Wrappers\BoundedContextHashmapFactory
       arguments:
         - "%apie.bounded_contexts%"
+
+  Apie\Common\Interfaces\RouteDefinitionProviderInterface:
+    alias: apie.route_definitions.provider
+
+  apie.route_definitions.provider:
+    class: Apie\Common\RouteDefinitions\ChainedRouteDefinitionProvider
+    factory: ['Apie\Common\Wrappers\GeneralServiceFactory', 'createRoutedDefinitionProvider']
+    arguments:
+      - !tagged apie.common.route_definition
 
   Apie\Common\Wrappers\RequestAwareInMemoryDatalayer:
     arguments:

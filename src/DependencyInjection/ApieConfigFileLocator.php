@@ -18,7 +18,7 @@ use Symfony\Component\Config\FileLocator;
 class ApieConfigFileLocator extends FileLocator
 {
     /**
-     * @var array<string, array{class-string<object>, string}>
+     * @var array<string, array{class-string<object>, string, class-string<object>}>
      */
     private array $predefined = [
         'cms.yaml' => [AbstractCmsRouteDefinition::class, '../..', 'Apie\\Cms\\CmsServiceProvider'],
@@ -52,12 +52,15 @@ class ApieConfigFileLocator extends FileLocator
         return dirname(realpath($refl->getFileName())) . DIRECTORY_SEPARATOR . $config[1] . DIRECTORY_SEPARATOR . $name;
     }
 
+    /**
+     * @return array<int, array{string, class-string<object>}>
+     */
     public function getAllPaths(): array
     {
         $result = [];
         foreach (array_keys($this->predefined) as $name) {
             try {
-                $result[] = [$this->locate($name), $this->predefined[$name][2]];
+                $result[] = [(string) $this->locate($name), $this->predefined[$name][2]];
             } catch (ReflectionException) {
             }
         }

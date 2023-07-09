@@ -9,7 +9,7 @@ use Apie\Core\Entities\EntityInterface;
 interface UserDecorator
 {
     /**
-     * @return EntityInterface<T>
+     * @return T
      */
     public function getEntity(): EntityInterface;
 }

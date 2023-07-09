@@ -7,7 +7,6 @@ use Illuminate\Support\ServiceProvider;
 /**
  * This file is generated with apie/service-provider-generator from file: common.yaml
  * @codecoverageIgnore
- * @phpstan-ignore
  */
 class CommonServiceProvider extends ServiceProvider
 {
@@ -27,11 +26,19 @@ class CommonServiceProvider extends ServiceProvider
             }
         );
         $this->app->singleton(
+            \Apie\Common\RouteDefinitions\PossibleRoutePrefixProvider::class,
+            function ($app) {
+                return new \Apie\Common\RouteDefinitions\PossibleRoutePrefixProvider(
+                    $this->parseArgument('%apie.cms.base_url%'),
+                    $this->parseArgument('%apie.rest_api.base_url%')
+                );
+            }
+        );
+        $this->app->singleton(
             \Apie\Common\RequestBodyDecoder::class,
             function ($app) {
                 return new \Apie\Common\RequestBodyDecoder(
-                    $app->make(\Apie\Serializer\DecoderHashmap::class),
-                    $app->make(\Apie\Core\Session\CsrfTokenProvider::class)
+                    $app->make(\Apie\Serializer\DecoderHashmap::class)
                 );
             }
         );
@@ -41,6 +48,17 @@ class CommonServiceProvider extends ServiceProvider
                 return new \Apie\Common\Wrappers\BoundedContextHashmapFactory(
                     $this->parseArgument('%apie.bounded_contexts%')
                 );
+            }
+        );
+        $this->app->bind(\Apie\Common\Interfaces\RouteDefinitionProviderInterface::class, 'apie.route_definitions.provider');
+        
+        $this->app->singleton(
+            'apie.route_definitions.provider',
+            function ($app) {
+                return \Apie\Common\Wrappers\GeneralServiceFactory::createRoutedDefinitionProvider(
+                    $this->getTaggedServicesIterator('apie.common.route_definition')
+                );
+                
             }
         );
         $this->app->singleton(
