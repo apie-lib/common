@@ -6,6 +6,8 @@ use Apie\CmsApiDropdownOption\Lists\DropdownOptionList;
 use Apie\Common\ApieFacade;
 use Apie\Console\ConsoleCommandFactory;
 use Apie\Core\Context\ApieContext;
+use Apie\DoctrineEntityConverter\EntityBuilder;
+use Apie\DoctrineEntityDatalayer\DoctrineEntityDatalayer;
 use Apie\Faker\ApieObjectFaker;
 use Apie\HtmlBuilders\FormBuildContext;
 use Apie\RestApi\OpenApi\OpenApiGenerator;
@@ -26,6 +28,8 @@ class ApieConfigFileLocator extends FileLocator
         'common.yaml' => [ApieFacade::class, '..', 'Apie\\Common\\CommonServiceProvider'],
         'console.yaml' => [ConsoleCommandFactory::class, '..', 'Apie\\Console\\ConsoleServiceProvider'],
         'core.yaml' => [ApieContext::class, '../..', 'Apie\\Core\\CoreServiceProvider'],
+        'doctrine_entity_converter.yaml' => [EntityBuilder::class, '..', 'Apie\\DoctrineEntityConverter\\DoctrineEntityConverterProvider'],
+        'doctrine_entity_datalayer.yaml' => [DoctrineEntityDatalayer::class, '..', 'Apie\\DoctrineEntityDatalayer\\DoctrineEntityDatalayerServiceProvider'],
         'faker.yaml' => [ApieObjectFaker::class, '..', 'Apie\\Faker\\FakerServiceProvider'],
         'html_builders.yaml' => [FormBuildContext::class, '..', 'Apie\\HtmlBuilders\\HtmlBuilderServiceProvider'],
         'rest_api.yaml' => [OpenApiGenerator::class, '../..', 'Apie\\RestApi\\RestApiServiceProvider'],
