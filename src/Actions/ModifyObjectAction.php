@@ -17,7 +17,7 @@ use Apie\Core\Lists\StringList;
 use ReflectionClass;
 
 /**
- * Action to create a new object.
+ * Action to modify an existing object.
  */
 final class ModifyObjectAction implements ActionInterface
 {
