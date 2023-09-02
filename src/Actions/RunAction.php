@@ -44,6 +44,7 @@ final class RunAction implements MethodActionInterface
             ContextConstants::GLOBAL_METHOD => true,
             ContextConstants::SERVICE_CLASS => $method->getDeclaringClass()->name,
             ContextConstants::METHOD_NAME => $method->getName(),
+            ContextConstants::DISPLAY_FORM => true,
         ];
     }
 

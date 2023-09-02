@@ -99,4 +99,9 @@ final class ContextConstants
     public const RESOURCE_METHOD = 'resource-call';
 
     public const GLOBAL_METHOD = 'method-call';
+
+    /**
+     * Displays a form on this page.
+     */
+    public const DISPLAY_FORM = 'display-form';
 }

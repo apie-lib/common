@@ -174,6 +174,7 @@ final class RunItemMethodAction implements MethodActionInterface
             ContextConstants::RESOURCE_NAME => $class->name,
             ContextConstants::METHOD_CLASS => $method->getDeclaringClass()->name,
             ContextConstants::METHOD_NAME => $method->name,
+            ContextConstants::DISPLAY_FORM => true,
         ];
     }
 }

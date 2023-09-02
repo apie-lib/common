@@ -97,6 +97,7 @@ final class ModifyObjectAction implements ActionInterface
         return [
             ContextConstants::EDIT_OBJECT => true,
             ContextConstants::RESOURCE_NAME => $class->name,
+            ContextConstants::DISPLAY_FORM => true,
         ];
     }
 }
