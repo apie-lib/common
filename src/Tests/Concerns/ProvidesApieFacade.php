@@ -13,10 +13,10 @@ use Apie\Core\BoundedContext\BoundedContext;
 use Apie\Core\BoundedContext\BoundedContextHashmap;
 use Apie\Core\BoundedContext\BoundedContextId;
 use Apie\Core\Context\ApieContext;
-use Apie\Core\Datalayers\InMemory\InMemoryDatalayer;
 use Apie\Core\Enums\RequestMethod;
 use Apie\Core\ValueObjects\UrlRouteDefinition;
 use Apie\Fixtures\BoundedContextFactory;
+use Apie\Fixtures\TestHelpers\TestWithInMemoryDatalayer;
 use Apie\Serializer\Serializer;
 use LogicException;
 
@@ -34,6 +34,8 @@ use LogicException;
  */
 trait ProvidesApieFacade
 {
+    use TestWithInMemoryDatalayer;
+
     /** @param class-string<ApieFacadeAction> $apieFacadeActionClass */
     public function givenAnApieFacade(string $apieFacadeActionClass, ?BoundedContextHashmap $boundedContextHashmap = null): ApieFacadeInterface
     {
@@ -97,7 +99,7 @@ trait ProvidesApieFacade
             $routeDefinitionProvider,
             $boundedContextHashmap ?? BoundedContextFactory::createHashmap(),
             Serializer::create(),
-            new InMemoryDatalayer(new BoundedContextId('default'))
+            $this->givenAnInMemoryDataLayer(new BoundedContextId('default'))
         );
     }
 }

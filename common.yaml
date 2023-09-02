@@ -32,6 +32,7 @@ services:
   Apie\Common\Wrappers\RequestAwareInMemoryDatalayer:
     arguments:
       - '@Apie\Common\Interfaces\BoundedContextSelection'
+      - '@Apie\Core\Datalayers\Search\LazyLoadedListFilterer'
     tags:
       - apie.datalayer
 

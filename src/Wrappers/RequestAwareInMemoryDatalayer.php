@@ -7,7 +7,8 @@ use Apie\Core\BoundedContext\BoundedContextId;
 use Apie\Core\Datalayers\ApieDatalayerWithSupport;
 use Apie\Core\Datalayers\BoundedContextAwareApieDatalayer;
 use Apie\Core\Datalayers\InMemory\InMemoryDatalayer;
-use Apie\Core\Datalayers\Lists\LazyLoadedList;
+use Apie\Core\Datalayers\Lists\EntityListInterface;
+use Apie\Core\Datalayers\Search\LazyLoadedListFilterer;
 use Apie\Core\Entities\EntityInterface;
 use Apie\Core\Identifiers\IdentifierInterface;
 use ReflectionClass;
@@ -20,7 +21,8 @@ final class RequestAwareInMemoryDatalayer implements BoundedContextAwareApieData
     private array $createdRepositories = [];
 
     public function __construct(
-        private readonly BoundedContextSelection $boundedContextSelected
+        private readonly BoundedContextSelection $boundedContextSelected,
+        private readonly LazyLoadedListFilterer $filterer
     ) {
     }
 
@@ -36,7 +38,7 @@ final class RequestAwareInMemoryDatalayer implements BoundedContextAwareApieData
         return $boundedContext ? $boundedContext->getId()->toNative() === $boundedContextId->toNative() : false;
     }
 
-    public function all(ReflectionClass $class, ?BoundedContext $boundedContext = null): LazyLoadedList
+    public function all(ReflectionClass $class, ?BoundedContext $boundedContext = null): EntityListInterface
     {
         return $this->getRepository($class, $boundedContext)->all($class, $boundedContext);
     }
@@ -79,7 +81,7 @@ final class RequestAwareInMemoryDatalayer implements BoundedContextAwareApieData
         }
         $boundedContextId = $boundedContext ? $boundedContext->getId() : new BoundedContextId('unknown');
         if (!isset($this->createdRepositories[$boundedContextId->toNative()])) {
-            $this->createdRepositories[$boundedContextId->toNative()] = new InMemoryDatalayer($boundedContextId);
+            $this->createdRepositories[$boundedContextId->toNative()] = new InMemoryDatalayer($boundedContextId, $this->filterer);
         }
 
         return $this->createdRepositories[$boundedContextId->toNative()];

@@ -65,7 +65,8 @@ class CommonServiceProvider extends ServiceProvider
             \Apie\Common\Wrappers\RequestAwareInMemoryDatalayer::class,
             function ($app) {
                 return new \Apie\Common\Wrappers\RequestAwareInMemoryDatalayer(
-                    $app->make(\Apie\Common\Interfaces\BoundedContextSelection::class)
+                    $app->make(\Apie\Common\Interfaces\BoundedContextSelection::class),
+                    $app->make(\Apie\Core\Datalayers\Search\LazyLoadedListFilterer::class)
                 );
             }
         );
