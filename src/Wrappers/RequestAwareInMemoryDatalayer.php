@@ -4,8 +4,10 @@ namespace Apie\Common\Wrappers;
 use Apie\Common\Interfaces\BoundedContextSelection;
 use Apie\Core\BoundedContext\BoundedContext;
 use Apie\Core\BoundedContext\BoundedContextId;
+use Apie\Core\Datalayers\ApieDatalayerWithFilters;
 use Apie\Core\Datalayers\ApieDatalayerWithSupport;
 use Apie\Core\Datalayers\BoundedContextAwareApieDatalayer;
+use Apie\Core\Datalayers\Concerns\FiltersOnAllFields;
 use Apie\Core\Datalayers\InMemory\InMemoryDatalayer;
 use Apie\Core\Datalayers\Lists\EntityListInterface;
 use Apie\Core\Datalayers\Search\LazyLoadedListFilterer;
@@ -13,8 +15,10 @@ use Apie\Core\Entities\EntityInterface;
 use Apie\Core\Identifiers\IdentifierInterface;
 use ReflectionClass;
 
-final class RequestAwareInMemoryDatalayer implements BoundedContextAwareApieDatalayer, ApieDatalayerWithSupport
+final class RequestAwareInMemoryDatalayer implements ApieDatalayerWithFilters, BoundedContextAwareApieDatalayer, ApieDatalayerWithSupport
 {
+    use FiltersOnAllFields;
+
     /**
      * @var array<string, InMemoryDatalayer>
      */
