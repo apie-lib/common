@@ -29,6 +29,8 @@ services:
     arguments:
       - !tagged apie.common.route_definition
 
+  Apie\Common\ErrorHandler\ApiErrorRenderer:
+
   Apie\Common\Wrappers\RequestAwareInMemoryDatalayer:
     arguments:
       - '@Apie\Common\Interfaces\BoundedContextSelection'
