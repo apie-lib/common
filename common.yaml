@@ -5,7 +5,7 @@ services:
       - '@Apie\Core\BoundedContext\BoundedContextHashmap'
       - '@Apie\Serializer\Serializer'
       - '@Apie\Core\Datalayers\ApieDatalayer'
-  
+
   Apie\Common\RouteDefinitions\PossibleRoutePrefixProvider:
     arguments:
       - '%apie.cms.base_url%'
