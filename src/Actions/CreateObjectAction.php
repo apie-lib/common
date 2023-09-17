@@ -2,6 +2,7 @@
 namespace Apie\Common\Actions;
 
 use Apie\Common\ContextConstants;
+use Apie\Common\IntegrationTestLogger;
 use Apie\Core\Actions\ActionInterface;
 use Apie\Core\Actions\ActionResponse;
 use Apie\Core\Actions\ActionResponseStatus;
@@ -35,6 +36,7 @@ final class CreateObjectAction implements ActionInterface
                 $context
             );
         } catch (Exception $error) {
+            IntegrationTestLogger::logException($error);
             return ActionResponse::createClientError($this->apieFacade, $context, $error);
         }
         $resource = $this->apieFacade->persistNew($resource, new BoundedContextId($context->getContext(ContextConstants::BOUNDED_CONTEXT_ID)));
