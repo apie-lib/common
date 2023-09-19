@@ -62,6 +62,14 @@ class CommonServiceProvider extends ServiceProvider
             }
         );
         $this->app->singleton(
+            \Apie\Common\ErrorHandler\ApiErrorRenderer::class,
+            function ($app) {
+                return new \Apie\Common\ErrorHandler\ApiErrorRenderer(
+                
+                );
+            }
+        );
+        $this->app->singleton(
             \Apie\Common\Wrappers\RequestAwareInMemoryDatalayer::class,
             function ($app) {
                 return new \Apie\Common\Wrappers\RequestAwareInMemoryDatalayer(
