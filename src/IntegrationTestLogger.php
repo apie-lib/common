@@ -19,8 +19,10 @@ final class IntegrationTestLogger
     {
         if (getenv('PHPUNIT_LOG_INTEGRATION_OUTPUT')) {
             while ($error) {
-                fwrite(STDERR, get_class($error) . ': ' . $error->getMessage() . PHP_EOL);
-                fwrite(STDERR, $error->getTraceAsString() . PHP_EOL);
+                $stdErr = @fopen('php://stderr', 'w');
+                fwrite($stdErr, get_class($error) . ': ' . $error->getMessage() . PHP_EOL);
+                fwrite($stdErr, $error->getTraceAsString() . PHP_EOL);
+                fclose($stdErr);
                 $error = $error->getPrevious();
             }
         }
