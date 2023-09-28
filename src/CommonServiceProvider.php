@@ -81,11 +81,23 @@ class CommonServiceProvider extends ServiceProvider
         \Apie\ServiceProviderGenerator\TagMap::register(
             $this->app,
             \Apie\Common\Wrappers\RequestAwareInMemoryDatalayer::class,
-            array(
+            array (
               0 => 'apie.datalayer',
             )
         );
         $this->app->tag([\Apie\Common\Wrappers\RequestAwareInMemoryDatalayer::class], 'apie.datalayer');
+        $this->app->singleton(
+            \Apie\Common\Wrappers\ConsoleCommandFactory::class,
+            function ($app) {
+                return new \Apie\Common\Wrappers\ConsoleCommandFactory(
+                    $app->make(\Apie\Console\ConsoleCommandFactory::class),
+                    $app->make(\Apie\Core\ContextBuilders\ContextBuilderFactory::class),
+                    $app->make(\Apie\Core\BoundedContext\BoundedContextHashmap::class)
+                );
+            }
+        );
+        $this->app->bind('apie.console.factory', \Apie\Common\Wrappers\ConsoleCommandFactory::class);
+        
         $this->app->bind('apie', \Apie\Common\ApieFacade::class);
         
         

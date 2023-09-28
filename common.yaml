@@ -38,6 +38,16 @@ services:
     tags:
       - apie.datalayer
 
+  Apie\Common\Wrappers\ConsoleCommandFactory:
+    arguments:
+      - '@Apie\Console\ConsoleCommandFactory'
+      - '@Apie\Core\ContextBuilders\ContextBuilderFactory'
+      - '@Apie\Core\BoundedContext\BoundedContextHashmap'
+
+  apie.console.factory:
+    alias: Apie\Common\Wrappers\ConsoleCommandFactory
+    public: true
+
   apie:
     alias: Apie\Common\ApieFacade
     public: true
