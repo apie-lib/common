@@ -81,7 +81,7 @@ class CommonServiceProvider extends ServiceProvider
         \Apie\ServiceProviderGenerator\TagMap::register(
             $this->app,
             \Apie\Common\Wrappers\RequestAwareInMemoryDatalayer::class,
-            array (
+            array(
               0 => 'apie.datalayer',
             )
         );
