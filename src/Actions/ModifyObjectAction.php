@@ -39,6 +39,7 @@ final class ModifyObjectAction implements ActionInterface
             IdentifierUtils::entityClassToIdentifier($resourceClass)->newInstance($id),
             new BoundedContextId($context->getContext(ContextConstants::BOUNDED_CONTEXT_ID))
         );
+        $context = $context->withContext(ContextConstants::RESOURCE, $resource);
         $resource = $this->apieFacade->denormalizeOnExistingObject(
             new ItemHashmap($rawContents),
             $resource,

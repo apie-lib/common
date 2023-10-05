@@ -38,6 +38,7 @@ final class GetItemAction implements ActionInterface
             IdentifierUtils::entityClassToIdentifier($resourceClass)->newInstance($id),
             new BoundedContextId($context->getContext(ContextConstants::BOUNDED_CONTEXT_ID))
         );
+        $context = $context->withContext(ContextConstants::RESOURCE, $result);
         return ActionResponse::createRunSuccess($this->apieFacade, $context, $result, $result);
     }
 

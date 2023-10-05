@@ -30,6 +30,11 @@ final class ContextConstants
     public const RESOURCE_ID = 'id';
 
     /**
+     * Resource retrieved that we can apply actions to.
+     */
+    public const RESOURCE = 'resource';
+
+    /**
      * Internal operation id of action used.
      *
      * @see HasRouteDefinition::getOperationId()

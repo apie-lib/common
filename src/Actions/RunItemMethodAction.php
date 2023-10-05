@@ -47,6 +47,7 @@ final class RunItemMethodAction implements MethodActionInterface
                 IdentifierUtils::entityClassToIdentifier($resourceClass)->newInstance($id),
                 new BoundedContextId($context->getContext(ContextConstants::BOUNDED_CONTEXT_ID))
             );
+            $context = $context->withContext(ContextConstants::RESOURCE, $resource);
         }
 
         $result = $this->apieFacade->denormalizeOnMethodCall(

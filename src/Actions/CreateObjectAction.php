@@ -39,7 +39,9 @@ final class CreateObjectAction implements ActionInterface
             IntegrationTestLogger::logException($error);
             return ActionResponse::createClientError($this->apieFacade, $context, $error);
         }
+        $context = $context->withContext(ContextConstants::RESOURCE, $resource);
         $resource = $this->apieFacade->persistNew($resource, new BoundedContextId($context->getContext(ContextConstants::BOUNDED_CONTEXT_ID)));
+        $context = $context->withContext(ContextConstants::RESOURCE, $resource);
         return ActionResponse::createCreationSuccess($this->apieFacade, $context, $resource, $resource);
     }
 
