@@ -93,6 +93,8 @@ final class ContextConstants
 
     public const CREATE_OBJECT = 'create';
 
+    public const REPLACE_OBJECT = 'replace';
+
     public const EDIT_OBJECT = 'edit';
 
     public const REMOVE_OBJECT = 'remove';

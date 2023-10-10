@@ -62,6 +62,11 @@ final class ApieFacade implements ApieFacadeInterface
         return $this->apieDatalayer->find($identifier, $this->getBoundedContext($boundedContext));
     }
 
+    public function removeExisting(EntityInterface $entity, BoundedContext|BoundedContextId $boundedContext): void
+    {
+        $this->apieDatalayer->removeExisting($entity, $this->getBoundedContext($boundedContext));
+    }
+
     /**
      * @template T of EntityInterface
      * @param T $entity

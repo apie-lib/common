@@ -15,6 +15,14 @@ class CommonServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->singleton(
+            \Apie\Common\ActionDefinitionProvider::class,
+            function ($app) {
+                return new \Apie\Common\ActionDefinitionProvider(
+                
+                );
+            }
+        );
+        $this->app->singleton(
             \Apie\Common\ApieFacade::class,
             function ($app) {
                 return new \Apie\Common\ApieFacade(

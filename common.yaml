@@ -1,4 +1,6 @@
 services:
+  Apie\Common\ActionDefinitionProvider:
+
   Apie\Common\ApieFacade:
     arguments:
       - '@apie.route_definitions.provider'

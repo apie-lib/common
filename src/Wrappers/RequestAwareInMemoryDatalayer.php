@@ -90,4 +90,9 @@ final class RequestAwareInMemoryDatalayer implements ApieDatalayerWithFilters, B
 
         return $this->createdRepositories[$boundedContextId->toNative()];
     }
+
+    public function removeExisting(EntityInterface $entity, ?BoundedContext $boundedContext = null): void
+    {
+        $this->getRepository($entity->getId()::getReferenceFor(), $boundedContext)->removeExisting($entity, $boundedContext);
+    }
 }
