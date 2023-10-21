@@ -37,7 +37,7 @@ final class RunGlobalMethodDefinition implements ActionDefinitionInterface
     {
         $actionDefinitions = [];
         $globalActionContext = $apieContext->withContext(ContextConstants::GLOBAL_METHOD, true);
-        foreach ($boundedContext->actions->filterOnApieContext($globalActionContext, false) as $action) {
+        foreach ($boundedContext->actions->filterOnApieContext($globalActionContext, $runtimeChecks) as $action) {
             $actionDefinitions[] = new RunGlobalMethodDefinition($action, $boundedContext->getId());
         }
 
