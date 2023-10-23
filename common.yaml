@@ -33,6 +33,11 @@ services:
 
   Apie\Common\ErrorHandler\ApiErrorRenderer:
 
+  Apie\Common\ContextBuilders\ServiceContextBuilder:
+    arguments:
+      - !tagged_locator { tag: 'apie.context' }
+    tags: [apie.core.context_builder]
+
   Apie\Common\Wrappers\RequestAwareInMemoryDatalayer:
     arguments:
       - '@Apie\Common\Interfaces\BoundedContextSelection'

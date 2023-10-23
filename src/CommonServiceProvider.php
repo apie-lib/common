@@ -23,6 +23,14 @@ class CommonServiceProvider extends ServiceProvider
             }
         );
         $this->app->singleton(
+            \Apie\Common\ContextBuilders\ServiceContextBuilder::class,
+            function ($app) {
+                return new \Apie\Common\ContextBuilders\ServiceContextBuilder(
+                    $this->getTaggedServicesServiceLocator('apie.context')
+                );
+            }
+        );
+        $this->app->singleton(
             \Apie\Common\ApieFacade::class,
             function ($app) {
                 return new \Apie\Common\ApieFacade(
