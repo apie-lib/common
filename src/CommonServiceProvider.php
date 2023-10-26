@@ -23,14 +23,6 @@ class CommonServiceProvider extends ServiceProvider
             }
         );
         $this->app->singleton(
-            \Apie\Common\ContextBuilders\ServiceContextBuilder::class,
-            function ($app) {
-                return new \Apie\Common\ContextBuilders\ServiceContextBuilder(
-                    $this->getTaggedServicesServiceLocator('apie.context')
-                );
-            }
-        );
-        $this->app->singleton(
             \Apie\Common\ApieFacade::class,
             function ($app) {
                 return new \Apie\Common\ApieFacade(
@@ -85,6 +77,22 @@ class CommonServiceProvider extends ServiceProvider
                 );
             }
         );
+        $this->app->singleton(
+            \Apie\Common\ContextBuilders\ServiceContextBuilder::class,
+            function ($app) {
+                return new \Apie\Common\ContextBuilders\ServiceContextBuilder(
+                    $this->getTaggedServicesServiceLocator('apie.context')
+                );
+            }
+        );
+        \Apie\ServiceProviderGenerator\TagMap::register(
+            $this->app,
+            \Apie\Common\ContextBuilders\ServiceContextBuilder::class,
+            array(
+              0 => 'apie.core.context_builder',
+            )
+        );
+        $this->app->tag([\Apie\Common\ContextBuilders\ServiceContextBuilder::class], 'apie.core.context_builder');
         $this->app->singleton(
             \Apie\Common\Wrappers\RequestAwareInMemoryDatalayer::class,
             function ($app) {
