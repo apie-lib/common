@@ -75,7 +75,7 @@ final class RemoveObjectAction implements ActionInterface
      */
     public static function getDescription(ReflectionClass $class): string
     {
-        return 'Modifies an instance of ' . $class->getShortName();
+        return 'Removes an instance of ' . $class->getShortName();
     }
     
     /**
