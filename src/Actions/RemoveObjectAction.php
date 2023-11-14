@@ -2,6 +2,7 @@
 namespace Apie\Common\Actions;
 
 use Apie\Common\ContextConstants;
+use Apie\Common\IntegrationTestLogger;
 use Apie\Core\Actions\ActionInterface;
 use Apie\Core\Actions\ActionResponse;
 use Apie\Core\Actions\ActionResponseStatus;
@@ -10,9 +11,11 @@ use Apie\Core\Actions\ApieFacadeInterface;
 use Apie\Core\BoundedContext\BoundedContextId;
 use Apie\Core\Context\ApieContext;
 use Apie\Core\Entities\EntityInterface;
+use Apie\Core\Exceptions\EntityNotFoundException;
 use Apie\Core\Exceptions\InvalidTypeException;
 use Apie\Core\IdentifierUtils;
 use Apie\Core\Lists\StringList;
+use Apie\Core\ValueObjects\Exceptions\InvalidStringForValueObjectException;
 use ReflectionClass;
 
 /**
@@ -35,10 +38,15 @@ final class RemoveObjectAction implements ActionInterface
             throw new InvalidTypeException($resourceClass->name, 'EntityInterface');
         }
         $boundedContextId = new BoundedContextId($context->getContext(ContextConstants::BOUNDED_CONTEXT_ID));
-        $resource = $this->apieFacade->find(
-            IdentifierUtils::entityClassToIdentifier($resourceClass)->newInstance($id),
-            $boundedContextId
-        );
+        try {
+            $resource = $this->apieFacade->find(
+                IdentifierUtils::entityClassToIdentifier($resourceClass)->newInstance($id),
+                $boundedContextId
+            );
+        } catch (InvalidStringForValueObjectException|EntityNotFoundException $error) {
+            IntegrationTestLogger::logException($error);
+            return ActionResponse::createClientError($this->apieFacade, $context, $error);
+        }
         $context = $context->withContext(ContextConstants::RESOURCE, $resource);
         $this->apieFacade->removeExisting($resource, $boundedContextId);
 

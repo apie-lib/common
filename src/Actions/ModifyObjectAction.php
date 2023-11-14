@@ -2,6 +2,7 @@
 namespace Apie\Common\Actions;
 
 use Apie\Common\ContextConstants;
+use Apie\Common\IntegrationTestLogger;
 use Apie\Core\Actions\ActionInterface;
 use Apie\Core\Actions\ActionResponse;
 use Apie\Core\Actions\ActionResponseStatus;
@@ -10,10 +11,12 @@ use Apie\Core\Actions\ApieFacadeInterface;
 use Apie\Core\BoundedContext\BoundedContextId;
 use Apie\Core\Context\ApieContext;
 use Apie\Core\Entities\EntityInterface;
+use Apie\Core\Exceptions\EntityNotFoundException;
 use Apie\Core\Exceptions\InvalidTypeException;
 use Apie\Core\IdentifierUtils;
 use Apie\Core\Lists\ItemHashmap;
 use Apie\Core\Lists\StringList;
+use Apie\Core\ValueObjects\Exceptions\InvalidStringForValueObjectException;
 use ReflectionClass;
 
 /**
@@ -35,10 +38,15 @@ final class ModifyObjectAction implements ActionInterface
         if (!$resourceClass->implementsInterface(EntityInterface::class)) {
             throw new InvalidTypeException($resourceClass->name, 'EntityInterface');
         }
-        $resource = $this->apieFacade->find(
-            IdentifierUtils::entityClassToIdentifier($resourceClass)->newInstance($id),
-            new BoundedContextId($context->getContext(ContextConstants::BOUNDED_CONTEXT_ID))
-        );
+        try {
+            $resource = $this->apieFacade->find(
+                IdentifierUtils::entityClassToIdentifier($resourceClass)->newInstance($id),
+                new BoundedContextId($context->getContext(ContextConstants::BOUNDED_CONTEXT_ID))
+            );
+        } catch (InvalidStringForValueObjectException|EntityNotFoundException $error) {
+            IntegrationTestLogger::logException($error);
+            return ActionResponse::createClientError($this->apieFacade, $context, $error);
+        }
         $context = $context->withContext(ContextConstants::RESOURCE, $resource);
         $resource = $this->apieFacade->denormalizeOnExistingObject(
             new ItemHashmap($rawContents),
