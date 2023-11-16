@@ -2,6 +2,7 @@
 namespace Apie\Common\Actions;
 
 use Apie\Common\ContextConstants;
+use Apie\Common\IntegrationTestLogger;
 use Apie\Core\Actions\ActionResponse;
 use Apie\Core\Actions\ActionResponseStatus;
 use Apie\Core\Actions\ActionResponseStatusList;
@@ -10,9 +11,11 @@ use Apie\Core\Actions\MethodActionInterface;
 use Apie\Core\BoundedContext\BoundedContextId;
 use Apie\Core\Context\ApieContext;
 use Apie\Core\Entities\EntityInterface;
+use Apie\Core\Exceptions\EntityNotFoundException;
 use Apie\Core\Exceptions\InvalidTypeException;
 use Apie\Core\IdentifierUtils;
 use Apie\Core\Lists\StringList;
+use Apie\Core\ValueObjects\Exceptions\InvalidStringForValueObjectException;
 use ReflectionClass;
 use ReflectionMethod;
 use ReflectionNamedType;
@@ -43,11 +46,15 @@ final class RunItemMethodAction implements MethodActionInterface
             $resource = null;
         } else {
             $id = $context->getContext(ContextConstants::RESOURCE_ID);
-            $resource = $this->apieFacade->find(
-                IdentifierUtils::entityClassToIdentifier($resourceClass)->newInstance($id),
-                new BoundedContextId($context->getContext(ContextConstants::BOUNDED_CONTEXT_ID))
-            );
-            $context = $context->withContext(ContextConstants::RESOURCE, $resource);
+            try {
+                $resource = $this->apieFacade->find(
+                    IdentifierUtils::entityClassToIdentifier($resourceClass)->newInstance($id),
+                    new BoundedContextId($context->getContext(ContextConstants::BOUNDED_CONTEXT_ID))
+                );
+            } catch (InvalidStringForValueObjectException|EntityNotFoundException $error) {
+                IntegrationTestLogger::logException($error);
+                return ActionResponse::createClientError($this->apieFacade, $context, $error);
+            }
         }
 
         $result = $this->apieFacade->denormalizeOnMethodCall(
