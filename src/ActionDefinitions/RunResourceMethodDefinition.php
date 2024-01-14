@@ -50,7 +50,7 @@ final class RunResourceMethodDefinition implements ActionDefinitionInterface
     {
         $actionDefinitions = [];
         $resourceActionContext = $apieContext->withContext(ContextConstants::RESOURCE_METHOD, true);
-        foreach ($boundedContext->resources->filterOnApieContext($resourceActionContext) as $resource) {
+        foreach ($boundedContext->resources->filterOnApieContext($resourceActionContext, $runtimeChecks) as $resource) {
             foreach ($resourceActionContext->getApplicableMethods($resource, $runtimeChecks) as $method) {
                 $definition = new RunResourceMethodDefinition(
                     $resource,
