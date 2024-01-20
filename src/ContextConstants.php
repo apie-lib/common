@@ -111,4 +111,6 @@ final class ContextConstants
      * Displays a form on this page.
      */
     public const DISPLAY_FORM = 'display-form';
+
+    public const AUTHENTICATED_USER = 'authenticated';
 }
