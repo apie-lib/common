@@ -9,6 +9,7 @@ use Apie\Core\Actions\ApieFacadeInterface;
 use Apie\Core\Actions\MethodActionInterface;
 use Apie\Core\Context\ApieContext;
 use Apie\Core\Lists\StringList;
+use Apie\Serializer\Exceptions\ValidationException;
 use ReflectionClass;
 use ReflectionMethod;
 
@@ -33,7 +34,11 @@ final class RunAction implements MethodActionInterface
         $object = $method->isStatic()
             ? null
             : $context->getContext($context->getContext(ContextConstants::SERVICE_CLASS));
-        $returnValue = $this->apieFacade->denormalizeOnMethodCall($rawContents, $object, $method, $context);
+        try {
+            $returnValue = $this->apieFacade->denormalizeOnMethodCall($rawContents, $object, $method, $context);
+        } catch (ValidationException $error) {
+            return ActionResponse::createClientError($this->apieFacade, $context, $error);
+        }
         return ActionResponse::createRunSuccess($this->apieFacade, $context, $returnValue, $object);
     }
 
