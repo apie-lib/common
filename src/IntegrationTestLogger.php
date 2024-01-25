@@ -5,6 +5,7 @@ use Throwable;
 
 final class IntegrationTestLogger
 {
+    private static ?Throwable $loggedException = null;
     /**
      * @codeCoverageIgnore
      */
@@ -12,11 +13,22 @@ final class IntegrationTestLogger
     {
     }
 
+    public static function resetLoggedException(): void
+    {
+        self::$loggedException = null;
+    }
+
+    public static function getLoggedException(): ?Throwable
+    {
+        return self::$loggedException;
+    }
+
     /**
      * Logs exceptions for integration tests purposes.
      */
     public static function logException(Throwable $error): void
     {
+        self::$loggedException = $error;
         if (getenv('PHPUNIT_LOG_INTEGRATION_OUTPUT')) {
             while ($error) {
                 $stdErr = @fopen('php://stderr', 'w');
