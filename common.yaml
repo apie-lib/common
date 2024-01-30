@@ -7,6 +7,7 @@ services:
       - '@Apie\Core\BoundedContext\BoundedContextHashmap'
       - '@Apie\Serializer\Serializer'
       - '@Apie\Core\Datalayers\ApieDatalayer'
+    tags: [apie.context]
 
   Apie\Common\RouteDefinitions\PossibleRoutePrefixProvider:
     arguments:

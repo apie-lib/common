@@ -33,6 +33,14 @@ class CommonServiceProvider extends ServiceProvider
                 );
             }
         );
+        \Apie\ServiceProviderGenerator\TagMap::register(
+            $this->app,
+            \Apie\Common\ApieFacade::class,
+            array(
+                0 => 'apie.context',
+            )
+        );
+        $this->app->tag([\Apie\Common\ApieFacade::class], 'apie.context');
         $this->app->singleton(
             \Apie\Common\RouteDefinitions\PossibleRoutePrefixProvider::class,
             function ($app) {
