@@ -37,7 +37,7 @@ class CommonServiceProvider extends ServiceProvider
             $this->app,
             \Apie\Common\ApieFacade::class,
             array(
-                0 => 'apie.context',
+              0 => 'apie.context',
             )
         );
         $this->app->tag([\Apie\Common\ApieFacade::class], 'apie.context');

@@ -39,6 +39,18 @@ final class EntityNamespace implements StringValueObjectInterface, HasRegexValue
         return new ReflectionClass($this->internal . $className);
     }
 
+    public function getParentNamespace(): self
+    {
+        $internal = explode('\\', rtrim($this->internal, '\\'));
+        array_pop($internal);
+        return new self(implode('\\', $internal));
+    }
+
+    public function getChildNamespace(string $childNamespace): self
+    {
+        return new self($this->internal . $childNamespace);
+    }
+
     /**
      * Returns all classes found in $path assuming the namespace of this value object.
      */
