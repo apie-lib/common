@@ -6,6 +6,8 @@ use Apie\Core\BoundedContext\BoundedContext;
 use Apie\Core\BoundedContext\BoundedContextId;
 use Apie\Core\Context\ApieContext;
 use Apie\Core\Entities\EntityInterface;
+use Apie\Core\Entities\PolymorphicEntityInterface;
+use Apie\Core\Utils\EntityUtils;
 use ReflectionClass;
 use ReflectionMethod;
 
@@ -51,15 +53,27 @@ final class RunResourceMethodDefinition implements ActionDefinitionInterface
         $actionDefinitions = [];
         $resourceActionContext = $apieContext->withContext(ContextConstants::RESOURCE_METHOD, true);
         foreach ($boundedContext->resources->filterOnApieContext($resourceActionContext, $runtimeChecks) as $resource) {
-            foreach ($resourceActionContext->getApplicableMethods($resource, $runtimeChecks) as $method) {
-                $definition = new RunResourceMethodDefinition(
-                    $resource,
-                    $method,
-                    $boundedContext->getId()
-                );
-                $actionDefinitions[] = $definition;
+            $resourceList = [$resource];
+            if (in_array(PolymorphicEntityInterface::class, $resource->getInterfaceNames())) {
+                if ($runtimeChecks) {
+                    if ($apieContext->hasContext(ContextConstants::RESOURCE)) {
+                        $resourceList = [new ReflectionClass($apieContext->getContext(ContextConstants::RESOURCE))];
+                    }
+                } else {
+                    $resourceList = EntityUtils::getDiscriminatorClasses($resource);
+                }
+            }
+            foreach ($resourceList as $actualClass) {
+                foreach ($resourceActionContext->getApplicableMethods($actualClass, $runtimeChecks) as $method) {
+                    $definition = new RunResourceMethodDefinition(
+                        $resource,
+                        $method,
+                        $boundedContext->getId()
+                    );
+                    $actionDefinitions[$method->name] = $definition;
+                }
             }
         }
-        return $actionDefinitions;
+        return array_values($actionDefinitions);
     }
 }
