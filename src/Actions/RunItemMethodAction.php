@@ -16,7 +16,10 @@ use Apie\Core\Exceptions\InvalidTypeException;
 use Apie\Core\IdentifierUtils;
 use Apie\Core\Lists\StringList;
 use Apie\Core\ValueObjects\Exceptions\InvalidStringForValueObjectException;
+use Apie\Serializer\Exceptions\ValidationException;
+use Exception;
 use ReflectionClass;
+use ReflectionException;
 use ReflectionMethod;
 use ReflectionNamedType;
 
@@ -54,6 +57,19 @@ final class RunItemMethodAction implements MethodActionInterface
             } catch (InvalidStringForValueObjectException|EntityNotFoundException $error) {
                 IntegrationTestLogger::logException($error);
                 return ActionResponse::createClientError($this->apieFacade, $context, $error);
+            }
+            // polymorphic relation, so could be the incorrect declared method
+            if (!$method->getDeclaringClass()->isInstance($resource)) {
+                try {
+                    $method = (new ReflectionClass($resource))->getMethod($method->name);
+                } catch (ReflectionException $methodError) {
+                    $error = new Exception(
+                        sprintf('Resource "%s" does not support "%s"!', $id, $method->name),
+                        0,
+                        $methodError
+                    );
+                    throw ValidationException::createFromArray(['' => $error]);
+                }
             }
         }
 

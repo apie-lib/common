@@ -70,7 +70,7 @@ final class RunResourceMethodDefinition implements ActionDefinitionInterface
                         $method,
                         $boundedContext->getId()
                     );
-                    $actionDefinitions[$method->name] = $definition;
+                    $actionDefinitions[] = $definition;
                 }
             }
         }
