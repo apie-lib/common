@@ -4,6 +4,7 @@ namespace Apie\Common;
 use Apie\Common\Actions\RunAction;
 use Apie\Common\Actions\RunItemMethodAction;
 use Apie\Core\Actions\HasRouteDefinition;
+use Apie\Core\Indexing\FromDateObject;
 
 /**
  * Contains a list of context key constants as used for ApieContext and in route definitions (which are copied to
@@ -106,6 +107,12 @@ final class ContextConstants
     public const RESOURCE_METHOD = 'resource-call';
 
     public const GLOBAL_METHOD = 'method-call';
+
+    /**
+     * @see FromDateObject
+     * @configured date formats for DateTime objects for indexing.
+     */
+    public const DATEFORMATS = 'date-formats';
 
     /**
      * Displays a form on this page.
