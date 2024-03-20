@@ -14,6 +14,7 @@ use Apie\Core\Dto\ListOf;
 use Apie\Core\Entities\EntityInterface;
 use Apie\Core\Exceptions\InvalidTypeException;
 use Apie\Core\Lists\StringList;
+use LogicException;
 use ReflectionClass;
 
 /**
@@ -25,11 +26,18 @@ final class GetListAction implements ActionInterface
     {
     }
 
+    public static function isAuthorized(ApieContext $context, bool $runtimeChecks, bool $throwError = false): bool
+    {
+        $refl = new ReflectionClass($context->getContext(ContextConstants::RESOURCE_NAME, $throwError));
+        return $context->appliesToContext($refl, $runtimeChecks, $throwError ? new LogicException("Class can not be accessed") : null);
+    }
+
     /**
      * @param array<string|int, mixed> $rawContents
      */
     public function __invoke(ApieContext $context, array $rawContents): ActionResponse
     {
+        $context->withContext(ContextConstants::APIE_ACTION, __CLASS__)->checkAuthorization();
         $resourceClass = $context->getContext(ContextConstants::RESOURCE_NAME);
         if (!is_a($resourceClass, EntityInterface::class, true)) {
             throw new InvalidTypeException($resourceClass, 'EntityInterface');

@@ -15,9 +15,11 @@ use Apie\Core\Exceptions\EntityNotFoundException;
 use Apie\Core\Exceptions\InvalidTypeException;
 use Apie\Core\IdentifierUtils;
 use Apie\Core\Lists\StringList;
+use Apie\Core\Utils\EntityUtils;
 use Apie\Core\ValueObjects\Exceptions\InvalidStringForValueObjectException;
 use Apie\Serializer\Exceptions\ValidationException;
 use Exception;
+use LogicException;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionMethod;
@@ -32,11 +34,37 @@ final class RunItemMethodAction implements MethodActionInterface
     {
     }
 
+    public static function isAuthorized(ApieContext $context, bool $runtimeChecks, bool $throwError = false): bool
+    {
+        $refl = new ReflectionClass($context->getContext(ContextConstants::RESOURCE_NAME, $throwError));
+        $methodName = $context->getContext(ContextConstants::METHOD_NAME, $throwError);
+        $method = new ReflectionMethod(
+            $context->getContext(ContextConstants::METHOD_CLASS, $throwError),
+            $methodName
+        );
+        if (EntityUtils::isPolymorphicEntity($refl) && $runtimeChecks && $context->hasContext(ContextConstants::RESOURCE) &&!$method->isStatic()) {
+            $refl = new ReflectionClass($context->getContext(ContextConstants::RESOURCE, $throwError));
+            if (!$refl->hasMethod($methodName)) {
+                if ($throwError) {
+                    throw new LogicException('Method ' . $methodName . ' does not exist on this entity');
+                }
+                return false;
+            }
+            $method = $refl->getMethod($methodName);
+        }
+        if (!$context->appliesToContext($refl, $runtimeChecks, $throwError ? new LogicException('Class access is not allowed!') : null)) {
+            return false;
+        }
+        return $context->appliesToContext($method, $runtimeChecks, $throwError ? new LogicException('Class method is not allowed') : null);
+
+    }
+
     /**
      * @param array<string|int, mixed> $rawContents
      */
     public function __invoke(ApieContext $context, array $rawContents): ActionResponse
     {
+        $context->withContext(ContextConstants::APIE_ACTION, __CLASS__)->checkAuthorization();
         $resourceClass = new ReflectionClass($context->getContext(ContextConstants::RESOURCE_NAME));
         if (!$resourceClass->implementsInterface(EntityInterface::class)) {
             throw new InvalidTypeException($resourceClass->name, 'EntityInterface');
@@ -58,6 +86,7 @@ final class RunItemMethodAction implements MethodActionInterface
                 IntegrationTestLogger::logException($error);
                 return ActionResponse::createClientError($this->apieFacade, $context, $error);
             }
+            $context = $context->withContext(ContextConstants::RESOURCE, $resource);
             // polymorphic relation, so could be the incorrect declared method
             if (!$method->getDeclaringClass()->isInstance($resource)) {
                 try {

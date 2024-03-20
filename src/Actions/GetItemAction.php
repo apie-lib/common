@@ -13,6 +13,8 @@ use Apie\Core\Entities\EntityInterface;
 use Apie\Core\Exceptions\InvalidTypeException;
 use Apie\Core\IdentifierUtils;
 use Apie\Core\Lists\StringList;
+use Apie\Core\Utils\EntityUtils;
+use LogicException;
 use ReflectionClass;
 
 /**
@@ -24,11 +26,21 @@ final class GetItemAction implements ActionInterface
     {
     }
 
+    public static function isAuthorized(ApieContext $context, bool $runtimeChecks, bool $throwError = false): bool
+    {
+        $refl = new ReflectionClass($context->getContext(ContextConstants::RESOURCE_NAME, $throwError));
+        if (EntityUtils::isPolymorphicEntity($refl) && $runtimeChecks && $context->hasContext(ContextConstants::RESOURCE)) {
+            $refl = new ReflectionClass($context->getContext(ContextConstants::RESOURCE, $throwError));
+        }
+        return $context->appliesToContext($refl, $runtimeChecks, $throwError ? new LogicException('Operation is not allowed') : null);
+    }
+
     /**
      * @param array<string|int, mixed> $rawContents
      */
     public function __invoke(ApieContext $context, array $rawContents): ActionResponse
     {
+        $context->withContext(ContextConstants::APIE_ACTION, __CLASS__)->checkAuthorization();
         $resourceClass = new ReflectionClass($context->getContext(ContextConstants::RESOURCE_NAME));
         $id = $context->getContext(ContextConstants::RESOURCE_ID);
         if (!$resourceClass->implementsInterface(EntityInterface::class)) {

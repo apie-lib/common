@@ -22,11 +22,17 @@ final class RunAction implements MethodActionInterface
     {
     }
 
+    public static function isAuthorized(ApieContext $context, bool $runtimeChecks, bool $throwError = false): bool
+    {
+        return true; //TODO
+    }
+
     /**
      * @param array<string|int, mixed> $rawContents
      */
     public function __invoke(ApieContext $context, array $rawContents): ActionResponse
     {
+        $context->withContext(ContextConstants::APIE_ACTION, __CLASS__)->checkAuthorization();
         $method = new ReflectionMethod(
             $context->getContext(ContextConstants::SERVICE_CLASS),
             $context->getContext(ContextConstants::METHOD_NAME)

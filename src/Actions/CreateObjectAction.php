@@ -11,8 +11,12 @@ use Apie\Core\Actions\ApieFacadeInterface;
 use Apie\Core\BoundedContext\BoundedContextId;
 use Apie\Core\Context\ApieContext;
 use Apie\Core\Entities\EntityInterface;
+use Apie\Core\Exceptions\IndexNotFoundException;
 use Apie\Core\Lists\StringList;
+use Apie\Core\Utils\EntityUtils;
+use Apie\Core\ValueObjects\Utils;
 use Exception;
+use LogicException;
 use ReflectionClass;
 
 /**
@@ -23,12 +27,35 @@ final class CreateObjectAction implements ActionInterface
     public function __construct(private readonly ApieFacadeInterface $apieFacade)
     {
     }
+
+    public static function isAuthorized(ApieContext $context, bool $runtimeChecks, bool $throwError = false): bool
+    {
+        $refl = new ReflectionClass($context->getContext(ContextConstants::RESOURCE_NAME, $throwError));
+        if (!$context->appliesToContext($refl, $runtimeChecks, $throwError ? new LogicException('Class access is not allowed') : null)) {
+            return false;
+        }
+        if (EntityUtils::isPolymorphicEntity($refl) && $runtimeChecks && $context->hasContext(ContextConstants::RAW_CONTENTS)) {
+            $rawContents = Utils::toArray($context->getContext(ContextConstants::RAW_CONTENTS, $throwError));
+            try {
+                $refl = EntityUtils::findClass($rawContents, $refl);
+            } catch (IndexNotFoundException) {
+            }
+        }
+        $constructor = $refl->getConstructor();
+        if ($constructor && !$context->appliesToContext($constructor, $runtimeChecks, $throwError ? new LogicException('Class instantiation is not allowed') : null)) {
+            return false;
+        }
+        return true;
+    }
     
     /**
      * @param array<string|int, mixed> $rawContents
      */
     public function __invoke(ApieContext $context, array $rawContents): ActionResponse
     {
+        $context->withContext(ContextConstants::RAW_CONTENTS, $rawContents)
+            ->withContext(ContextConstants::APIE_ACTION, __CLASS__)
+            ->checkAuthorization();
         try {
             $resource = $this->apieFacade->denormalizeNewObject(
                 $rawContents,
@@ -94,7 +121,6 @@ final class CreateObjectAction implements ActionInterface
         return [
             ContextConstants::CREATE_OBJECT => true,
             ContextConstants::RESOURCE_NAME => $class->name,
-            ContextConstants::DISPLAY_FORM => true,
         ];
     }
 }

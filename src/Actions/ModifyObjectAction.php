@@ -16,7 +16,10 @@ use Apie\Core\Exceptions\InvalidTypeException;
 use Apie\Core\IdentifierUtils;
 use Apie\Core\Lists\ItemHashmap;
 use Apie\Core\Lists\StringList;
+use Apie\Core\Metadata\MetadataFactory;
+use Apie\Core\Utils\EntityUtils;
 use Apie\Core\ValueObjects\Exceptions\InvalidStringForValueObjectException;
+use LogicException;
 use ReflectionClass;
 
 /**
@@ -27,12 +30,29 @@ final class ModifyObjectAction implements ActionInterface
     public function __construct(private readonly ApieFacadeInterface $apieFacade)
     {
     }
+
+    public static function isAuthorized(ApieContext $context, bool $runtimeChecks, bool $throwError = false): bool
+    {
+        $refl = new ReflectionClass($context->getContext(ContextConstants::RESOURCE_NAME, $throwError));
+        if (EntityUtils::isPolymorphicEntity($refl) && $runtimeChecks && $context->hasContext(ContextConstants::RESOURCE)) {
+            $refl = new ReflectionClass($context->getContext(ContextConstants::RESOURCE, $throwError));
+        }
+        $metadata = MetadataFactory::getModificationMetadata($refl, $context);
+        if ($metadata->getHashmap()->count() === 0) {
+            if ($throwError) {
+                throw new LogicException('Metadata for ' . $refl->getShortName() . ' has no fields to edit.');
+            }
+            return false;
+        }
+        return $context->appliesToContext($refl, $runtimeChecks, $throwError ? new LogicException('Operation on ' . $refl->getShortName() . ' is not allowed') : null);
+    }
     
     /**
      * @param array<string|int, mixed> $rawContents
      */
     public function __invoke(ApieContext $context, array $rawContents): ActionResponse
     {
+        $context->withContext(ContextConstants::APIE_ACTION, __CLASS__)->checkAuthorization();
         $resourceClass = new ReflectionClass($context->getContext(ContextConstants::RESOURCE_NAME));
         $id = $context->getContext(ContextConstants::RESOURCE_ID);
         if (!$resourceClass->implementsInterface(EntityInterface::class)) {

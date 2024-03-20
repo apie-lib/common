@@ -8,6 +8,7 @@ use Apie\Core\Actions\ActionResponse;
 use Apie\Core\Actions\ActionResponseStatus;
 use Apie\Core\Actions\ActionResponseStatusList;
 use Apie\Core\Actions\ApieFacadeInterface;
+use Apie\Core\Attributes\RemovalCheck;
 use Apie\Core\BoundedContext\BoundedContextId;
 use Apie\Core\Context\ApieContext;
 use Apie\Core\Entities\EntityInterface;
@@ -15,7 +16,9 @@ use Apie\Core\Exceptions\EntityNotFoundException;
 use Apie\Core\Exceptions\InvalidTypeException;
 use Apie\Core\IdentifierUtils;
 use Apie\Core\Lists\StringList;
+use Apie\Core\Utils\EntityUtils;
 use Apie\Core\ValueObjects\Exceptions\InvalidStringForValueObjectException;
+use LogicException;
 use ReflectionClass;
 
 /**
@@ -26,12 +29,36 @@ final class RemoveObjectAction implements ActionInterface
     public function __construct(private readonly ApieFacadeInterface $apieFacade)
     {
     }
+
+    public static function isAuthorized(ApieContext $context, bool $runtimeChecks, bool $throwError = false): bool
+    {
+        $refl = new ReflectionClass($context->getContext(ContextConstants::RESOURCE_NAME, $throwError));
+        if (EntityUtils::isPolymorphicEntity($refl) && $runtimeChecks && $context->hasContext(ContextConstants::RESOURCE)) {
+            $refl = new ReflectionClass($context->getContext(ContextConstants::RESOURCE, $throwError));
+        }
+        if (!$context->appliesToContext($refl, $runtimeChecks, $throwError ? new LogicException('Class does not allow it') : null)) {
+            return false;
+        }
+        $returnValue = false;
+        foreach ($refl->getAttributes(RemovalCheck::class) as $removeAttribute) {
+            $returnValue = true;
+            $removeCheck = $removeAttribute->newInstance();
+            if ($removeCheck->isStaticCheck() && !$removeCheck->applies($context)) {
+                return false;
+            }
+            if ($runtimeChecks && $removeCheck->isRuntimeCheck() && !$removeCheck->applies($context)) {
+                return false;
+            }
+        }
+        return $returnValue;
+    }
     
     /**
      * @param array<string|int, mixed> $rawContents
      */
     public function __invoke(ApieContext $context, array $rawContents): ActionResponse
     {
+        $context->withContext(ContextConstants::APIE_ACTION, __CLASS__)->checkAuthorization();
         $resourceClass = new ReflectionClass($context->getContext(ContextConstants::RESOURCE_NAME));
         $id = $context->getContext(ContextConstants::RESOURCE_ID);
         if (!$resourceClass->implementsInterface(EntityInterface::class)) {
