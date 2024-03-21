@@ -92,6 +92,11 @@ final class ContextConstants
      */
     public const CMS='cms';
 
+    /**
+     * Added if serializing the profile fields in apie/cms
+     */
+    public const SHOW_PROFILE = 'show_profile';
+
     public const CREATE_OBJECT = 'create';
 
     public const REPLACE_OBJECT = 'replace';
@@ -120,4 +125,12 @@ final class ContextConstants
     public const DISPLAY_FORM = 'display-form';
 
     public const AUTHENTICATED_USER = 'authenticated';
+
+    /**
+     * Used for workarounds with frameworks using middleware or events for authentication and redoing the controller
+     * again.
+     * 
+     * @internal
+     */
+    public const ALREADY_CALCULATED = 'already_calculated';
 }

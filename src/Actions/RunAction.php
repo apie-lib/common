@@ -10,6 +10,7 @@ use Apie\Core\Actions\MethodActionInterface;
 use Apie\Core\Context\ApieContext;
 use Apie\Core\Lists\StringList;
 use Apie\Serializer\Exceptions\ValidationException;
+use LogicException;
 use ReflectionClass;
 use ReflectionMethod;
 
@@ -24,7 +25,19 @@ final class RunAction implements MethodActionInterface
 
     public static function isAuthorized(ApieContext $context, bool $runtimeChecks, bool $throwError = false): bool
     {
-        return true; //TODO
+        $serviceClass = $context->getContext(ContextConstants::SERVICE_CLASS, $throwError);
+        $methodName = $context->getContext(ContextConstants::METHOD_NAME, $throwError);
+        if (!$serviceClass || !$methodName) {
+            return false;
+        }
+        $method = new ReflectionMethod($serviceClass, $methodName);
+        if (!$method->isStatic() && !$context->hasContext($serviceClass)) {
+            if ($throwError) {
+                throw new LogicException('Service ' . $serviceClass . ' is missing!');
+            }
+            return false;
+        }
+        return $context->appliesToContext($method, $runtimeChecks, $throwError ? new LogicException('Service class method not allowed') : null);
     }
 
     /**
@@ -32,6 +45,10 @@ final class RunAction implements MethodActionInterface
      */
     public function __invoke(ApieContext $context, array $rawContents): ActionResponse
     {
+        $alreadyCalculated = $context->getContext(ContextConstants::ALREADY_CALCULATED, false);
+        if ($alreadyCalculated instanceof ActionResponse) {
+            return $alreadyCalculated;
+        }
         $context->withContext(ContextConstants::APIE_ACTION, __CLASS__)->checkAuthorization();
         $method = new ReflectionMethod(
             $context->getContext(ContextConstants::SERVICE_CLASS),
