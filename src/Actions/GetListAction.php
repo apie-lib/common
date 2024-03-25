@@ -46,7 +46,7 @@ final class GetListAction implements ActionInterface
             $resourceClass,
             new BoundedContextId($context->getContext(ContextConstants::BOUNDED_CONTEXT_ID))
         );
-        $result = $resource->toPaginatedResult(QuerySearch::fromArray($rawContents));
+        $result = $resource->toPaginatedResult(QuerySearch::fromArray($rawContents, $context));
         return ActionResponse::createRunSuccess($this->apieFacade, $context, $result, $resource);
     }
 
