@@ -129,7 +129,7 @@ final class ContextConstants
     /**
      * Used for workarounds with frameworks using middleware or events for authentication and redoing the controller
      * again.
-     * 
+     *
      * @internal
      */
     public const ALREADY_CALCULATED = 'already_calculated';
