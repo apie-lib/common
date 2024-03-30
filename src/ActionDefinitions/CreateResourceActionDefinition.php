@@ -1,6 +1,7 @@
 <?php
 namespace Apie\Common\ActionDefinitions;
 
+use Apie\Common\Actions\CreateObjectAction;
 use Apie\Common\ContextConstants;
 use Apie\Core\BoundedContext\BoundedContext;
 use Apie\Core\BoundedContext\BoundedContextId;
@@ -49,6 +50,9 @@ final class CreateResourceActionDefinition implements ActionDefinitionInterface
         $postContext = $apieContext->withContext(ContextConstants::CREATE_OBJECT, true)
             ->registerInstance($boundedContext);
         foreach ($boundedContext->resources->filterOnApieContext($postContext, $runtimeChecks) as $resource) {
+            if (!CreateObjectAction::isAuthorized($postContext, true)) {
+                continue;
+            }
             $constructor = $resource->getConstructor();
             if ($constructor && !$constructor->isPublic() && !$resource->implementsInterface(PolymorphicEntityInterface::class)) {
                 continue;
