@@ -126,6 +126,8 @@ final class ContextConstants
 
     public const AUTHENTICATED_USER = 'authenticated';
 
+    public const LOCALE = 'locale';
+
     /**
      * Used for workarounds with frameworks using middleware or events for authentication and redoing the controller
      * again.

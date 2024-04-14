@@ -50,7 +50,7 @@ final class CreateResourceActionDefinition implements ActionDefinitionInterface
         $postContext = $apieContext->withContext(ContextConstants::CREATE_OBJECT, true)
             ->registerInstance($boundedContext);
         foreach ($boundedContext->resources->filterOnApieContext($postContext, $runtimeChecks) as $resource) {
-            if (!CreateObjectAction::isAuthorized($postContext->withContext(ContextConstants::RESOURCE_NAME, $resource->name), true)) {
+            if ($runtimeChecks && !CreateObjectAction::isAuthorized($postContext->withContext(ContextConstants::RESOURCE_NAME, $resource->name), true)) {
                 continue;
             }
             $constructor = $resource->getConstructor();
