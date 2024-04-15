@@ -24,7 +24,9 @@ final class ConsoleCommandFactory
                 Application::class => $application,
                 BoundedContext::class => $boundedContext
             ]);
-            yield from $this->factory->createForBoundedContext($boundedContext, $context);
+            foreach ($this->factory->createForBoundedContext($boundedContext, $context) as $command) {
+                yield $command;
+            }
         }
     }
 }
