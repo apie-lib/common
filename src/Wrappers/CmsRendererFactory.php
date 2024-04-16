@@ -2,6 +2,7 @@
 namespace Apie\Common\Wrappers;
 
 use Apie\CmsLayoutGraphite\GraphiteDesignSystemLayout;
+use Apie\Core\Context\ApieContext;
 use Apie\HtmlBuilders\Assets\AssetManager;
 use Apie\HtmlBuilders\Interfaces\ComponentInterface;
 use Apie\HtmlBuilders\Interfaces\ComponentRendererInterface;
@@ -24,7 +25,7 @@ final class CmsRendererFactory
             {
             }
 
-            public function render(ComponentInterface $componentInterface): string
+            public function render(ComponentInterface $componentInterface, ApieContext $apieContext): string
             {
                 return $this->contents;
             }
