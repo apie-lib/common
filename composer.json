@@ -19,6 +19,14 @@
       "Apie\\Tests\\Common\\": "tests/"
     }
   },
+  "extra": {
+    "apie-objects": [
+      "Apie\\Common\\Enums\\UrlPrefix",
+      "Apie\\Common\\ValueObjects\\EntityNamespace",
+      "Apie\\Common\\ValueObjects\\PossibleRoutePrefixes",
+      "Apie\\Common\\Wrappers\\ApieUserDecoratorIdentifier"
+    ]
+  },
   "require": {
     "php": ">=8.1",
     "apie/core": "self.version",
