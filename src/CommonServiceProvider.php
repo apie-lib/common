@@ -42,6 +42,14 @@ class CommonServiceProvider extends ServiceProvider
         );
         $this->app->tag([\Apie\Common\ApieFacade::class], 'apie.context');
         $this->app->singleton(
+            \Apie\Common\Events\ResponseDispatcher::class,
+            function ($app) {
+                return new \Apie\Common\Events\ResponseDispatcher(
+                    $app->make(\Psr\EventDispatcher\EventDispatcherInterface::class)
+                );
+            }
+        );
+        $this->app->singleton(
             \Apie\Common\RouteDefinitions\PossibleRoutePrefixProvider::class,
             function ($app) {
                 return new \Apie\Common\RouteDefinitions\PossibleRoutePrefixProvider(

@@ -9,6 +9,10 @@ services:
       - '@Apie\Core\Datalayers\ApieDatalayer'
     tags: [apie.context]
 
+  Apie\Common\Events\ResponseDispatcher:
+    arguments:
+      - '@Psr\EventDispatcher\EventDispatcherInterface'
+
   Apie\Common\RouteDefinitions\PossibleRoutePrefixProvider:
     arguments:
       - '%apie.cms.base_url%'
