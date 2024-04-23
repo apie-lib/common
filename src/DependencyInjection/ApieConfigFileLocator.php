@@ -1,6 +1,7 @@
 <?php
 namespace Apie\Common\DependencyInjection;
 
+use Apie\ApieCommonPlugin\ApieCommonPlugin;
 use Apie\Cms\RouteDefinitions\AbstractCmsRouteDefinition;
 use Apie\CmsApiDropdownOption\Lists\DropdownOptionList;
 use Apie\Common\ApieFacade;
@@ -24,6 +25,7 @@ class ApieConfigFileLocator extends FileLocator
      * @var array<string, array{class-string<object>, string, class-string<object>}>
      */
     private array $predefined = [
+        'apie_common_plugin.yaml' => [ApieCommonPlugin::class, '..', 'Apie\\ApieCommonPlugin\\GeneratedApieCommonPluginServiceProvider'],
         'cms.yaml' => [AbstractCmsRouteDefinition::class, '../..', 'Apie\\Cms\\CmsServiceProvider'],
         'cms_dropdown.yaml' => [DropdownOptionList::class, '../..', 'Apie\\CmsApiDropdownOption\\CmsDropdownServiceProvider'],
         'common.yaml' => [ApieFacade::class, '..', 'Apie\\Common\\CommonServiceProvider'],
