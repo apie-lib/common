@@ -1,6 +1,12 @@
 services:
   Apie\Common\ActionDefinitionProvider:
 
+  Apie\Common\ContextBuilders\AddTextEncrypterContextBuilder:
+    arguments:
+      - '@Psr\Cache\CacheItemPoolInterface'
+      - '%apie.encryption_key%'
+    tags: ['apie.core.context_builder']
+
   Apie\Common\ApieFacade:
     arguments:
       - '@apie.route_definitions.provider'
@@ -42,6 +48,9 @@ services:
     arguments:
       - !tagged_locator { tag: 'apie.context' }
     tags: [apie.core.context_builder]
+
+  Apie\Common\Events\AddAuthenticationCookie:
+    tags: ['kernel.event_subscriber']
 
   Apie\Common\Wrappers\RequestAwareInMemoryDatalayer:
     arguments:

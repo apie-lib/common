@@ -23,6 +23,23 @@ class CommonServiceProvider extends ServiceProvider
             }
         );
         $this->app->singleton(
+            \Apie\Common\ContextBuilders\AddTextEncrypterContextBuilder::class,
+            function ($app) {
+                return new \Apie\Common\ContextBuilders\AddTextEncrypterContextBuilder(
+                    $app->make(\Psr\Cache\CacheItemPoolInterface::class),
+                    $this->parseArgument('%apie.encryption_key%')
+                );
+            }
+        );
+        \Apie\ServiceProviderGenerator\TagMap::register(
+            $this->app,
+            \Apie\Common\ContextBuilders\AddTextEncrypterContextBuilder::class,
+            array(
+              0 => 'apie.core.context_builder',
+            )
+        );
+        $this->app->tag([\Apie\Common\ContextBuilders\AddTextEncrypterContextBuilder::class], 'apie.core.context_builder');
+        $this->app->singleton(
             \Apie\Common\ApieFacade::class,
             function ($app) {
                 return new \Apie\Common\ApieFacade(
@@ -109,6 +126,22 @@ class CommonServiceProvider extends ServiceProvider
             )
         );
         $this->app->tag([\Apie\Common\ContextBuilders\ServiceContextBuilder::class], 'apie.core.context_builder');
+        $this->app->singleton(
+            \Apie\Common\Events\AddAuthenticationCookie::class,
+            function ($app) {
+                return new \Apie\Common\Events\AddAuthenticationCookie(
+                
+                );
+            }
+        );
+        \Apie\ServiceProviderGenerator\TagMap::register(
+            $this->app,
+            \Apie\Common\Events\AddAuthenticationCookie::class,
+            array(
+              0 => 'kernel.event_subscriber',
+            )
+        );
+        $this->app->tag([\Apie\Common\Events\AddAuthenticationCookie::class], 'kernel.event_subscriber');
         $this->app->singleton(
             \Apie\Common\Wrappers\RequestAwareInMemoryDatalayer::class,
             function ($app) {
