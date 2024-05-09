@@ -2,12 +2,15 @@
 namespace Apie\Common\Actions;
 
 use Apie\Common\ContextConstants;
+use Apie\Common\ValueObjects\DecryptedAuthenticatedUser;
 use Apie\Core\Actions\ActionResponse;
 use Apie\Core\Actions\ActionResponseStatus;
 use Apie\Core\Actions\ActionResponseStatusList;
 use Apie\Core\Actions\ApieFacadeInterface;
 use Apie\Core\Actions\MethodActionInterface;
+use Apie\Core\BoundedContext\BoundedContextId;
 use Apie\Core\Context\ApieContext;
+use Apie\Core\Entities\EntityInterface;
 use Apie\Core\Lists\StringList;
 use Apie\Serializer\Exceptions\ValidationException;
 use LogicException;
@@ -59,6 +62,18 @@ final class RunAction implements MethodActionInterface
             : $context->getContext($context->getContext(ContextConstants::SERVICE_CLASS));
         try {
             $returnValue = $this->apieFacade->denormalizeOnMethodCall($rawContents, $object, $method, $context);
+            if ($context->getContext(ContextConstants::METHOD_NAME) === 'verifyAuthentication') {
+                if ($returnValue instanceof EntityInterface) {
+                    $userValue = DecryptedAuthenticatedUser::createFromEntity(
+                        $returnValue,
+                        new BoundedContextId($context->getContext(ContextConstants::BOUNDED_CONTEXT_ID, false) ?? 'unknown'),
+                        time() + 3600
+                    );
+                } else {
+                    $userValue = null;
+                }
+                $context = $context->withContext(DecryptedAuthenticatedUser::class, $userValue);
+            }
         } catch (ValidationException $error) {
             return ActionResponse::createClientError($this->apieFacade, $context, $error);
         }

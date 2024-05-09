@@ -23,8 +23,7 @@
     "apie-objects": [
       "Apie\\Common\\Enums\\UrlPrefix",
       "Apie\\Common\\ValueObjects\\EntityNamespace",
-      "Apie\\Common\\ValueObjects\\PossibleRoutePrefixes",
-      "Apie\\Common\\Wrappers\\ApieUserDecoratorIdentifier"
+      "Apie\\Common\\ValueObjects\\PossibleRoutePrefixes"
     ]
   },
   "require": {

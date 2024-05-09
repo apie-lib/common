@@ -40,6 +40,26 @@ class CommonServiceProvider extends ServiceProvider
         );
         $this->app->tag([\Apie\Common\ContextBuilders\AddTextEncrypterContextBuilder::class], 'apie.core.context_builder');
         $this->app->singleton(
+            \Apie\Common\ContextBuilders\CheckAuthenticatedContextBuilder::class,
+            function ($app) {
+                return new \Apie\Common\ContextBuilders\CheckAuthenticatedContextBuilder(
+                    $app->make(\Psr\Log\LoggerInterface::class)
+                );
+            }
+        );
+        \Apie\ServiceProviderGenerator\TagMap::register(
+            $this->app,
+            \Apie\Common\ContextBuilders\CheckAuthenticatedContextBuilder::class,
+            array(
+              0 =>
+              array(
+                'name' => 'apie.core.context_builder',
+                'priority' => -1,
+              ),
+            )
+        );
+        $this->app->tag([\Apie\Common\ContextBuilders\CheckAuthenticatedContextBuilder::class], 'apie.core.context_builder');
+        $this->app->singleton(
             \Apie\Common\ApieFacade::class,
             function ($app) {
                 return new \Apie\Common\ApieFacade(

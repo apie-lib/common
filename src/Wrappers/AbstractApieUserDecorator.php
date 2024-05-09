@@ -2,6 +2,7 @@
 namespace Apie\Common\Wrappers;
 
 use Apie\Common\Interfaces\UserDecorator;
+use Apie\Common\ValueObjects\DecryptedAuthenticatedUser;
 use Apie\Core\Entities\EntityInterface;
 
 /**
@@ -11,11 +12,13 @@ use Apie\Core\Entities\EntityInterface;
 abstract class AbstractApieUserDecorator implements UserDecorator
 {
     /**
-     * @param ApieUserDecoratorIdentifier<T> $id
+     * @param DecryptedAuthenticatedUser<T> $id
      * @param T $entity
      */
-    public function __construct(protected readonly ApieUserDecoratorIdentifier $id, protected readonly EntityInterface $entity)
-    {
+    public function __construct(
+        protected readonly DecryptedAuthenticatedUser $id,
+        protected readonly EntityInterface $entity
+    ) {
     }
 
     /**
