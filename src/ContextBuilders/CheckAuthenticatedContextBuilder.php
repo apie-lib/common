@@ -48,6 +48,15 @@ class CheckAuthenticatedContextBuilder implements ContextBuilderInterface
                         throw new WrongTokenException($error);
                     }
                 }
+            } else {
+                $this->logger->error(
+                    sprintf(
+                        'Could not determine authentication cookie as a dependency is missing: encrypter: %s, request: %s, data layer: %s',
+                        $textEncrypter instanceof TextEncrypter ? 'true' : 'false',
+                        $request instanceof ServerRequestInterface ? 'true' : 'false',
+                        $datalayer instanceof ApieDatalayer ? 'true' : 'false'
+                    )
+                );
             }
         }
         return $context;
