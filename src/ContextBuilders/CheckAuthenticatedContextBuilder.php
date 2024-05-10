@@ -1,6 +1,7 @@
 <?php
 namespace Apie\Common\ContextBuilders;
 
+use Apie\Common\ContextBuilders\Exceptions\WrongTokenException;
 use Apie\Common\ContextConstants;
 use Apie\Common\Events\AddAuthenticationCookie;
 use Apie\Common\ValueObjects\DecryptedAuthenticatedUser;
@@ -44,7 +45,7 @@ class CheckAuthenticatedContextBuilder implements ContextBuilderInterface
                             'Error decrypting auth cookie: ' . $error->getMessage(),
                             ['error' => $error]
                         );
-                        throw $error;
+                        throw new WrongTokenException($error);
                     }
                 }
             }

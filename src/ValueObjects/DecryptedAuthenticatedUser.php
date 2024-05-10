@@ -4,9 +4,11 @@ namespace Apie\Common\ValueObjects;
 use Apie\Core\BoundedContext\BoundedContextId;
 use Apie\Core\Entities\EntityInterface;
 use Apie\Core\Identifiers\IdentifierInterface;
+use Apie\Core\ValueObjects\Exceptions\InvalidStringForValueObjectException;
 use Apie\Core\ValueObjects\Interfaces\StringValueObjectInterface;
 use Apie\Core\ValueObjects\IsStringValueObject;
 use ReflectionClass;
+use ReflectionException;
 
 /**
  * @template T of EntityInterface
@@ -94,7 +96,14 @@ final class DecryptedAuthenticatedUser implements StringValueObjectInterface
             $input,
             4
         );
-        new ReflectionClass($className);
+        try {
+            $refl = new ReflectionClass($className);
+            if (!in_array(IdentifierInterface::class, $refl->getInterfaceNames(), true)) {
+                throw new InvalidStringForValueObjectException($input, $this);
+            }
+        } catch (ReflectionException $previous) {
+            throw new InvalidStringForValueObjectException($input, $this, $previous);
+        }
         $this->className = $className;
         $this->boundedContextId = new BoundedContextId($boundedContextId);
         $this->id = new $className($id);
