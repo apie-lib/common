@@ -1,10 +1,10 @@
 <?php
 namespace Apie\Common\ActionDefinitions;
 
-use Apie\Common\ContextConstants;
 use Apie\Core\BoundedContext\BoundedContext;
 use Apie\Core\BoundedContext\BoundedContextId;
 use Apie\Core\Context\ApieContext;
+use Apie\Core\ContextConstants;
 use Apie\Core\Entities\EntityInterface;
 use Apie\Core\Entities\PolymorphicEntityInterface;
 use Apie\Core\Utils\EntityUtils;

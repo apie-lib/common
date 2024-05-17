@@ -2,12 +2,12 @@
 namespace Apie\Common\ContextBuilders;
 
 use Apie\Common\ContextBuilders\Exceptions\WrongTokenException;
-use Apie\Common\ContextConstants;
 use Apie\Common\Events\AddAuthenticationCookie;
 use Apie\Common\ValueObjects\DecryptedAuthenticatedUser;
 use Apie\Common\Wrappers\TextEncrypter;
 use Apie\Core\Context\ApieContext;
 use Apie\Core\ContextBuilders\ContextBuilderInterface;
+use Apie\Core\ContextConstants;
 use Apie\Core\Datalayers\ApieDatalayer;
 use Exception;
 use Psr\Http\Message\ServerRequestInterface;

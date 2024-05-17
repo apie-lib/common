@@ -1,10 +1,10 @@
 <?php
 namespace Apie\Common\RouteDefinitions;
 
-use Apie\Common\ContextConstants;
 use Apie\Common\Interfaces\RestApiRouteDefinition;
 use Apie\Core\Actions\ActionResponseStatusList;
 use Apie\Core\BoundedContext\BoundedContextId;
+use Apie\Core\ContextConstants;
 use Apie\Core\Dto\ListOf;
 use Apie\Core\Lists\StringList;
 use ReflectionClass;

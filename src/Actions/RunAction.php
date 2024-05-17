@@ -1,7 +1,6 @@
 <?php
 namespace Apie\Common\Actions;
 
-use Apie\Common\ContextConstants;
 use Apie\Common\ValueObjects\DecryptedAuthenticatedUser;
 use Apie\Core\Actions\ActionResponse;
 use Apie\Core\Actions\ActionResponseStatus;
@@ -10,6 +9,7 @@ use Apie\Core\Actions\ApieFacadeInterface;
 use Apie\Core\Actions\MethodActionInterface;
 use Apie\Core\BoundedContext\BoundedContextId;
 use Apie\Core\Context\ApieContext;
+use Apie\Core\ContextConstants;
 use Apie\Core\Entities\EntityInterface;
 use Apie\Core\Lists\StringList;
 use Apie\Serializer\Exceptions\ValidationException;

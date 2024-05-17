@@ -1,7 +1,6 @@
 <?php
 namespace Apie\Common\Actions;
 
-use Apie\Common\ContextConstants;
 use Apie\Core\Actions\ActionInterface;
 use Apie\Core\Actions\ActionResponse;
 use Apie\Core\Actions\ActionResponseStatus;
@@ -9,6 +8,7 @@ use Apie\Core\Actions\ActionResponseStatusList;
 use Apie\Core\Actions\ApieFacadeInterface;
 use Apie\Core\BoundedContext\BoundedContextId;
 use Apie\Core\Context\ApieContext;
+use Apie\Core\ContextConstants;
 use Apie\Core\Entities\EntityInterface;
 use Apie\Core\Exceptions\InvalidTypeException;
 use Apie\Core\IdentifierUtils;

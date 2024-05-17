@@ -1,10 +1,10 @@
 <?php
 namespace Apie\Common\ContextBuilders;
 
-use Apie\Common\ContextConstants;
 use Apie\Common\RequestBodyDecoder;
 use Apie\Core\Context\ApieContext;
 use Apie\Core\ContextBuilders\ContextBuilderInterface;
+use Apie\Core\ContextConstants;
 use Apie\Serializer\Interfaces\DecoderInterface;
 use Psr\Http\Message\ServerRequestInterface;
 

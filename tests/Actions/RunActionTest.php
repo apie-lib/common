@@ -2,9 +2,9 @@
 namespace Apie\Tests\Common\Actions;
 
 use Apie\Common\Actions\RunAction;
-use Apie\Common\ContextConstants;
 use Apie\Common\Tests\Concerns\ProvidesApieFacade;
 use Apie\Core\Context\ApieContext;
+use Apie\Core\ContextConstants;
 use Apie\Fixtures\Actions\StaticActionExample;
 use Apie\Serializer\Lists\SerializedList;
 use PHPUnit\Framework\TestCase;
