@@ -43,7 +43,8 @@
     "apie/text-value-objects": "self.version",
     "illuminate/support": "*",
     "phpunit/phpunit": "^9.5",
-    "phpspec/prophecy-phpunit": "^2.0"
+    "phpspec/prophecy-phpunit": "^2.0",
+    "symfony/event-dispatcher": "6.*"
   },
   "minimum-stability": "dev",
   "prefer-stable": true
