@@ -24,7 +24,6 @@ final class IntegrationTestLogger
                 self::$loggedException?->getTraceAsString()
             )
         );
-        
     }
 
     public static function resetLoggedException(): void

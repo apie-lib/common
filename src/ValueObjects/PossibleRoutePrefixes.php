@@ -40,7 +40,7 @@ final class PossibleRoutePrefixes implements ValueObjectInterface, Stringable
      */
     public function getRouteRequirements(): array
     {
-        return match(count($this->internal)) {
+        return match (count($this->internal)) {
             0 => [],
             1 => [],
             // TODO; quote regular expression?
@@ -50,7 +50,7 @@ final class PossibleRoutePrefixes implements ValueObjectInterface, Stringable
 
     public function __toString(): string
     {
-        switch(count($this->internal)) {
+        switch (count($this->internal)) {
             case 0:
                 return '/';
             case 1:

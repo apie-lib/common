@@ -56,7 +56,6 @@ final class RunItemMethodAction implements MethodActionInterface
             return false;
         }
         return $context->appliesToContext($method, $runtimeChecks, $throwError ? new LogicException('Class method is not allowed') : null);
-
     }
 
     /**

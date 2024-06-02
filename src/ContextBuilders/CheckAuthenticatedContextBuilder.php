@@ -40,7 +40,7 @@ class CheckAuthenticatedContextBuilder implements ContextBuilderInterface
                         $context = $context
                             ->withContext(ContextConstants::AUTHENTICATED_USER, $authenticated)
                             ->registerInstance($decryptedUserId);
-                    } catch(Exception $error) {
+                    } catch (Exception $error) {
                         $this->logger->error(
                             'Error decrypting auth cookie: ' . $error->getMessage(),
                             ['error' => $error]

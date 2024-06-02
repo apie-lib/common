@@ -99,7 +99,6 @@ class CommonServiceProvider extends ServiceProvider
                 return \Apie\Common\Wrappers\GeneralServiceFactory::createRoutedDefinitionProvider(
                     $this->getTaggedServicesIterator('apie.common.route_definition')
                 );
-                
             }
         );
         $this->app->singleton(
@@ -180,7 +179,5 @@ class CommonServiceProvider extends ServiceProvider
         );
         $this->app->tag([\Apie\Common\Wrappers\RequestAwareInMemoryDatalayer::class], 'apie.datalayer');
         $this->app->bind('apie', \Apie\Common\ApieFacade::class);
-        
-        
     }
 }
