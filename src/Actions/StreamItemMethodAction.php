@@ -21,15 +21,19 @@ use Apie\Core\ValueObjects\Exceptions\InvalidStringForValueObjectException;
 use Apie\Serializer\Exceptions\ValidationException;
 use Exception;
 use LogicException;
+use Nyholm\Psr7\Factory\Psr17Factory;
+use Nyholm\Psr7\Stream;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\UploadedFileInterface;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionMethod;
-use ReflectionNamedType;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**
- * Runs a method from  a resource (and persist resource afterwards).
+ * Runs a method from  a resource and will stream the result.
  */
-final class RunItemMethodAction implements MethodActionInterface
+final class StreamItemMethodAction implements MethodActionInterface
 {
     public function __construct(private readonly ApieFacadeInterface $apieFacade)
     {
@@ -108,35 +112,41 @@ final class RunItemMethodAction implements MethodActionInterface
             $method,
             $context
         );
-        if ($resource !== null) {
-            $resource = $this->apieFacade->persistExisting(
-                $resource,
-                new BoundedContextId($context->getContext(ContextConstants::BOUNDED_CONTEXT_ID))
-            );
-        }
-        if (self::shouldReturnResource($method)) {
-            $result = $resource;
-        }
+        $result = $this->toDownload($result);
+
         return ActionResponse::createRunSuccess($this->apieFacade, $context, $result, $resource);
     }
 
-    /**
-     * Returns true if we should not return the return value of the method, but should return the return value of the resource.
-     * This is the case if:
-     * - The method returns void
-     * - The method call starts with 'add' or 'remove' and has arguments.
-     */
-    public static function shouldReturnResource(ReflectionMethod $method): bool
+    private function toDownload(mixed $result): ResponseInterface
     {
-        $returnType = $method->getReturnType();
-        if ($returnType instanceof ReflectionNamedType && 'void' === $returnType->getName()) {
-            return true;
+        $factory = new Psr17Factory();
+        $response = $factory->createResponse(200);
+        if (is_resource($result)) {
+            $stream = Stream::create($result);
+            $response = $response->withBody($stream);
+            $response = $response->withHeader('Content-Type', 'application/octet-stream');
+            return $response;
         }
-        if ($method->getNumberOfParameters() === 0) {
-            return false;
+        if ($result instanceof UploadedFileInterface) {
+            $stream = $result->getStream();
+            $response = $response->withBody($stream);
+            $filename = $result->getClientFilename();
+            $mimeType = $result->getClientMediaType();
+            $response = $response->withHeader('Content-Disposition', 'attachment; filename="' . $filename . '"');
+            $response = $response->withHeader('Content-Type', $mimeType);
+            return $response;
         }
-                
-        return str_starts_with($method->name, 'add') || str_starts_with($method->name, 'remove');
+        if ($result instanceof UploadedFile) {
+            $fileResource = fopen($result->getRealPath(), 'r');
+            $stream = Stream::create($fileResource);
+            $response = $response->withBody($stream);
+            $filename = $result->getClientOriginalName();
+            $mimeType = $result->getClientMimeType();
+            $response = $response->withHeader('Content-Disposition', 'attachment; filename="' . $filename . '"');
+            $response = $response->withHeader('Content-Type', $mimeType);
+            return $response;
+        }
+        throw ValidationException::createFromArray(['' => new LogicException('There is nothing to stream')]);
     }
 
     /**
@@ -169,9 +179,6 @@ final class RunItemMethodAction implements MethodActionInterface
     public static function getOutputType(ReflectionClass $class, ?ReflectionMethod $method = null): ReflectionMethod|ReflectionClass
     {
         assert($method instanceof ReflectionMethod);
-        if (RunItemMethodAction::shouldReturnResource($method)) {
-            return $class;
-        }
         return $method;
     }
 

@@ -10,6 +10,7 @@ use Apie\Common\ActionDefinitions\RemoveResourceActionDefinition;
 use Apie\Common\ActionDefinitions\ReplaceResourceActionDefinition;
 use Apie\Common\ActionDefinitions\RunGlobalMethodDefinition;
 use Apie\Common\ActionDefinitions\RunResourceMethodDefinition;
+use Apie\Common\ActionDefinitions\StreamGetterActionDefinition;
 use Apie\Common\Lists\ActionDefinitionList;
 use Apie\Core\BoundedContext\BoundedContext;
 use Apie\Core\Context\ApieContext;
@@ -28,6 +29,7 @@ class ActionDefinitionProvider
         RemoveResourceActionDefinition::class,
         RunGlobalMethodDefinition::class,
         RunResourceMethodDefinition::class,
+        StreamGetterActionDefinition::class,
     ];
     public function provideActionDefinitions(BoundedContext $boundedContext, ApieContext $apieContext, bool $runtimeChecks = false): ActionDefinitionList
     {
