@@ -161,9 +161,9 @@ final class StreamItemMethodAction implements MethodActionInterface
             if (str_starts_with($method->name, 'add')) {
                 return lcfirst(substr($method->name, strlen('add')));
             }
-            if (str_starts_with($method->name, 'get') && TypeUtils::couldBeAStream($method->getReturnType())) {
-                return lcfirst(substr($method->name, strlen('get')));
-            }
+        }
+        if (str_starts_with($method->name, 'get') && TypeUtils::couldBeAStream($method->getReturnType())) {
+            return lcfirst(substr($method->name, strlen('get')));
         }
         return $method->name;
     }
@@ -203,13 +203,7 @@ final class StreamItemMethodAction implements MethodActionInterface
     {
         assert($method instanceof ReflectionMethod);
         $name = self::getDisplayNameForMethod($method);
-        if (str_starts_with($method->name, 'add')) {
-            return 'Adds ' . $name . ' to ' . $class->getShortName();
-        }
-        if (str_starts_with($method->name, 'remove')) {
-            return 'Removes ' . $name . ' from ' . $class->getShortName();
-        }
-        return 'Runs method ' . $name . ' on a ' . $class->getShortName() . ' with a specific id';
+        return 'Streams ' . $name . ' on a ' . $class->getShortName() . ' with a specific id';
     }
     
     /**
