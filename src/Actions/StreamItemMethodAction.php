@@ -214,9 +214,9 @@ final class StreamItemMethodAction implements MethodActionInterface
         $className = $class->getShortName();
         $declared = $method ? $method->getDeclaringClass()->getShortName() : $className;
         if ($className !== $declared) {
-            return new StringList([$className, $declared, 'action']);
+            return new StringList([$className, $declared, 'action', 'download']);
         }
-        return new StringList([$className, 'action']);
+        return new StringList([$className, 'action', 'download']);
     }
 
     /**

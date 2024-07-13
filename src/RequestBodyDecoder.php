@@ -6,6 +6,8 @@ use Apie\RestApi\Exceptions\InvalidContentTypeException;
 use Apie\Serializer\DecoderHashmap;
 use Apie\Serializer\Interfaces\DecoderInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\UploadedFileInterface;
+use Riverline\MultiPartParser\StreamedPart;
 
 final class RequestBodyDecoder
 {
@@ -24,10 +26,20 @@ final class RequestBodyDecoder
             throw new InvalidContentTypeException($request->getHeaderLine('Content-Type'));
         }
         $contentType = reset($contentTypes);
+        $options = null;
+        $parsedBody = null;
+        if (strpos($contentType, ';') !== false) {
+            $options = strstr($contentType, ';', false);
+            $contentType = strstr($contentType, ';', true);
+        }
+        if (strtolower($contentType) === 'multipart/form-data') {
+            $parsedBody = $request->getParsedBody();
+        }
         if (!isset($this->decoderHashmap[$contentType])) {
             throw new InvalidContentTypeException($contentType);
         }
-        return $this->decoderHashmap[$contentType];
+        $res = $this->decoderHashmap[$contentType]->withParsedBody($parsedBody);
+        return $options === null ? $res  : $res->withOptions($options);
     }
 
     /**
@@ -44,6 +56,25 @@ final class RequestBodyDecoder
         if (!is_array($rawContents)) {
             throw new InvalidTypeException($rawContents, 'array');
         }
+        $this->addUploadedFiles($rawContents, $request->getUploadedFiles());
         return $rawContents;
+    }
+
+    /**
+     * @param array<string|int, mixed> $rawContents
+     * @param array<string|int, mixed> $uploadedFiles
+     */
+    private function addUploadedFiles(array& $rawContents, array $uploadedFiles): void
+    {
+        foreach ($uploadedFiles as $key => $value) {
+            if ($value instanceof UploadedFileInterface) {
+                $rawContents[$key] = $value;
+                continue;
+            }
+            if (!isset($rawContents[$key])) {
+                $rawContents[$key] = [];
+            }
+            $this->addUploadedFiles($rawContents[$key], $uploadedFiles);
+        }
     }
 }
