@@ -7,7 +7,6 @@ use Apie\Serializer\DecoderHashmap;
 use Apie\Serializer\Interfaces\DecoderInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UploadedFileInterface;
-use Riverline\MultiPartParser\StreamedPart;
 
 final class RequestBodyDecoder
 {
