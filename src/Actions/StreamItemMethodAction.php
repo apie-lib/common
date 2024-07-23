@@ -13,6 +13,7 @@ use Apie\Core\ContextConstants;
 use Apie\Core\Entities\EntityInterface;
 use Apie\Core\Exceptions\EntityNotFoundException;
 use Apie\Core\Exceptions\InvalidTypeException;
+use Apie\Core\FileStorage\StoredFile;
 use Apie\Core\IdentifierUtils;
 use Apie\Core\Lists\StringList;
 use Apie\Core\TypeUtils;
@@ -131,7 +132,7 @@ final class StreamItemMethodAction implements MethodActionInterface
             $stream = $result->getStream();
             $response = $response->withBody($stream);
             $filename = $result->getClientFilename();
-            $mimeType = $result->getClientMediaType();
+            $mimeType = $result instanceof StoredFile ? $result->getServerMimeType() : $result->getClientMediaType();
             $response = $response->withHeader('Content-Disposition', 'attachment; filename="' . $filename . '"');
             $response = $response->withHeader('Content-Type', $mimeType);
             return $response;
