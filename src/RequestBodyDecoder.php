@@ -2,6 +2,7 @@
 namespace Apie\Common;
 
 use Apie\Core\Exceptions\InvalidTypeException;
+use Apie\Core\FileStorage\StoredFile;
 use Apie\RestApi\Exceptions\InvalidContentTypeException;
 use Apie\Serializer\DecoderHashmap;
 use Apie\Serializer\Interfaces\DecoderInterface;
@@ -55,7 +56,7 @@ final class RequestBodyDecoder
         if (!is_array($rawContents)) {
             throw new InvalidTypeException($rawContents, 'array');
         }
-        $this->addUploadedFiles($rawContents, $request->getUploadedFiles());
+        $this->addUploadedFiles($rawContents, $request->getUploadedFiles()['form'] ?? []);
         return $rawContents;
     }
 
@@ -67,13 +68,13 @@ final class RequestBodyDecoder
     {
         foreach ($uploadedFiles as $key => $value) {
             if ($value instanceof UploadedFileInterface) {
-                $rawContents[$key] = $value;
+                $rawContents[$key] = $value instanceof StoredFile ? $value : StoredFile::createFromUploadedFile($value);
                 continue;
             }
             if (!isset($rawContents[$key])) {
                 $rawContents[$key] = [];
             }
-            $this->addUploadedFiles($rawContents[$key], $uploadedFiles);
+            $this->addUploadedFiles($rawContents[$key], $value);
         }
     }
 }
