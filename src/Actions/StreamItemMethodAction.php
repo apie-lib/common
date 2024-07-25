@@ -29,7 +29,6 @@ use Psr\Http\Message\UploadedFileInterface;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionMethod;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**
  * Runs a method from  a resource and will stream the result.
@@ -133,16 +132,6 @@ final class StreamItemMethodAction implements MethodActionInterface
             $response = $response->withBody($stream);
             $filename = $result->getClientFilename();
             $mimeType = $result instanceof StoredFile ? $result->getServerMimeType() : $result->getClientMediaType();
-            $response = $response->withHeader('Content-Disposition', 'attachment; filename="' . $filename . '"');
-            $response = $response->withHeader('Content-Type', $mimeType);
-            return $response;
-        }
-        if ($result instanceof UploadedFile) {
-            $fileResource = fopen($result->getRealPath(), 'r');
-            $stream = Stream::create($fileResource);
-            $response = $response->withBody($stream);
-            $filename = $result->getClientOriginalName();
-            $mimeType = $result->getClientMimeType();
             $response = $response->withHeader('Content-Disposition', 'attachment; filename="' . $filename . '"');
             $response = $response->withHeader('Content-Type', $mimeType);
             return $response;

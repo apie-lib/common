@@ -56,7 +56,8 @@ final class RequestBodyDecoder
         if (!is_array($rawContents)) {
             throw new InvalidTypeException($rawContents, 'array');
         }
-        $this->addUploadedFiles($rawContents, $request->getUploadedFiles()['form'] ?? []);
+        $uploadedFiles = $request->getUploadedFiles();
+        $this->addUploadedFiles($rawContents, $uploadedFiles['form'] ?? $uploadedFiles);
         return $rawContents;
     }
 
