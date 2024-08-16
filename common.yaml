@@ -32,6 +32,7 @@ services:
       class: Apie\Common\Wrappers\BoundedContextHashmapFactory
       arguments:
         - "%apie.bounded_contexts%"
+        - "%apie.scan_bounded_contexts%"
 
   Apie\Common\Interfaces\RouteDefinitionProviderInterface:
     alias: apie.route_definitions.provider

@@ -87,7 +87,8 @@ class CommonServiceProvider extends ServiceProvider
             'apie.bounded_context.hashmap_factory',
             function ($app) {
                 return new \Apie\Common\Wrappers\BoundedContextHashmapFactory(
-                    $this->parseArgument('%apie.bounded_contexts%')
+                    $this->parseArgument('%apie.bounded_contexts%'),
+                    $this->parseArgument('%apie.scan_bounded_contexts%')
                 );
             }
         );
