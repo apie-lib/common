@@ -1,6 +1,11 @@
 services:
   Apie\Common\ActionDefinitionProvider:
 
+  Apie\Common\ContextBuilders\AddEventDispatcherContextBuilder:
+    arguments:
+      - '@Psr\EventDispatcher\EventDispatcherInterface'
+    tags: ['apie.core.context_builder']
+
   Apie\Common\ContextBuilders\AddTextEncrypterContextBuilder:
     arguments:
       - '@Psr\Cache\CacheItemPoolInterface'

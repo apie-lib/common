@@ -23,6 +23,22 @@ class CommonServiceProvider extends ServiceProvider
             }
         );
         $this->app->singleton(
+            \Apie\Common\ContextBuilders\AddEventDispatcherContextBuilder::class,
+            function ($app) {
+                return new \Apie\Common\ContextBuilders\AddEventDispatcherContextBuilder(
+                    $app->make(\Psr\EventDispatcher\EventDispatcherInterface::class)
+                );
+            }
+        );
+        \Apie\ServiceProviderGenerator\TagMap::register(
+            $this->app,
+            \Apie\Common\ContextBuilders\AddEventDispatcherContextBuilder::class,
+            array(
+              0 => 'apie.core.context_builder',
+            )
+        );
+        $this->app->tag([\Apie\Common\ContextBuilders\AddEventDispatcherContextBuilder::class], 'apie.core.context_builder');
+        $this->app->singleton(
             \Apie\Common\ContextBuilders\AddTextEncrypterContextBuilder::class,
             function ($app) {
                 return new \Apie\Common\ContextBuilders\AddTextEncrypterContextBuilder(
