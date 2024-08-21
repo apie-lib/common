@@ -2,6 +2,7 @@
 namespace Apie\Common\Wrappers;
 
 use Apie\CmsLayoutGraphite\GraphiteDesignSystemLayout;
+use Apie\CmsLayoutIonic\IonicDesignSystemLayout;
 use Apie\Core\Context\ApieContext;
 use Apie\HtmlBuilders\Assets\AssetManager;
 use Apie\HtmlBuilders\Interfaces\ComponentInterface;
@@ -15,6 +16,9 @@ final class CmsRendererFactory
 
     public static function createRenderer(?AssetManager $assetManager): ComponentRendererInterface
     {
+        if (class_exists(IonicDesignSystemLayout::class)) {
+            return IonicDesignSystemLayout::createRenderer($assetManager);
+        }
         if (class_exists(GraphiteDesignSystemLayout::class)) {
             return GraphiteDesignSystemLayout::createRenderer($assetManager);
         }
