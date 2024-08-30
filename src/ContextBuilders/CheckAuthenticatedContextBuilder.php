@@ -30,6 +30,7 @@ class CheckAuthenticatedContextBuilder implements ContextBuilderInterface
                 && $request instanceof ServerRequestInterface
                 && $datalayer instanceof ApieDatalayer) {
                 $name = $request->getCookieParams()[AddAuthenticationCookie::COOKIE_NAME] ?? null;
+                $this->logger->debug($request->getUri()->__toString() . ' ' . ($name ?? 'no cookie'));
                 if ($name) {
                     try {
                         $decryptedUserId = new DecryptedAuthenticatedUser($textEncrypter->decrypt($name));

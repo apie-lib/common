@@ -1,7 +1,7 @@
 <?php
 namespace Apie\Common\Wrappers;
 
-use Apie\ApieBundle\DependencyInjection\Configuration;
+use Apie\Common\Config\Configuration;
 use Apie\Common\ValueObjects\EntityNamespace;
 use Apie\Core\BoundedContext\BoundedContext;
 use Apie\Core\BoundedContext\BoundedContextHashmap;
