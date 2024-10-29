@@ -123,6 +123,7 @@ final class CreateObjectAction implements ActionInterface
         return [
             ContextConstants::CREATE_OBJECT => true,
             ContextConstants::RESOURCE_NAME => $class->name,
+            ContextConstants::DISPLAY_FORM => true,
         ];
     }
 }
