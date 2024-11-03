@@ -31,6 +31,7 @@ class ActionDefinitionProvider
         RunResourceMethodDefinition::class,
         StreamGetterActionDefinition::class,
     ];
+    
     public function provideActionDefinitions(BoundedContext $boundedContext, ApieContext $apieContext, bool $runtimeChecks = false): ActionDefinitionList
     {
         $actionDefinitions = [];

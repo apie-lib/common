@@ -67,17 +67,16 @@ class StreamGetterActionDefinition implements ActionDefinitionInterface
             }
             foreach ($resourceList as $actualClass) {
                 foreach ($resourceActionContext->getApplicableGetters($actualClass, $runtimeChecks) as $method) {
-                    if (!$method instanceof ReflectionMethod) {
-                        continue;
-                    }
-                    $returnType = $method->getReturnType();
+                    $returnType = $method instanceof ReflectionMethod ? $method->getReturnType() : $method->getType();
                     if (TypeUtils::couldBeAStream($returnType)) {
-                        $definition = new StreamGetterActionDefinition(
-                            $resource,
-                            $method,
-                            $boundedContext->getId()
-                        );
-                        $actionDefinitions[] = $definition;
+                        if ($method instanceof ReflectionMethod) {
+                            $definition = new StreamGetterActionDefinition(
+                                $resource,
+                                $method,
+                                $boundedContext->getId()
+                            );
+                            $actionDefinitions[] = $definition;
+                        }// TODO $method instanceof ReflectionProperty
                     }
                 }
             }
