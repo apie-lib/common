@@ -3,6 +3,7 @@ namespace Apie\Common\Wrappers;
 
 use Apie\CmsLayoutGraphite\GraphiteDesignSystemLayout;
 use Apie\CmsLayoutIonic\IonicDesignSystemLayout;
+use Apie\CmsLayoutUgly\UglyDesignSystemLayout;
 use Apie\Core\Context\ApieContext;
 use Apie\HtmlBuilders\Assets\AssetManager;
 use Apie\HtmlBuilders\Interfaces\ComponentInterface;
@@ -21,6 +22,9 @@ final class CmsRendererFactory
         }
         if (class_exists(GraphiteDesignSystemLayout::class)) {
             return GraphiteDesignSystemLayout::createRenderer($assetManager);
+        }
+        if (class_exists(UglyDesignSystemLayout::class)) {
+            return UglyDesignSystemLayout::createRenderer($assetManager);
         }
         // fallback is just a message displaying you need to install a cms renderer package.
         $contents = file_get_contents(__DIR__ . '/../../resources/html/install-instructions-cms-renderer.html');

@@ -20,6 +20,7 @@ abstract class Configuration implements ConfigurationInterface
         'enable_maker' => 'Apie\Maker\Utils',
         'enable_rest_api' => 'Apie\RestApi\OpenApi\OpenApiGenerator',
         'enable_console' => 'Apie\Console\ConsoleCommandFactory',
+        'enable_twig_template_layout_renderer' => 'Apie\TwigTemplateLayoutRenderer\TwigRenderer',
     ];
 
     abstract protected function addCmsOptions(ArrayNodeDefinition $arrayNode): void;

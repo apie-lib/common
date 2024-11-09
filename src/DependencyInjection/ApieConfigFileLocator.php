@@ -15,6 +15,7 @@ use Apie\Maker\Utils;
 use Apie\RestApi\OpenApi\OpenApiGenerator;
 use Apie\SchemaGenerator\ComponentsBuilderFactory;
 use Apie\Serializer\Serializer;
+use Apie\TwigTemplateLayoutRenderer\TwigRenderer;
 use ReflectionClass;
 use ReflectionException;
 use Symfony\Component\Config\FileLocator;
@@ -38,7 +39,8 @@ class ApieConfigFileLocator extends FileLocator
         'maker.yaml' => [Utils::class, '..', 'Apie\\Maker\\MakerServiceProvider'],
         'rest_api.yaml' => [OpenApiGenerator::class, '../..', 'Apie\\RestApi\\RestApiServiceProvider'],
         'serializer.yaml' => [Serializer::class, '..', 'Apie\\Serializer\\SerializerServiceProvider'],
-        'schema_generator.yaml' => [ComponentsBuilderFactory::class, '..', 'Apie\\SchemaGenerator\\SchemaGeneratorServiceProvider']
+        'schema_generator.yaml' => [ComponentsBuilderFactory::class, '..', 'Apie\\SchemaGenerator\\SchemaGeneratorServiceProvider'],
+        'twig_template_layout_renderer.yaml' => [TwigRenderer::class, '..', 'Apie\\TwigTemplateLayoutRenderer\\TwigTemplateLayoutRendererServiceProvider'],
     ];
 
     public function __construct(string|array $paths = [])
