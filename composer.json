@@ -26,6 +26,9 @@
       "Apie\\Common\\ValueObjects\\PossibleRoutePrefixes"
     ]
   },
+  "conflict": {
+    "phpstan/phpdoc-parser": "2.*"
+  },
   "require": {
     "php": ">=8.1",
     "apie/core": "self.version",
