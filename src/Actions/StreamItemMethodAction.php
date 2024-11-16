@@ -2,6 +2,7 @@
 namespace Apie\Common\Actions;
 
 use Apie\Common\IntegrationTestLogger;
+use Apie\Common\Other\DownloadFile;
 use Apie\Core\Actions\ActionResponse;
 use Apie\Core\Actions\ActionResponseStatus;
 use Apie\Core\Actions\ActionResponseStatusList;
@@ -16,18 +17,15 @@ use Apie\Core\Exceptions\InvalidTypeException;
 use Apie\Core\FileStorage\StoredFile;
 use Apie\Core\IdentifierUtils;
 use Apie\Core\Lists\StringList;
-use Apie\Core\TypeUtils;
-use Apie\Core\Utils\EntityUtils;
+use Apie\Core\PropertyAccess;
 use Apie\Core\ValueObjects\Exceptions\InvalidStringForValueObjectException;
 use Apie\Serializer\Exceptions\ValidationException;
-use Exception;
 use LogicException;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7\Stream;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\UploadedFileInterface;
 use ReflectionClass;
-use ReflectionException;
 use ReflectionMethod;
 
 /**
@@ -42,25 +40,7 @@ final class StreamItemMethodAction implements MethodActionInterface
     public static function isAuthorized(ApieContext $context, bool $runtimeChecks, bool $throwError = false): bool
     {
         $refl = new ReflectionClass($context->getContext(ContextConstants::RESOURCE_NAME, $throwError));
-        $methodName = $context->getContext(ContextConstants::METHOD_NAME, $throwError);
-        $method = new ReflectionMethod(
-            $context->getContext(ContextConstants::METHOD_CLASS, $throwError),
-            $methodName
-        );
-        if (EntityUtils::isPolymorphicEntity($refl) && $runtimeChecks && $context->hasContext(ContextConstants::RESOURCE) &&!$method->isStatic()) {
-            $refl = new ReflectionClass($context->getContext(ContextConstants::RESOURCE, $throwError));
-            if (!$refl->hasMethod($methodName)) {
-                if ($throwError) {
-                    throw new LogicException('Method ' . $methodName . ' does not exist on this entity');
-                }
-                return false;
-            }
-            $method = $refl->getMethod($methodName);
-        }
-        if (!$context->appliesToContext($refl, $runtimeChecks, $throwError ? new LogicException('Class access is not allowed!') : null)) {
-            return false;
-        }
-        return $context->appliesToContext($method, $runtimeChecks, $throwError ? new LogicException('Class method is not allowed') : null);
+        return $context->appliesToContext($refl, $runtimeChecks, $throwError ? new LogicException('Class access is not allowed!') : null);
     }
 
     /**
@@ -73,45 +53,19 @@ final class StreamItemMethodAction implements MethodActionInterface
         if (!$resourceClass->implementsInterface(EntityInterface::class)) {
             throw new InvalidTypeException($resourceClass->name, 'EntityInterface');
         }
-        $method = new ReflectionMethod(
-            $context->getContext(ContextConstants::METHOD_CLASS),
-            $context->getContext(ContextConstants::METHOD_NAME)
-        );
-        if ($method->isStatic()) {
-            $resource = null;
-        } else {
-            $id = $context->getContext(ContextConstants::RESOURCE_ID);
-            try {
-                $resource = $this->apieFacade->find(
-                    IdentifierUtils::entityClassToIdentifier($resourceClass)->newInstance($id),
-                    new BoundedContextId($context->getContext(ContextConstants::BOUNDED_CONTEXT_ID))
-                );
-            } catch (InvalidStringForValueObjectException|EntityNotFoundException $error) {
-                IntegrationTestLogger::logException($error);
-                return ActionResponse::createClientError($this->apieFacade, $context, $error);
-            }
-            $context = $context->withContext(ContextConstants::RESOURCE, $resource);
-            // polymorphic relation, so could be the incorrect declared method
-            if (!$method->getDeclaringClass()->isInstance($resource)) {
-                try {
-                    $method = (new ReflectionClass($resource))->getMethod($method->name);
-                } catch (ReflectionException $methodError) {
-                    $error = new Exception(
-                        sprintf('Resource "%s" does not support "%s"!', $id, $method->name),
-                        0,
-                        $methodError
-                    );
-                    throw ValidationException::createFromArray(['' => $error]);
-                }
-            }
+        $properties = explode('/', $context->getContext('properties'));
+        $id = $context->getContext(ContextConstants::RESOURCE_ID);
+        try {
+            $resource = $this->apieFacade->find(
+                IdentifierUtils::entityClassToIdentifier($resourceClass)->newInstance($id),
+                new BoundedContextId($context->getContext(ContextConstants::BOUNDED_CONTEXT_ID))
+            );
+        } catch (InvalidStringForValueObjectException|EntityNotFoundException $error) {
+            IntegrationTestLogger::logException($error);
+            return ActionResponse::createClientError($this->apieFacade, $context, $error);
         }
-
-        $result = $this->apieFacade->denormalizeOnMethodCall(
-            $rawContents,
-            $resource,
-            $method,
-            $context
-        );
+        $context = $context->withContext(ContextConstants::RESOURCE, $resource);
+        $result = PropertyAccess::getPropertyValue($resource, $properties, $context, false);
         $result = $this->toDownload($result);
 
         return ActionResponse::createRunSuccess($this->apieFacade, $context, $result, $resource);
@@ -139,51 +93,25 @@ final class StreamItemMethodAction implements MethodActionInterface
         throw ValidationException::createFromArray(['' => new LogicException('There is nothing to stream')]);
     }
 
-    /**
-     * Returns a string how we should display the method. For example we remove 'add' or 'remove' from the string.
-     */
-    public static function getDisplayNameForMethod(ReflectionMethod $method): string
-    {
-        if ($method->getNumberOfParameters() > 0) {
-            if (str_starts_with($method->name, 'remove')) {
-                return lcfirst(substr($method->name, strlen('remove')));
-            }
-            if (str_starts_with($method->name, 'add')) {
-                return lcfirst(substr($method->name, strlen('add')));
-            }
-        }
-        if (str_starts_with($method->name, 'get') && TypeUtils::couldBeAStream($method->getReturnType())) {
-            return lcfirst(substr($method->name, strlen('get')));
-        }
-        return $method->name;
-    }
-
     /** @param ReflectionClass<object> $class */
     public static function getInputType(ReflectionClass $class, ?ReflectionMethod $method = null): ReflectionMethod
     {
-        assert($method instanceof ReflectionMethod);
-        return $method;
+        return $class->getConstructor() ?? new ReflectionMethod(DownloadFile::class, '__construct');
     }
 
     /** @param ReflectionClass<object> $class */
-    public static function getOutputType(ReflectionClass $class, ?ReflectionMethod $method = null): ReflectionMethod|ReflectionClass
+    public static function getOutputType(ReflectionClass $class, ?ReflectionMethod $method = null): ReflectionMethod
     {
-        assert($method instanceof ReflectionMethod);
-        return $method;
+        return new ReflectionMethod(DownloadFile::class, 'download');
     }
 
     public static function getPossibleActionResponseStatuses(?ReflectionMethod $method = null): ActionResponseStatusList
     {
-        assert($method instanceof ReflectionMethod);
-        $list = [ActionResponseStatus::SUCCESS];
-
-        if (!empty($method->getParameters())) {
-            $list[] = ActionResponseStatus::CLIENT_ERROR;
-        }
-        if (!$method->isStatic()) {
-            $list[] = ActionResponseStatus::NOT_FOUND;
-        }
-        return new ActionResponseStatusList($list);
+        return new ActionResponseStatusList([
+            ActionResponseStatus::SUCCESS,
+            ActionResponseStatus::CLIENT_ERROR,
+            ActionResponseStatus::NOT_FOUND,
+        ]);
     }
 
     /**
@@ -191,9 +119,7 @@ final class StreamItemMethodAction implements MethodActionInterface
      */
     public static function getDescription(ReflectionClass $class, ?ReflectionMethod $method = null): string
     {
-        assert($method instanceof ReflectionMethod);
-        $name = self::getDisplayNameForMethod($method);
-        return 'Streams ' . $name . ' on a ' . $class->getShortName() . ' with a specific id';
+        return 'Streams a file on a ' . $class->getShortName() . ' with a specific id';
     }
     
     /**
@@ -219,8 +145,6 @@ final class StreamItemMethodAction implements MethodActionInterface
             ContextConstants::GET_OBJECT => true,
             ContextConstants::RESOURCE_METHOD => true,
             ContextConstants::RESOURCE_NAME => $class->name,
-            ContextConstants::METHOD_CLASS => $method->getDeclaringClass()->name,
-            ContextConstants::METHOD_NAME => $method->name,
             ContextConstants::DISPLAY_FORM => true,
         ];
     }
