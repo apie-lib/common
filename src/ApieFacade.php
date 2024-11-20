@@ -31,12 +31,12 @@ final class ApieFacade implements ApieFacadeInterface
     ) {
     }
 
-    private function getBoundedContext(BoundedContext|BoundedContextId $boundedContext): BoundedContext
+    private function getBoundedContext(BoundedContext|BoundedContextId $boundedContext): BoundedContextId
     {
         if ($boundedContext instanceof BoundedContext) {
-            return $boundedContext;
+            return $boundedContext->getId();
         }
-        return $this->boundedContextHashmap[$boundedContext->toNative()];
+        return $boundedContext;
     }
 
     /**

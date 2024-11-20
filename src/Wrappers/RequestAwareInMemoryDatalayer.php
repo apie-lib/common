@@ -2,11 +2,9 @@
 namespace Apie\Common\Wrappers;
 
 use Apie\Common\Interfaces\BoundedContextSelection;
-use Apie\Core\BoundedContext\BoundedContext;
 use Apie\Core\BoundedContext\BoundedContextId;
 use Apie\Core\Datalayers\ApieDatalayerWithFilters;
 use Apie\Core\Datalayers\ApieDatalayerWithSupport;
-use Apie\Core\Datalayers\BoundedContextAwareApieDatalayer;
 use Apie\Core\Datalayers\Concerns\FiltersOnAllFields;
 use Apie\Core\Datalayers\InMemory\InMemoryDatalayer;
 use Apie\Core\Datalayers\Lists\EntityListInterface;
@@ -15,7 +13,7 @@ use Apie\Core\Entities\EntityInterface;
 use Apie\Core\Identifiers\IdentifierInterface;
 use ReflectionClass;
 
-final class RequestAwareInMemoryDatalayer implements ApieDatalayerWithFilters, BoundedContextAwareApieDatalayer, ApieDatalayerWithSupport
+final class RequestAwareInMemoryDatalayer implements ApieDatalayerWithFilters, ApieDatalayerWithSupport
 {
     use FiltersOnAllFields;
 
@@ -42,24 +40,16 @@ final class RequestAwareInMemoryDatalayer implements ApieDatalayerWithFilters, B
         return $boundedContext ? $boundedContext->getId()->toNative() === $boundedContextId->toNative() : false;
     }
 
-    public function all(ReflectionClass $class, ?BoundedContext $boundedContext = null): EntityListInterface
+    public function all(ReflectionClass $class, ?BoundedContextId $boundedContextId = null): EntityListInterface
     {
-        return $this->getRepository($class, $boundedContext)->all($class, $boundedContext);
+        return $this->getRepository($class, $boundedContextId)
+            ->all($class, $boundedContextId);
     }
 
-    public function find(IdentifierInterface $identifier, ?BoundedContext $boundedContext = null): EntityInterface
+    public function find(IdentifierInterface $identifier, ?BoundedContextId $boundedContextId = null): EntityInterface
     {
-        return $this->getRepository($identifier::getReferenceFor(), $boundedContext)->find($identifier, $boundedContext);
-    }
-
-    /**
-     * @template T of EntityInterface
-     * @param T $entity
-     * @return T
-     */
-    public function persistNew(EntityInterface $entity, ?BoundedContext $boundedContext = null): EntityInterface
-    {
-        return $this->getRepository($entity->getId()::getReferenceFor(), $boundedContext)->persistNew($entity, $boundedContext);
+        return $this->getRepository($identifier::getReferenceFor(), $boundedContextId)
+            ->find($identifier, $boundedContextId);
     }
 
     /**
@@ -67,23 +57,35 @@ final class RequestAwareInMemoryDatalayer implements ApieDatalayerWithFilters, B
      * @param T $entity
      * @return T
      */
-    public function persistExisting(EntityInterface $entity, ?BoundedContext $boundedContext = null): EntityInterface
+    public function persistNew(EntityInterface $entity, ?BoundedContextId $boundedContextId = null): EntityInterface
     {
-        return $this->getRepository($entity->getId()::getReferenceFor(), $boundedContext)->persistExisting($entity, $boundedContext);
+        return $this->getRepository($entity->getId()::getReferenceFor(), $boundedContextId)
+            ->persistNew($entity, $boundedContextId);
+    }
+
+    /**
+     * @template T of EntityInterface
+     * @param T $entity
+     * @return T
+     */
+    public function persistExisting(EntityInterface $entity, ?BoundedContextId $boundedContextId = null): EntityInterface
+    {
+        return $this->getRepository($entity->getId()::getReferenceFor(), $boundedContextId)
+            ->persistExisting($entity, $boundedContextId);
     }
 
     /**
      * @param ReflectionClass<object> $class
      */
-    private function getRepository(ReflectionClass $class, ?BoundedContext $boundedContext = null): InMemoryDatalayer
+    private function getRepository(ReflectionClass $class, ?BoundedContextId $boundedContextId = null): InMemoryDatalayer
     {
-        if ($boundedContext === null) {
-            $boundedContext = $this->boundedContextSelected->getBoundedContextFromRequest();
-            if (!$boundedContext) {
-                $boundedContext = $this->boundedContextSelected->getBoundedContextFromClassName($class->name);
+        if ($boundedContextId === null) {
+            $boundedContextId = $this->boundedContextSelected->getBoundedContextFromRequest()?->getId();
+            if (!$boundedContextId) {
+                $boundedContextId = $this->boundedContextSelected->getBoundedContextFromClassName($class->name)?->getId();
             }
         }
-        $boundedContextId = $boundedContext ? $boundedContext->getId() : new BoundedContextId('unknown');
+        $boundedContextId ??= new BoundedContextId('unknown');
         if (!isset($this->createdRepositories[$boundedContextId->toNative()])) {
             $this->createdRepositories[$boundedContextId->toNative()] = new InMemoryDatalayer($boundedContextId, $this->filterer);
         }
@@ -91,8 +93,9 @@ final class RequestAwareInMemoryDatalayer implements ApieDatalayerWithFilters, B
         return $this->createdRepositories[$boundedContextId->toNative()];
     }
 
-    public function removeExisting(EntityInterface $entity, ?BoundedContext $boundedContext = null): void
+    public function removeExisting(EntityInterface $entity, ?BoundedContextId $boundedContextId = null): void
     {
-        $this->getRepository($entity->getId()::getReferenceFor(), $boundedContext)->removeExisting($entity, $boundedContext);
+        $this->getRepository($entity->getId()::getReferenceFor(), $boundedContextId)
+            ->removeExisting($entity, $boundedContextId);
     }
 }
