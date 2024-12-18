@@ -18,6 +18,7 @@ class ApiErrorRenderer
         return new JsonResponse(
             [
                 'message' => $error->getMessage(),
+                'code' => $error->getCode(),
             ],
             $statusCode
         );

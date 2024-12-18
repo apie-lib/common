@@ -12,7 +12,10 @@ use Apie\Core\ContextConstants;
 use Apie\Core\Entities\EntityInterface;
 use Apie\Core\Exceptions\InvalidTypeException;
 use Apie\Core\IdentifierUtils;
+use Apie\Core\Lists\PermissionList;
 use Apie\Core\Lists\StringList;
+use Apie\Core\Permissions\PermissionInterface;
+use Apie\Core\Permissions\RequiresPermissionsInterface;
 use Apie\Core\Utils\EntityUtils;
 use LogicException;
 use ReflectionClass;
@@ -29,8 +32,18 @@ final class GetItemAction implements ActionInterface
     public static function isAuthorized(ApieContext $context, bool $runtimeChecks, bool $throwError = false): bool
     {
         $refl = new ReflectionClass($context->getContext(ContextConstants::RESOURCE_NAME, $throwError));
-        if (EntityUtils::isPolymorphicEntity($refl) && $runtimeChecks && $context->hasContext(ContextConstants::RESOURCE)) {
-            $refl = new ReflectionClass($context->getContext(ContextConstants::RESOURCE, $throwError));
+        $resource = $context->getContext(ContextConstants::RESOURCE, false);
+        if ($resource instanceof RequiresPermissionsInterface) {
+            $requiredPermissions = $resource->getRequiredPermissions();
+            $user = $context->getContext(ContextConstants::AUTHENTICATED_USER, false);
+            if ($user instanceof PermissionInterface) {
+                $hasPermisions = $user->getPermissionIdentifiers();
+                return $hasPermisions->hasOverlap($requiredPermissions);
+            }
+            return $requiredPermissions->hasOverlap(new PermissionList(['']));
+        }
+        if (EntityUtils::isPolymorphicEntity($refl) && $runtimeChecks && $resource) {
+            $refl = new ReflectionClass($resource);
         }
         return $context->appliesToContext($refl, $runtimeChecks, $throwError ? new LogicException('Operation is not allowed') : null);
     }
@@ -51,6 +64,7 @@ final class GetItemAction implements ActionInterface
             new BoundedContextId($context->getContext(ContextConstants::BOUNDED_CONTEXT_ID))
         );
         $context = $context->withContext(ContextConstants::RESOURCE, $result);
+        $context->withContext(ContextConstants::APIE_ACTION, __CLASS__)->checkAuthorization();
         return ActionResponse::createRunSuccess($this->apieFacade, $context, $result, $result);
     }
 
@@ -74,6 +88,7 @@ final class GetItemAction implements ActionInterface
     {
         return new ActionResponseStatusList([
             ActionResponseStatus::SUCCESS,
+            ActionResponseStatus::AUTHORIZATION_ERROR,
             ActionResponseStatus::NOT_FOUND
         ]);
     }
