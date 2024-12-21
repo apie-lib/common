@@ -34,6 +34,7 @@ class GetListActionTest extends TestCase
         $this->assertEquals(
             [
                 'totalCount' => 0,
+                'filteredCount' => 0,
                 'list' => new SerializedList([]),
                 'first' => '/default/UserWithAddress?items_per_page=5',
                 'last' => '/default/UserWithAddress?items_per_page=5',
