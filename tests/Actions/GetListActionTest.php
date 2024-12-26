@@ -13,7 +13,7 @@ use PHPUnit\Framework\TestCase;
 class GetListActionTest extends TestCase
 {
     use ProvidesApieFacade;
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_can_list_items_of_a_resource()
     {
         $testItem = $this->givenAnApieFacade(GetListAction::class);

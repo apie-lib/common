@@ -12,7 +12,7 @@ use PHPUnit\Framework\TestCase;
 class RunActionTest extends TestCase
 {
     use ProvidesApieFacade;
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_can_run_a_method()
     {
         $testItem = $this->givenAnApieFacade(RunAction::class);

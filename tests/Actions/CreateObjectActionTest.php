@@ -12,7 +12,7 @@ use PHPUnit\Framework\TestCase;
 class CreateObjectActionTest extends TestCase
 {
     use ProvidesApieFacade;
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_can_create_a_new_object()
     {
         $testItem = $this->givenAnApieFacade(CreateObjectAction::class);

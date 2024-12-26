@@ -46,7 +46,7 @@ services:
     class: Apie\Common\RouteDefinitions\ChainedRouteDefinitionProvider
     factory: ['Apie\Common\Wrappers\GeneralServiceFactory', 'createRoutedDefinitionProvider']
     arguments:
-      - !tagged apie.common.route_definition
+      - !tagged_iterator apie.common.route_definition
 
   Apie\Common\ErrorHandler\ApiErrorRenderer:
 

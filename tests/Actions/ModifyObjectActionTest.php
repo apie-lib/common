@@ -15,7 +15,7 @@ use PHPUnit\Framework\TestCase;
 class ModifyObjectActionTest extends TestCase
 {
     use ProvidesApieFacade;
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_can_modify_an_new_object()
     {
         $testItem = $this->givenAnApieFacade(ModifyObjectAction::class);

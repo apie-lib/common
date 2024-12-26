@@ -9,6 +9,7 @@ use Apie\Common\Interfaces\HasRouteDefinition;
 use Apie\Common\Interfaces\RouteDefinitionProviderInterface;
 use Apie\Common\Lists\UrlPrefixList;
 use Apie\Common\RouteDefinitions\ActionHashmap;
+use Apie\Core\Actions\ActionInterface;
 use Apie\Core\BoundedContext\BoundedContext;
 use Apie\Core\BoundedContext\BoundedContextHashmap;
 use Apie\Core\BoundedContext\BoundedContextId;
@@ -36,11 +37,11 @@ trait ProvidesApieFacade
 {
     use TestWithInMemoryDatalayer;
 
-    /** @param class-string<ApieFacadeAction> $apieFacadeActionClass */
+    /** @param class-string<ActionInterface> $apieFacadeActionClass */
     public function givenAnApieFacade(string $apieFacadeActionClass, ?BoundedContextHashmap $boundedContextHashmap = null): ApieFacadeInterface
     {
         $routeDefinitionProvider = new class($apieFacadeActionClass) implements RouteDefinitionProviderInterface {
-            /** @param class-string<ApieFacadeAction> $apieFacadeActionClass */
+            /** @param class-string<ActionInterface> $apieFacadeActionClass */
             public function __construct(private readonly string $apieFacadeActionClass)
             {
             }
@@ -48,7 +49,7 @@ trait ProvidesApieFacade
             public function getActionsForBoundedContext(BoundedContext $boundedContext, ApieContext $apieContext): ActionHashmap
             {
                 $routeDefinition =  new class($this->apieFacadeActionClass) implements HasRouteDefinition, HasActionDefinition {
-                    /** @param class-string<ApieFacadeAction> $apieFacadeActionClass */
+                    /** @param class-string<ActionInterface> $apieFacadeActionClass */
                     public function __construct(private readonly string $apieFacadeActionClass)
                     {
                     }

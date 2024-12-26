@@ -6,9 +6,7 @@ use PHPUnit\Framework\TestCase;
 
 class TextEncrypterTest extends TestCase
 {
-    /**
-     * @test
-     */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_can_encrypt_and_decrypt_empty_string()
     {
         $testItem = new TextEncrypter('test');
@@ -17,9 +15,7 @@ class TextEncrypterTest extends TestCase
         $this->assertEquals('', $testItem->decrypt($actual));
     }
 
-    /**
-     * @test
-     */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_can_encrypt_and_decrypt_a_text()
     {
         $testItem = new TextEncrypter('test');

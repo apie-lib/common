@@ -58,6 +58,7 @@ class DownloadFilesActionDefinition implements ActionDefinitionInterface
                 $actionDefinitions[] = new self($resource, $boundedContext->getId());
             }
         }
+        // @phpstan-ignore return.type
         return $actionDefinitions;
     }
 }

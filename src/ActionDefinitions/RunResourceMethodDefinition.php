@@ -74,6 +74,6 @@ final class RunResourceMethodDefinition implements ActionDefinitionInterface
                 }
             }
         }
-        return array_values($actionDefinitions);
+        return $actionDefinitions;
     }
 }

@@ -52,7 +52,7 @@ class ApieConfigFileLocator extends FileLocator
     /**
      * @return string|string[]
      */
-    public function locate(string $name, string $currentPath = null, bool $first = true): array|string
+    public function locate(string $name, ?string $currentPath = null, bool $first = true): array|string
     {
         if ($currentPath !== null || !isset($this->predefined[$name])) {
             return parent::locate($name, $currentPath, $first);

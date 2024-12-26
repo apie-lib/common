@@ -16,7 +16,7 @@ class GetItemActionTest extends TestCase
 {
     use ProvidesApieFacade;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_can_display_an_item()
     {
         $testItem = $this->givenAnApieFacade(GetItemAction::class);
