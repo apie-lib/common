@@ -98,4 +98,10 @@ final class RequestAwareInMemoryDatalayer implements ApieDatalayerWithFilters, A
         $this->getRepository($entity->getId()::getReferenceFor(), $boundedContextId)
             ->removeExisting($entity, $boundedContextId);
     }
+
+    public function upsert(EntityInterface $entity, ?BoundedContextId $boundedContextId): EntityInterface
+    {
+        return $this->getRepository($entity->getId()::getReferenceFor(), $boundedContextId)
+            ->upsert($entity, $boundedContextId);
+    }
 }
