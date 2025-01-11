@@ -143,4 +143,9 @@ final class ApieFacade implements ApieFacadeInterface
 
         return $this->routeDefinitionProvider->getActionsForBoundedContext($boundedContext, $apieContext);
     }
+
+    public function upsert(EntityInterface $entity, BoundedContextId|BoundedContext $boundedContext): EntityInterface
+    {
+        return $this->apieDatalayer->upsert($entity, $this->getBoundedContext($boundedContext));
+    }
 }

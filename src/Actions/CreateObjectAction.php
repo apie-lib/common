@@ -12,6 +12,7 @@ use Apie\Core\BoundedContext\BoundedContextId;
 use Apie\Core\Context\ApieContext;
 use Apie\Core\ContextConstants;
 use Apie\Core\Entities\EntityInterface;
+use Apie\Core\Enums\RequestMethod;
 use Apie\Core\Exceptions\IndexNotFoundException;
 use Apie\Core\Lists\StringList;
 use Apie\Core\Utils\EntityUtils;
@@ -68,7 +69,12 @@ final class CreateObjectAction implements ActionInterface
             return ActionResponse::createClientError($this->apieFacade, $context, $error);
         }
         $context = $context->withContext(ContextConstants::RESOURCE, $resource);
-        $resource = $this->apieFacade->persistNew($resource, new BoundedContextId($context->getContext(ContextConstants::BOUNDED_CONTEXT_ID)));
+        if ($context->getContext(RequestMethod::class, false) === RequestMethod::PUT) {
+            /** @phpstan-ignore argument.templateType */
+            $resource = $this->apieFacade->upsert($resource, new BoundedContextId($context->getContext(ContextConstants::BOUNDED_CONTEXT_ID)));
+        } else {
+            $resource = $this->apieFacade->persistNew($resource, new BoundedContextId($context->getContext(ContextConstants::BOUNDED_CONTEXT_ID)));
+        }
         $context = $context->withContext(ContextConstants::RESOURCE, $resource);
         $context->dispatchEvent(new ApieResourceCreated($resource));
         return ActionResponse::createCreationSuccess($this->apieFacade, $context, $resource, $resource);
