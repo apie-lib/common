@@ -3,9 +3,11 @@ namespace Apie\Common\Wrappers;
 
 use Apie\Common\Config\Configuration;
 use Apie\Common\ValueObjects\EntityNamespace;
+use Apie\Core\ApieLib;
 use Apie\Core\BoundedContext\BoundedContext;
 use Apie\Core\BoundedContext\BoundedContextHashmap;
 use Apie\Core\BoundedContext\BoundedContextId;
+use Apie\Core\Entities\EntityInterface;
 use Symfony\Component\Finder\Finder;
 
 /**
@@ -29,10 +31,12 @@ final class BoundedContextHashmapFactory
     public function create(): BoundedContextHashmap
     {
         $result = [];
+        $entities = [];
         foreach ($this->boundedContexts as $boundedContextId => $boundedContextConfig) {
             $contextId = new BoundedContextId($boundedContextId);
             $namespace = new EntityNamespace($boundedContextConfig['entities_namespace']);
             $classes = $namespace->getClasses($boundedContextConfig['entities_folder']);
+            $entities = array_merge($entities, $classes->toStringArray());
             $namespace = new EntityNamespace($boundedContextConfig['actions_namespace']);
             $methods = $namespace->getMethods($boundedContextConfig['actions_folder']);
             $result[$boundedContextId] = new BoundedContext(
@@ -41,6 +45,7 @@ final class BoundedContextHashmapFactory
                 $methods
             );
         }
+        ApieLib::registerAlias(EntityInterface::class, implode('|', $entities));
         if (!empty($this->scanBoundedContexts['search_path'])
             && !empty($this->scanBoundedContexts['search_namespace'])
             && is_dir($this->scanBoundedContexts['search_path'])
