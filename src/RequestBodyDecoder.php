@@ -36,6 +36,9 @@ final class RequestBodyDecoder
             $parsedBody = $request->getParsedBody();
         }
         if (!isset($this->decoderHashmap[$contentType])) {
+            if ($request->getMethod() === 'DELETE') {
+                return null;
+            }
             throw new InvalidContentTypeException($contentType);
         }
         $res = $this->decoderHashmap[$contentType]->withParsedBody($parsedBody);
