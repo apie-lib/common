@@ -56,6 +56,24 @@ class CommonServiceProvider extends ServiceProvider
         );
         $this->app->tag([\Apie\Common\ContextBuilders\AddTextEncrypterContextBuilder::class], 'apie.core.context_builder');
         $this->app->singleton(
+            \Apie\Common\Command\ApieUpdateRecalculatingCommand::class,
+            function ($app) {
+                return new \Apie\Common\Command\ApieUpdateRecalculatingCommand(
+                    $app->make(\Apie\Core\BoundedContext\BoundedContextHashmap::class),
+                    $app->make(\Apie\Core\Datalayers\ApieDatalayer::class),
+                    $app->make(\Apie\Core\ContextBuilders\ContextBuilderFactory::class)
+                );
+            }
+        );
+        \Apie\ServiceProviderGenerator\TagMap::register(
+            $this->app,
+            \Apie\Common\Command\ApieUpdateRecalculatingCommand::class,
+            array(
+              0 => 'console.command',
+            )
+        );
+        $this->app->tag([\Apie\Common\Command\ApieUpdateRecalculatingCommand::class], 'console.command');
+        $this->app->singleton(
             \Apie\Common\ApieFacade::class,
             function ($app) {
                 return new \Apie\Common\ApieFacade(

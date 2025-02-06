@@ -12,6 +12,14 @@ services:
       - '%apie.encryption_key%'
     tags: ['apie.core.context_builder']
 
+  Apie\Common\Command\ApieUpdateRecalculatingCommand:
+    arguments:
+      - '@Apie\Core\BoundedContext\BoundedContextHashmap'
+      - '@Apie\Core\Datalayers\ApieDatalayer'
+      - '@Apie\Core\ContextBuilders\ContextBuilderFactory'
+    tags:
+      - 'console.command'
+
   Apie\Common\ApieFacade:
     arguments:
       - '@apie.route_definitions.provider'
