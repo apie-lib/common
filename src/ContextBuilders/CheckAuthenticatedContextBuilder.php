@@ -14,7 +14,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 
 class CheckAuthenticatedContextBuilder implements ContextBuilderInterface
-{
+{   
     public function __construct(
         private readonly LoggerInterface $logger
     ) {
@@ -46,6 +46,7 @@ class CheckAuthenticatedContextBuilder implements ContextBuilderInterface
                             'Error decrypting auth cookie: ' . $error->getMessage(),
                             ['error' => $error]
                         );
+
                         throw new WrongTokenException($error);
                     }
                 }

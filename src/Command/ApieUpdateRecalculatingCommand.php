@@ -1,7 +1,6 @@
 <?php
 namespace Apie\Common\Command;
 
-use Apie\Core\ApieLib;
 use Apie\Core\BoundedContext\BoundedContext;
 use Apie\Core\BoundedContext\BoundedContextHashmap;
 use Apie\Core\BoundedContext\BoundedContextId;
@@ -30,7 +29,7 @@ class ApieUpdateRecalculatingCommand extends Command
     ) {
         parent::__construct('apie:recalculate-resources');
     }
-    protected function configure()
+    protected function configure(): void
     {
         $this->addOption('limit', 'l', InputOption::VALUE_OPTIONAL, 'limit number of resources to check');
     }
@@ -51,7 +50,6 @@ class ApieUpdateRecalculatingCommand extends Command
             $subApieContext = $apieContext->registerInstance($boundedContext)
                 ->withContext(ContextConstants::BOUNDED_CONTEXT_ID, $contextId)
                 ->registerInstance(new BoundedContextId($contextId));
-            $now = ApieLib::getPsrClock()->now();
             /** @var ReflectionClass<EntityInterface> $resource */
             foreach ($boundedContext->resources as $resource) {
                 if (in_array(RequiresRecalculatingInterface::class, $resource->getInterfaceNames())) {
@@ -62,7 +60,7 @@ class ApieUpdateRecalculatingCommand extends Command
                     do {
                         $chunk = $list->toPaginatedResult(
                             new QuerySearch(
-                                0,
+                                $offset,
                                 $limit ?? self::CHUNKSIZE,
                                 textSearch: null,
                                 searches: null,
@@ -70,11 +68,11 @@ class ApieUpdateRecalculatingCommand extends Command
                                 apieContext: $subApieContext
                             )
                         );
+                        $offset++;
                         $stop = true;
                         foreach ($chunk as $item) {
                             /** @var RequiresRecalculatingInterface $item */
                             $output->write(sprintf('%40s', Utils::toString($item->getId())));
-                            $date = $item->getDateToRecalculate();
                             $stop = false;
                             $this->apieDatalayer->persistExisting($item, $boundedContextId);
                             $output->writeln(' Done');
