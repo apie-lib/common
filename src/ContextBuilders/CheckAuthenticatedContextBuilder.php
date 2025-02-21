@@ -14,7 +14,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 
 class CheckAuthenticatedContextBuilder implements ContextBuilderInterface
-{   
+{
     public function __construct(
         private readonly LoggerInterface $logger
     ) {
