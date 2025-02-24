@@ -5,6 +5,8 @@ use Apie\Common\RequestBodyDecoder;
 use Apie\Core\Context\ApieContext;
 use Apie\Core\ContextBuilders\ContextBuilderInterface;
 use Apie\Core\ContextConstants;
+use Apie\Serializer\FieldFilters\FieldFilterInterface;
+use Apie\Serializer\FieldFilters\FilterFromArray;
 use Apie\Serializer\Interfaces\DecoderInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -16,20 +18,30 @@ class RequestBodyDecoderContextBuilder implements ContextBuilderInterface
 
     public function process(ApieContext $context): ApieContext
     {
-        if (!$context->hasContext(ContextConstants::RAW_CONTENTS) && $context->hasContext(ServerRequestInterface::class)) {
-            return $context
-                ->withContext(
-                    DecoderInterface::class,
-                    $this->requestBodyDecoder->getDecoder(
-                        $context->getContext(ServerRequestInterface::class)
-                    )
-                )
-                ->withContext(
-                    ContextConstants::RAW_CONTENTS,
-                    $this->requestBodyDecoder->decodeBody(
-                        $context->getContext(ServerRequestInterface::class)
-                    )
+        $request = $context->getContext(ServerRequestInterface::class, false);
+        if ($request instanceof ServerRequestInterface) {
+            $queryParams = $request->getQueryParams();
+            if (isset($queryParams['fields'])) {
+                $context = $context->withContext(
+                    FieldFilterInterface::class,
+                    FilterFromArray::createFromMixed($queryParams['fields'])
                 );
+            }
+            if (!$context->hasContext(ContextConstants::RAW_CONTENTS)) {
+                return $context
+                    ->withContext(
+                        DecoderInterface::class,
+                        $this->requestBodyDecoder->getDecoder(
+                            $context->getContext(ServerRequestInterface::class)
+                        )
+                    )
+                    ->withContext(
+                        ContextConstants::RAW_CONTENTS,
+                        $this->requestBodyDecoder->decodeBody(
+                            $context->getContext(ServerRequestInterface::class)
+                        )
+                    );
+            }
         }
 
         return $context;
