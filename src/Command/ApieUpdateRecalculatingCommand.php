@@ -25,7 +25,7 @@ class ApieUpdateRecalculatingCommand extends Command
     public function __construct(
         private readonly BoundedContextHashmap $boundedContextHashmap,
         private readonly ApieDatalayer $apieDatalayer,
-        private readonly ContextBuilderFactory $contextBuilderFactory,
+        private readonly ContextBuilderFactory $contextBuilderFactory
     ) {
         parent::__construct('apie:recalculate-resources');
     }

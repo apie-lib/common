@@ -1,6 +1,7 @@
 <?php
 namespace Apie\Common\Config;
 
+use Apie\DoctrineEntityDatalayer\IndexStrategy\DirectIndexStrategy;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
@@ -66,6 +67,12 @@ abstract class Configuration implements ConfigurationInterface
             ->end()
             ->arrayNode('doctrine')
                 ->children()
+                    ->arrayNode('indexing')
+                        ->children()
+                            ->enumNode('type')->values(['direct', 'late', 'background', 'custom'])->defaultValue('direct')->end()
+                            ->scalarNode('service')->defaultValue(DirectIndexStrategy::class)->end()
+                        ->end()
+                    ->end()
                     ->scalarNode('build_once')->defaultValue(false)->end()
                     ->scalarNode('run_migrations')->defaultValue(true)->end()
                     ->arrayNode('connection_params')
