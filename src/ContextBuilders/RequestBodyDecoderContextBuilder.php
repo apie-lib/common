@@ -8,6 +8,8 @@ use Apie\Core\ContextConstants;
 use Apie\Serializer\FieldFilters\FieldFilterInterface;
 use Apie\Serializer\FieldFilters\FilterFromArray;
 use Apie\Serializer\Interfaces\DecoderInterface;
+use Apie\Serializer\Relations\EmbedRelationFromArray;
+use Apie\Serializer\Relations\EmbedRelationInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 class RequestBodyDecoderContextBuilder implements ContextBuilderInterface
@@ -25,6 +27,12 @@ class RequestBodyDecoderContextBuilder implements ContextBuilderInterface
                 $context = $context->withContext(
                     FieldFilterInterface::class,
                     FilterFromArray::createFromMixed($queryParams['fields'])
+                );
+            }
+            if (isset($queryParams['relations'])) {
+                $context = $context->withContext(
+                    EmbedRelationInterface::class,
+                    EmbedRelationFromArray::createFromMixed($queryParams['relations'])
                 );
             }
             if (!$context->hasContext(ContextConstants::RAW_CONTENTS)) {
