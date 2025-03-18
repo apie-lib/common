@@ -2,9 +2,9 @@
 namespace Apie\Tests\Common\Actions;
 
 use Apie\Common\Actions\RunAction;
-use Apie\Common\ContextConstants;
 use Apie\Common\Tests\Concerns\ProvidesApieFacade;
 use Apie\Core\Context\ApieContext;
+use Apie\Core\ContextConstants;
 use Apie\Fixtures\Actions\StaticActionExample;
 use Apie\Serializer\Lists\SerializedList;
 use PHPUnit\Framework\TestCase;
@@ -12,7 +12,7 @@ use PHPUnit\Framework\TestCase;
 class RunActionTest extends TestCase
 {
     use ProvidesApieFacade;
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_can_run_a_method()
     {
         $testItem = $this->givenAnApieFacade(RunAction::class);

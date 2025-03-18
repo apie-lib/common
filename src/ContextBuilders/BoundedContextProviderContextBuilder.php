@@ -1,11 +1,11 @@
 <?php
 namespace Apie\Common\ContextBuilders;
 
-use Apie\Common\ContextConstants;
 use Apie\Core\BoundedContext\BoundedContext;
 use Apie\Core\BoundedContext\BoundedContextHashmap;
 use Apie\Core\Context\ApieContext;
 use Apie\Core\ContextBuilders\ContextBuilderInterface;
+use Apie\Core\ContextConstants;
 
 class BoundedContextProviderContextBuilder implements ContextBuilderInterface
 {

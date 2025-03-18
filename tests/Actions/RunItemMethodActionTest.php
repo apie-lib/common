@@ -2,20 +2,20 @@
 namespace Apie\Tests\Common\Actions;
 
 use Apie\Common\Actions\RunItemMethodAction;
-use Apie\Common\ContextConstants;
 use Apie\Common\Tests\Concerns\ProvidesApieFacade;
 use Apie\Core\BoundedContext\BoundedContextId;
 use Apie\Core\Context\ApieContext;
+use Apie\Core\ContextConstants;
+use Apie\Core\ValueObjects\DatabaseText;
 use Apie\Fixtures\Entities\UserWithAddress;
 use Apie\Fixtures\ValueObjects\AddressWithZipcodeCheck;
 use Apie\Fixtures\ValueObjects\Password;
-use Apie\TextValueObjects\DatabaseText;
 use PHPUnit\Framework\TestCase;
 
 class RunItemMethodActionTest extends TestCase
 {
     use ProvidesApieFacade;
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_can_run_a_method()
     {
         $testItem = $this->givenAnApieFacade(RunItemMethodAction::class);

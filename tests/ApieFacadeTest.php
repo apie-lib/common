@@ -10,9 +10,7 @@ class ApieFacadeTest extends TestCase
 {
     use ProvidesApieFacade;
 
-    /**
-     * @test
-     */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_can_request_an_action_instance()
     {
         $testItem = $this->givenAnApieFacade(CreateObjectAction::class);

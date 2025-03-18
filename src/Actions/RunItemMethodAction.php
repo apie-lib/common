@@ -1,7 +1,7 @@
 <?php
 namespace Apie\Common\Actions;
 
-use Apie\Common\ContextConstants;
+use Apie\Common\IntegrationTestLogger;
 use Apie\Core\Actions\ActionResponse;
 use Apie\Core\Actions\ActionResponseStatus;
 use Apie\Core\Actions\ActionResponseStatusList;
@@ -9,11 +9,20 @@ use Apie\Core\Actions\ApieFacadeInterface;
 use Apie\Core\Actions\MethodActionInterface;
 use Apie\Core\BoundedContext\BoundedContextId;
 use Apie\Core\Context\ApieContext;
+use Apie\Core\ContextConstants;
 use Apie\Core\Entities\EntityInterface;
+use Apie\Core\Exceptions\EntityNotFoundException;
 use Apie\Core\Exceptions\InvalidTypeException;
 use Apie\Core\IdentifierUtils;
 use Apie\Core\Lists\StringList;
+use Apie\Core\TypeUtils;
+use Apie\Core\Utils\EntityUtils;
+use Apie\Core\ValueObjects\Exceptions\InvalidStringForValueObjectException;
+use Apie\Serializer\Exceptions\ValidationException;
+use Exception;
+use LogicException;
 use ReflectionClass;
+use ReflectionException;
 use ReflectionMethod;
 use ReflectionNamedType;
 
@@ -26,11 +35,36 @@ final class RunItemMethodAction implements MethodActionInterface
     {
     }
 
+    public static function isAuthorized(ApieContext $context, bool $runtimeChecks, bool $throwError = false): bool
+    {
+        $refl = new ReflectionClass($context->getContext(ContextConstants::RESOURCE_NAME, $throwError));
+        $methodName = $context->getContext(ContextConstants::METHOD_NAME, $throwError);
+        $method = new ReflectionMethod(
+            $context->getContext(ContextConstants::METHOD_CLASS, $throwError),
+            $methodName
+        );
+        if (EntityUtils::isPolymorphicEntity($refl) && $runtimeChecks && $context->hasContext(ContextConstants::RESOURCE) &&!$method->isStatic()) {
+            $refl = new ReflectionClass($context->getContext(ContextConstants::RESOURCE, $throwError));
+            if (!$refl->hasMethod($methodName)) {
+                if ($throwError) {
+                    throw new LogicException('Method ' . $methodName . ' does not exist on this entity');
+                }
+                return false;
+            }
+            $method = $refl->getMethod($methodName);
+        }
+        if (!$context->appliesToContext($refl, $runtimeChecks, $throwError ? new LogicException('Class access is not allowed!') : null)) {
+            return false;
+        }
+        return $context->appliesToContext($method, $runtimeChecks, $throwError ? new LogicException('Class method is not allowed') : null);
+    }
+
     /**
      * @param array<string|int, mixed> $rawContents
      */
     public function __invoke(ApieContext $context, array $rawContents): ActionResponse
     {
+        $context->withContext(ContextConstants::APIE_ACTION, __CLASS__)->checkAuthorization();
         $resourceClass = new ReflectionClass($context->getContext(ContextConstants::RESOURCE_NAME));
         if (!$resourceClass->implementsInterface(EntityInterface::class)) {
             throw new InvalidTypeException($resourceClass->name, 'EntityInterface');
@@ -43,10 +77,29 @@ final class RunItemMethodAction implements MethodActionInterface
             $resource = null;
         } else {
             $id = $context->getContext(ContextConstants::RESOURCE_ID);
-            $resource = $this->apieFacade->find(
-                IdentifierUtils::entityClassToIdentifier($resourceClass)->newInstance($id),
-                new BoundedContextId($context->getContext(ContextConstants::BOUNDED_CONTEXT_ID))
-            );
+            try {
+                $resource = $this->apieFacade->find(
+                    IdentifierUtils::entityClassToIdentifier($resourceClass)->newInstance($id),
+                    new BoundedContextId($context->getContext(ContextConstants::BOUNDED_CONTEXT_ID))
+                );
+            } catch (InvalidStringForValueObjectException|EntityNotFoundException $error) {
+                IntegrationTestLogger::logException($error);
+                return ActionResponse::createClientError($this->apieFacade, $context, $error);
+            }
+            $context = $context->withContext(ContextConstants::RESOURCE, $resource);
+            // polymorphic relation, so could be the incorrect declared method
+            if (!$method->getDeclaringClass()->isInstance($resource)) {
+                try {
+                    $method = (new ReflectionClass($resource))->getMethod($method->name);
+                } catch (ReflectionException $methodError) {
+                    $error = new Exception(
+                        sprintf('Resource "%s" does not support "%s"!', $id, $method->name),
+                        0,
+                        $methodError
+                    );
+                    throw ValidationException::createFromArray(['' => $error]);
+                }
+            }
         }
 
         $result = $this->apieFacade->denormalizeOnMethodCall(
@@ -99,15 +152,20 @@ final class RunItemMethodAction implements MethodActionInterface
                 return lcfirst(substr($method->name, strlen('add')));
             }
         }
+        if (str_starts_with($method->name, 'get') && TypeUtils::couldBeAStream($method->getReturnType())) {
+            return lcfirst(substr($method->name, strlen('get')));
+        }
         return $method->name;
     }
 
+    /** @param ReflectionClass<object> $class */
     public static function getInputType(ReflectionClass $class, ?ReflectionMethod $method = null): ReflectionMethod
     {
         assert($method instanceof ReflectionMethod);
         return $method;
     }
 
+    /** @param ReflectionClass<object> $class */
     public static function getOutputType(ReflectionClass $class, ?ReflectionMethod $method = null): ReflectionMethod|ReflectionClass
     {
         assert($method instanceof ReflectionMethod);
@@ -131,6 +189,9 @@ final class RunItemMethodAction implements MethodActionInterface
         return new ActionResponseStatusList($list);
     }
 
+    /**
+     * @param ReflectionClass<object> $class
+     */
     public static function getDescription(ReflectionClass $class, ?ReflectionMethod $method = null): string
     {
         assert($method instanceof ReflectionMethod);
@@ -143,12 +204,10 @@ final class RunItemMethodAction implements MethodActionInterface
         }
         return 'Runs method ' . $name . ' on a ' . $class->getShortName() . ' with a specific id';
     }
-
-    public function getOperationId(): string
-    {
-        return 'get-single-' . $this->className->getShortName() . '-run-' . $this->method->name;
-    }
     
+    /**
+     * @param ReflectionClass<object> $class
+     */
     public static function getTags(ReflectionClass $class, ?ReflectionMethod $method = null): StringList
     {
         $className = $class->getShortName();
@@ -159,6 +218,9 @@ final class RunItemMethodAction implements MethodActionInterface
         return new StringList([$className, 'action']);
     }
 
+    /**
+     * @param ReflectionClass<object> $class
+     */
     public static function getRouteAttributes(ReflectionClass $class, ?ReflectionMethod $method = null): array
     {
         return
@@ -168,6 +230,7 @@ final class RunItemMethodAction implements MethodActionInterface
             ContextConstants::RESOURCE_NAME => $class->name,
             ContextConstants::METHOD_CLASS => $method->getDeclaringClass()->name,
             ContextConstants::METHOD_NAME => $method->name,
+            ContextConstants::DISPLAY_FORM => true,
         ];
     }
 }

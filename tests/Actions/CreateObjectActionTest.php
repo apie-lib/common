@@ -2,9 +2,9 @@
 namespace Apie\Tests\Common\Actions;
 
 use Apie\Common\Actions\CreateObjectAction;
-use Apie\Common\ContextConstants;
 use Apie\Common\Tests\Concerns\ProvidesApieFacade;
 use Apie\Core\Context\ApieContext;
+use Apie\Core\ContextConstants;
 use Apie\Core\Lists\ItemHashmap;
 use Apie\Fixtures\Entities\UserWithAddress;
 use PHPUnit\Framework\TestCase;
@@ -12,7 +12,7 @@ use PHPUnit\Framework\TestCase;
 class CreateObjectActionTest extends TestCase
 {
     use ProvidesApieFacade;
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function it_can_create_a_new_object()
     {
         $testItem = $this->givenAnApieFacade(CreateObjectAction::class);

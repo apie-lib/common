@@ -1,0 +1,24 @@
+<html>
+    <head>
+        <title>Apie instructions for CMS</title>
+    </head>
+    <body>
+        <h1>Install an existing renderer</h1>
+        <p>
+            Apie does not contain a component renderer by default. The easiest solution is requiring
+            <a href="https://github.com/apie-lib/cms-layout-graphite">apie/cms-layout-graphite</a>.
+
+            <blockquote><pre>composer require apie/cms-layout-graphite</pre></blockquote>
+        </p>
+        <h1>Creating your own renderer</h1>
+        <p>
+            You neede a class to implement <code>Apie\HtmlBuilders\Interfaces\ComponentRendererInterface</code> (you require to
+            install apie/html-builders with composer.
+
+            Then in services.yaml you make an alias for Apie\HtmlBuilders\Interfaces\ComponentRendererInterface linking your class.
+            <blockquote><pre>services:
+    Apie\HtmlBuilders\Interfaces\ComponentRendererInterface:
+        alias: MyClassRenderer</pre></blockquote>
+        </p>
+    </body>
+</html>
