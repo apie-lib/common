@@ -61,13 +61,8 @@ final class GetItemAction implements ActionInterface
         if (!$resourceClass->implementsInterface(EntityInterface::class)) {
             throw new InvalidTypeException($resourceClass->name, 'EntityInterface');
         }
-        $idClass = IdentifierUtils::entityClassToIdentifier($resourceClass);
-        /** @var IdentifierInterface<EntityInterface> $idObject */
-        $idObject = $context->hasContext(Serializer::class)
-            ? $context->getContext(Serializer::class)->denormalizeNewObject($id, $idClass->name, $context)
-            : $idClass->newInstance($id);
         $result = $this->apieFacade->find(
-            $idObject,
+            IdentifierUtils::idStringToIdentifier($id, $context),
             new BoundedContextId($context->getContext(ContextConstants::BOUNDED_CONTEXT_ID))
         );
         $context = $context->withContext(ContextConstants::RESOURCE, $result);
