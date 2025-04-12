@@ -11,14 +11,12 @@ use Apie\Core\Context\ApieContext;
 use Apie\Core\ContextConstants;
 use Apie\Core\Entities\EntityInterface;
 use Apie\Core\Exceptions\InvalidTypeException;
-use Apie\Core\Identifiers\IdentifierInterface;
 use Apie\Core\IdentifierUtils;
 use Apie\Core\Lists\PermissionList;
 use Apie\Core\Lists\StringList;
 use Apie\Core\Permissions\PermissionInterface;
 use Apie\Core\Permissions\RequiresPermissionsInterface;
 use Apie\Core\Utils\EntityUtils;
-use Apie\Serializer\Serializer;
 use LogicException;
 use ReflectionClass;
 

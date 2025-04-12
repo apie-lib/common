@@ -2,12 +2,14 @@
 namespace Apie\Common\Wrappers;
 
 use Apie\Common\Config\Configuration;
+use Apie\Common\Events\RegisterBoundedContexts;
 use Apie\Common\ValueObjects\EntityNamespace;
 use Apie\Core\ApieLib;
 use Apie\Core\BoundedContext\BoundedContext;
 use Apie\Core\BoundedContext\BoundedContextHashmap;
 use Apie\Core\BoundedContext\BoundedContextId;
 use Apie\Core\Entities\EntityInterface;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Finder\Finder;
 
 /**
@@ -24,7 +26,8 @@ final class BoundedContextHashmapFactory
      */
     public function __construct(
         private readonly array $boundedContexts,
-        private readonly array $scanBoundedContexts
+        private readonly array $scanBoundedContexts,
+        private readonly EventDispatcherInterface $eventDispatcher
     ) {
     }
 
@@ -69,6 +72,9 @@ final class BoundedContextHashmapFactory
                 );
             }
         }
-        return new BoundedContextHashmap($result);
+        $map = new BoundedContextHashmap($result);
+        $event = new RegisterBoundedContexts($map);
+        $this->eventDispatcher->dispatch($event);
+        return $event->hashmap;
     }
 }

@@ -46,6 +46,7 @@ services:
       arguments:
         - "%apie.bounded_contexts%"
         - "%apie.scan_bounded_contexts%"
+        - '@Psr\EventDispatcher\EventDispatcherInterface'
 
   Apie\Common\Interfaces\RouteDefinitionProviderInterface:
     alias: apie.route_definitions.provider
@@ -70,6 +71,9 @@ services:
       - { name: 'apie.core.context_builder', priority: -1 }
 
   Apie\Common\Events\AddAuthenticationCookie:
+    tags: ['kernel.event_subscriber']
+
+  Apie\Common\Events\AddSharedResources:
     tags: ['kernel.event_subscriber']
 
   Apie\Common\Wrappers\RequestAwareInMemoryDatalayer:
