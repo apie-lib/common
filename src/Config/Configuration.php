@@ -12,6 +12,7 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
 abstract class Configuration implements ConfigurationInterface
 {
     private const ENABLE_CONFIGS = [
+        'enable_ai_instructor' => 'Apie\AiInstructor\AiInstructor',
         'enable_common_plugin' => 'Apie\ApieCommonPlugin\ApieCommonPlugin',
         'enable_cms' => 'Apie\Cms\RouteDefinitions\CmsRouteDefinitionProvider',
         'enable_cms_dropdown' => 'Apie\CmsApiDropdownOption\RouteDefinitions\DropdownOptionsForExistingObjectRouteDefinition',
@@ -46,6 +47,12 @@ abstract class Configuration implements ConfigurationInterface
           ->scalarNode('base_url')->defaultValue('/api')->end()
         ->end();
         $this->addApiOptions($apiConfig);
+
+        $aiConfig = $children->arrayNode('ai');
+        $aiConfig->children()
+            ->scalarNode('base_url')->defaultValue('https://api.openai.com/v1')->end()
+            ->scalarNode('api_key')->defaultValue('no-value')->end()
+        ->end();
         $children->arrayNode('datalayers')
                 ->children()
                     ->scalarNode('default_datalayer')->isRequired()->end()
