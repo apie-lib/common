@@ -122,7 +122,8 @@ class CommonServiceProvider extends ServiceProvider
             function ($app) {
                 return new \Apie\Common\Wrappers\BoundedContextHashmapFactory(
                     $this->parseArgument('%apie.bounded_contexts%'),
-                    $this->parseArgument('%apie.scan_bounded_contexts%')
+                    $this->parseArgument('%apie.scan_bounded_contexts%'),
+                    $app->make(\Psr\EventDispatcher\EventDispatcherInterface::class)
                 );
             }
         );
@@ -197,6 +198,22 @@ class CommonServiceProvider extends ServiceProvider
             )
         );
         $this->app->tag([\Apie\Common\Events\AddAuthenticationCookie::class], 'kernel.event_subscriber');
+        $this->app->singleton(
+            \Apie\Common\Events\AddSharedResources::class,
+            function ($app) {
+                return new \Apie\Common\Events\AddSharedResources(
+                
+                );
+            }
+        );
+        \Apie\ServiceProviderGenerator\TagMap::register(
+            $this->app,
+            \Apie\Common\Events\AddSharedResources::class,
+            array(
+              0 => 'kernel.event_subscriber',
+            )
+        );
+        $this->app->tag([\Apie\Common\Events\AddSharedResources::class], 'kernel.event_subscriber');
         $this->app->singleton(
             \Apie\Common\Wrappers\RequestAwareInMemoryDatalayer::class,
             function ($app) {

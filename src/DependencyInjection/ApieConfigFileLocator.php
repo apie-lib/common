@@ -1,6 +1,7 @@
 <?php
 namespace Apie\Common\DependencyInjection;
 
+use Apie\AiInstructor\AiInstructor;
 use Apie\ApieCommonPlugin\ApieCommonPlugin;
 use Apie\Cms\RouteDefinitions\AbstractCmsRouteDefinition;
 use Apie\CmsApiDropdownOption\Lists\DropdownOptionList;
@@ -26,6 +27,7 @@ class ApieConfigFileLocator extends FileLocator
      * @var array<string, array{class-string<object>, string, class-string<object>}>
      */
     private array $predefined = [
+        'ai_instructor.yaml' => [AiInstructor::class, '..', 'Apie\\AiInstructor\\AiInstructorServiceProvider'],
         'apie_common_plugin.yaml' => [ApieCommonPlugin::class, '..', 'Apie\\ApieCommonPlugin\\GeneratedApieCommonPluginServiceProvider'],
         'cms.yaml' => [AbstractCmsRouteDefinition::class, '../..', 'Apie\\Cms\\CmsServiceProvider'],
         'cms_dropdown.yaml' => [DropdownOptionList::class, '../..', 'Apie\\CmsApiDropdownOption\\CmsDropdownServiceProvider'],
