@@ -1,6 +1,7 @@
 <?php
 namespace Apie\Common\ValueObjects;
 
+use Apie\Core\Attributes\Description;
 use Apie\Core\Lists\ReflectionClassList;
 use Apie\Core\Lists\ReflectionMethodList;
 use Apie\Core\ValueObjects\Interfaces\HasRegexValueObjectInterface;
@@ -17,6 +18,7 @@ use Symfony\Component\Finder\Finder;
  * "Apie\Common\"
  * "Symfony\Component\"
  */
+#[Description('A PHP class namespace with trailing slash, for example: "Symfony\Component\\"')]
 final class EntityNamespace implements StringValueObjectInterface, HasRegexValueObjectInterface
 {
     use IsStringWithRegexValueObject;
