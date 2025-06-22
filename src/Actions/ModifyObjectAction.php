@@ -2,6 +2,7 @@
 namespace Apie\Common\Actions;
 
 use Apie\Common\IntegrationTestLogger;
+use Apie\Common\Other\LockUtil;
 use Apie\Core\Actions\ActionInterface;
 use Apie\Core\Actions\ActionResponse;
 use Apie\Core\Actions\ActionResponseStatus;
@@ -58,22 +59,34 @@ final class ModifyObjectAction implements ActionInterface
         if (!$resourceClass->implementsInterface(EntityInterface::class)) {
             throw new InvalidTypeException($resourceClass->name, 'EntityInterface');
         }
-        try {
-            $resource = $this->apieFacade->find(
-                IdentifierUtils::idStringToIdentifier($id, $context),
-                new BoundedContextId($context->getContext(ContextConstants::BOUNDED_CONTEXT_ID))
-            );
-        } catch (InvalidStringForValueObjectException|EntityNotFoundException $error) {
-            IntegrationTestLogger::logException($error);
-            return ActionResponse::createClientError($this->apieFacade, $context, $error);
-        }
-        $context = $context->withContext(ContextConstants::RESOURCE, $resource);
-        $resource = $this->apieFacade->denormalizeOnExistingObject(
-            new ItemHashmap($rawContents),
-            $resource,
-            $context
+        $lock = LockUtil::createLock(
+            $context,
+            [ContextConstants::BOUNDED_CONTEXT_ID, ContextConstants::RESOURCE_NAME, ContextConstants::RESOURCE_ID],
+            write: true
         );
-        $resource = $this->apieFacade->persistExisting($resource, new BoundedContextId($context->getContext(ContextConstants::BOUNDED_CONTEXT_ID)));
+        try {
+            try {
+                $resource = $this->apieFacade->find(
+                    IdentifierUtils::idStringToIdentifier($id, $context),
+                    new BoundedContextId($context->getContext(ContextConstants::BOUNDED_CONTEXT_ID))
+                );
+            } catch (InvalidStringForValueObjectException|EntityNotFoundException $error) {
+                IntegrationTestLogger::logException($error);
+                return ActionResponse::createClientError($this->apieFacade, $context, $error);
+            }
+            $context = $context->withContext(ContextConstants::RESOURCE, $resource);
+            $resource = $this->apieFacade->denormalizeOnExistingObject(
+                new ItemHashmap($rawContents),
+                $resource,
+                $context,
+            );
+            if (!$lock->isAcquired()) {
+                throw new \LogicException('Lock was released before modification was finished!');
+            }
+            $resource = $this->apieFacade->persistExisting($resource, new BoundedContextId($context->getContext(ContextConstants::BOUNDED_CONTEXT_ID)));
+        } finally {
+            $lock->release();
+        }
         return ActionResponse::createRunSuccess($this->apieFacade, $context, $resource, $resource);
     }
 

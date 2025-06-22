@@ -76,6 +76,11 @@ services:
   Apie\Common\Events\AddSharedResources:
     tags: ['kernel.event_subscriber']
 
+  Apie\Common\ContextBuilders\AddLockManagerContextBuilder:
+    arguments:
+      - '@Symfony\Component\Lock\LockFactory'
+    tags: ['apie.core.context_builder']
+
   Apie\Common\Wrappers\RequestAwareInMemoryDatalayer:
     arguments:
       - '@Apie\Common\Interfaces\BoundedContextSelection'

@@ -11,6 +11,8 @@ use Apie\Core\ValueObjects\DatabaseText;
 use Apie\Fixtures\Entities\UserWithAddress;
 use Apie\Fixtures\ValueObjects\AddressWithZipcodeCheck;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Lock\LockFactory;
+use Symfony\Component\Lock\Store\FlockStore;
 
 class ModifyObjectActionTest extends TestCase
 {
@@ -32,6 +34,7 @@ class ModifyObjectActionTest extends TestCase
             ContextConstants::RESOURCE_NAME => UserWithAddress::class,
             'id' => $userWithAddress->getId()->toNative(),
             ContextConstants::BOUNDED_CONTEXT_ID => 'default',
+            LockFactory::class => new LockFactory(new FlockStore()),
         ]);
         /** @var ModifyObjectAction $action */
         $action = $testItem->getAction('default', 'test', $context);

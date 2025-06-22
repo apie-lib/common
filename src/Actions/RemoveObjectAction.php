@@ -2,6 +2,7 @@
 namespace Apie\Common\Actions;
 
 use Apie\Common\IntegrationTestLogger;
+use Apie\Common\Other\LockUtil;
 use Apie\Core\Actions\ActionInterface;
 use Apie\Core\Actions\ActionResponse;
 use Apie\Core\Actions\ActionResponseStatus;
@@ -64,18 +65,31 @@ final class RemoveObjectAction implements ActionInterface
         if (!$resourceClass->implementsInterface(EntityInterface::class)) {
             throw new InvalidTypeException($resourceClass->name, 'EntityInterface');
         }
-        $boundedContextId = new BoundedContextId($context->getContext(ContextConstants::BOUNDED_CONTEXT_ID));
+        $lock = LockUtil::createLock(
+            $context,
+            [ContextConstants::BOUNDED_CONTEXT_ID, ContextConstants::RESOURCE_NAME, ContextConstants::RESOURCE_ID],
+            write: true
+        );
         try {
-            $resource = $this->apieFacade->find(
-                IdentifierUtils::idStringToIdentifier($id, $context),
-                $boundedContextId
-            );
-        } catch (InvalidStringForValueObjectException|EntityNotFoundException $error) {
-            IntegrationTestLogger::logException($error);
-            return ActionResponse::createClientError($this->apieFacade, $context, $error);
+            $boundedContextId = new BoundedContextId($context->getContext(ContextConstants::BOUNDED_CONTEXT_ID));
+            try {
+                $resource = $this->apieFacade->find(
+                    IdentifierUtils::idStringToIdentifier($id, $context),
+                    $boundedContextId
+                );
+            } catch (InvalidStringForValueObjectException|EntityNotFoundException $error) {
+                IntegrationTestLogger::logException($error);
+                return ActionResponse::createClientError($this->apieFacade, $context, $error);
+            }
+            $context = $context->withContext(ContextConstants::RESOURCE, $resource);
+
+            if (!$lock->isAcquired()) {
+                throw new \LogicException('Lock was released before modification was finished!');
+            }
+            $this->apieFacade->removeExisting($resource, $boundedContextId);
+        } finally {
+            $lock->release();
         }
-        $context = $context->withContext(ContextConstants::RESOURCE, $resource);
-        $this->apieFacade->removeExisting($resource, $boundedContextId);
 
         return ActionResponse::createRemovedSuccess($this->apieFacade, $context);
     }

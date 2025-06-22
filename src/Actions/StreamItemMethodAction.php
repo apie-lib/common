@@ -3,6 +3,7 @@ namespace Apie\Common\Actions;
 
 use Apie\Common\IntegrationTestLogger;
 use Apie\Common\Other\DownloadFile;
+use Apie\Common\Other\LockUtil;
 use Apie\Core\Actions\ActionResponse;
 use Apie\Core\Actions\ActionResponseStatus;
 use Apie\Core\Actions\ActionResponseStatusList;
@@ -54,19 +55,27 @@ final class StreamItemMethodAction implements MethodActionInterface
             throw new InvalidTypeException($resourceClass->name, 'EntityInterface');
         }
         $properties = explode('/', $context->getContext('properties'));
-        $id = $context->getContext(ContextConstants::RESOURCE_ID);
+        $lock = LockUtil::createLock(
+            $context,
+            [ContextConstants::BOUNDED_CONTEXT_ID, ContextConstants::RESOURCE_NAME, ContextConstants::RESOURCE_ID]
+        );
         try {
-            $resource = $this->apieFacade->find(
-                IdentifierUtils::idStringToIdentifier($id, $context),
-                new BoundedContextId($context->getContext(ContextConstants::BOUNDED_CONTEXT_ID))
-            );
-        } catch (InvalidStringForValueObjectException|EntityNotFoundException $error) {
-            IntegrationTestLogger::logException($error);
-            return ActionResponse::createClientError($this->apieFacade, $context, $error);
+            $id = $context->getContext(ContextConstants::RESOURCE_ID);
+            try {
+                $resource = $this->apieFacade->find(
+                    IdentifierUtils::idStringToIdentifier($id, $context),
+                    new BoundedContextId($context->getContext(ContextConstants::BOUNDED_CONTEXT_ID))
+                );
+            } catch (InvalidStringForValueObjectException|EntityNotFoundException $error) {
+                IntegrationTestLogger::logException($error);
+                return ActionResponse::createClientError($this->apieFacade, $context, $error);
+            }
+            $context = $context->withContext(ContextConstants::RESOURCE, $resource);
+            $result = PropertyAccess::getPropertyValue($resource, $properties, $context, false);
+            $result = $this->toDownload($result);
+        } finally {
+            $lock->release();
         }
-        $context = $context->withContext(ContextConstants::RESOURCE, $resource);
-        $result = PropertyAccess::getPropertyValue($resource, $properties, $context, false);
-        $result = $this->toDownload($result);
 
         return ActionResponse::createRunSuccess($this->apieFacade, $context, $result, $resource);
     }

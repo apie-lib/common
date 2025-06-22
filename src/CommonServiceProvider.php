@@ -215,6 +215,22 @@ class CommonServiceProvider extends ServiceProvider
         );
         $this->app->tag([\Apie\Common\Events\AddSharedResources::class], 'kernel.event_subscriber');
         $this->app->singleton(
+            \Apie\Common\ContextBuilders\AddLockManagerContextBuilder::class,
+            function ($app) {
+                return new \Apie\Common\ContextBuilders\AddLockManagerContextBuilder(
+                    $app->make(\Symfony\Component\Lock\LockFactory::class)
+                );
+            }
+        );
+        \Apie\ServiceProviderGenerator\TagMap::register(
+            $this->app,
+            \Apie\Common\ContextBuilders\AddLockManagerContextBuilder::class,
+            array(
+              0 => 'apie.core.context_builder',
+            )
+        );
+        $this->app->tag([\Apie\Common\ContextBuilders\AddLockManagerContextBuilder::class], 'apie.core.context_builder');
+        $this->app->singleton(
             \Apie\Common\Wrappers\RequestAwareInMemoryDatalayer::class,
             function ($app) {
                 return new \Apie\Common\Wrappers\RequestAwareInMemoryDatalayer(

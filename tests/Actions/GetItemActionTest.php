@@ -11,6 +11,8 @@ use Apie\Core\ValueObjects\DatabaseText;
 use Apie\Fixtures\Entities\UserWithAddress;
 use Apie\Fixtures\ValueObjects\AddressWithZipcodeCheck;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Lock\LockFactory;
+use Symfony\Component\Lock\Store\NullStore;
 
 class GetItemActionTest extends TestCase
 {
@@ -35,6 +37,7 @@ class GetItemActionTest extends TestCase
             ContextConstants::RESOURCE_NAME => UserWithAddress::class,
             ContextConstants::RESOURCE_ID => $user->getId()->toNative(),
             ContextConstants::BOUNDED_CONTEXT_ID => 'default',
+            LockFactory::class => new LockFactory(new NullStore()),
         ]);
         /** @var GetItemAction $action */
         $action = $testItem->getAction('default', 'test', $context);

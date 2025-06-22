@@ -1,6 +1,7 @@
 <?php
 namespace Apie\Common\Actions;
 
+use Apie\Common\Other\LockUtil;
 use Apie\Core\Actions\ActionInterface;
 use Apie\Core\Actions\ActionResponse;
 use Apie\Core\Actions\ActionResponseStatus;
@@ -59,12 +60,20 @@ final class GetItemAction implements ActionInterface
         if (!$resourceClass->implementsInterface(EntityInterface::class)) {
             throw new InvalidTypeException($resourceClass->name, 'EntityInterface');
         }
-        $result = $this->apieFacade->find(
-            IdentifierUtils::idStringToIdentifier($id, $context),
-            new BoundedContextId($context->getContext(ContextConstants::BOUNDED_CONTEXT_ID))
+        $lock = LockUtil::createLock(
+            $context,
+            [ContextConstants::BOUNDED_CONTEXT_ID, ContextConstants::RESOURCE_NAME, ContextConstants::RESOURCE_ID]
         );
-        $context = $context->withContext(ContextConstants::RESOURCE, $result);
-        $context->withContext(ContextConstants::APIE_ACTION, __CLASS__)->checkAuthorization();
+        try {
+            $result = $this->apieFacade->find(
+                IdentifierUtils::idStringToIdentifier($id, $context),
+                new BoundedContextId($context->getContext(ContextConstants::BOUNDED_CONTEXT_ID))
+            );
+            $context = $context->withContext(ContextConstants::RESOURCE, $result);
+            $context->withContext(ContextConstants::APIE_ACTION, __CLASS__)->checkAuthorization();
+        } finally {
+            $lock->release();
+        }
         return ActionResponse::createRunSuccess($this->apieFacade, $context, $result, $result);
     }
 

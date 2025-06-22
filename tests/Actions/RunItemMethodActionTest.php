@@ -11,6 +11,8 @@ use Apie\Fixtures\Entities\UserWithAddress;
 use Apie\Fixtures\ValueObjects\AddressWithZipcodeCheck;
 use Apie\Fixtures\ValueObjects\Password;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Lock\LockFactory;
+use Symfony\Component\Lock\Store\FlockStore;
 
 class RunItemMethodActionTest extends TestCase
 {
@@ -34,6 +36,7 @@ class RunItemMethodActionTest extends TestCase
             ContextConstants::METHOD_CLASS => UserWithAddress::class,
             ContextConstants::METHOD_NAME => 'verifyAuthentication',
             ContextConstants::BOUNDED_CONTEXT_ID => 'default',
+            LockFactory::class => new LockFactory(new FlockStore()),
         ]);
         /** @var RunItemMethodAction $action */
         $action = $testItem->getAction('default', 'test', $context);
