@@ -43,7 +43,7 @@ class CommonServiceProvider extends ServiceProvider
             function ($app) {
                 return new \Apie\Common\ContextBuilders\AddTextEncrypterContextBuilder(
                     $app->make(\Psr\Cache\CacheItemPoolInterface::class),
-                    $this->parseArgument('%apie.encryption_key%')
+                    $this->parseArgument('%apie.encryption_key%', \Apie\Common\ContextBuilders\AddTextEncrypterContextBuilder::class, 1)
                 );
             }
         );
@@ -104,8 +104,8 @@ class CommonServiceProvider extends ServiceProvider
             \Apie\Common\RouteDefinitions\PossibleRoutePrefixProvider::class,
             function ($app) {
                 return new \Apie\Common\RouteDefinitions\PossibleRoutePrefixProvider(
-                    $this->parseArgument('%apie.cms.base_url%'),
-                    $this->parseArgument('%apie.rest_api.base_url%')
+                    $this->parseArgument('%apie.cms.base_url%', \Apie\Common\RouteDefinitions\PossibleRoutePrefixProvider::class, 0),
+                    $this->parseArgument('%apie.rest_api.base_url%', \Apie\Common\RouteDefinitions\PossibleRoutePrefixProvider::class, 1)
                 );
             }
         );
@@ -121,8 +121,8 @@ class CommonServiceProvider extends ServiceProvider
             'apie.bounded_context.hashmap_factory',
             function ($app) {
                 return new \Apie\Common\Wrappers\BoundedContextHashmapFactory(
-                    $this->parseArgument('%apie.bounded_contexts%'),
-                    $this->parseArgument('%apie.scan_bounded_contexts%'),
+                    $this->parseArgument('%apie.bounded_contexts%', \Apie\Common\Wrappers\BoundedContextHashmapFactory::class, 0),
+                    $this->parseArgument('%apie.scan_bounded_contexts%', \Apie\Common\Wrappers\BoundedContextHashmapFactory::class, 1),
                     $app->make(\Psr\EventDispatcher\EventDispatcherInterface::class)
                 );
             }

@@ -5,5 +5,5 @@ use Apie\Common\RouteDefinitions\ActionHashmap;
 
 interface GlobalRouteDefinitionProviderInterface extends RouteDefinitionProviderInterface
 {
-   public function getGlobalRoutes(): ActionHashmap;
+    public function getGlobalRoutes(): ActionHashmap;
 }

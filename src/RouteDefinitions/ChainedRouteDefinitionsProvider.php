@@ -22,7 +22,7 @@ class ChainedRouteDefinitionsProvider implements GlobalRouteDefinitionProviderIn
     {
         $actionHashmap = new ActionHashmap();
         foreach ($this->routeDefinitions as $routeDefinition) {
-            if ($routeDefinition instanceof GlobalRouteDefinitionProviderInterface) {    
+            if ($routeDefinition instanceof GlobalRouteDefinitionProviderInterface) {
                 $actionHashmap = $actionHashmap->merge($routeDefinition->getGlobalRoutes());
             }
         }
