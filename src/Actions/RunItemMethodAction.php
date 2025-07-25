@@ -8,6 +8,7 @@ use Apie\Core\Actions\ActionResponseStatus;
 use Apie\Core\Actions\ActionResponseStatusList;
 use Apie\Core\Actions\ApieFacadeInterface;
 use Apie\Core\Actions\MethodActionInterface;
+use Apie\Core\Attributes\Description;
 use Apie\Core\BoundedContext\BoundedContextId;
 use Apie\Core\Context\ApieContext;
 use Apie\Core\ContextConstants;
@@ -208,6 +209,9 @@ final class RunItemMethodAction implements MethodActionInterface
     public static function getDescription(ReflectionClass $class, ?ReflectionMethod $method = null): string
     {
         assert($method instanceof ReflectionMethod);
+        foreach ($method->getAttributes(Description::class) as $attribute) {
+            return $attribute->newInstance()->description;
+        }
         $name = self::getDisplayNameForMethod($method);
         if (str_starts_with($method->name, 'add')) {
             return 'Adds ' . $name . ' to ' . $class->getShortName();

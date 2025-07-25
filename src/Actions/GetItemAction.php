@@ -7,6 +7,7 @@ use Apie\Core\Actions\ActionResponse;
 use Apie\Core\Actions\ActionResponseStatus;
 use Apie\Core\Actions\ActionResponseStatusList;
 use Apie\Core\Actions\ApieFacadeInterface;
+use Apie\Core\Attributes\Description;
 use Apie\Core\BoundedContext\BoundedContextId;
 use Apie\Core\Context\ApieContext;
 use Apie\Core\ContextConstants;
@@ -104,7 +105,12 @@ final class GetItemAction implements ActionInterface
 
     public static function getDescription(ReflectionClass $class): string
     {
-        return 'Gets a resource of ' . $class->getShortName() . ' with a specific id';
+        $description = 'Gets a resource of ' . $class->getShortName() . ' with a specific id';
+        foreach ($class->getAttributes(Description::class) as $attribute) {
+            $description .= '. ' . $attribute->newInstance()->description;
+        }
+
+        return $description;
     }
     
     public static function getTags(ReflectionClass $class): StringList

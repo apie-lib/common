@@ -8,6 +8,7 @@ use Apie\Core\Actions\ActionResponse;
 use Apie\Core\Actions\ActionResponseStatus;
 use Apie\Core\Actions\ActionResponseStatusList;
 use Apie\Core\Actions\ApieFacadeInterface;
+use Apie\Core\Attributes\Description;
 use Apie\Core\Attributes\RemovalCheck;
 use Apie\Core\BoundedContext\BoundedContextId;
 use Apie\Core\Context\ApieContext;
@@ -124,7 +125,12 @@ final class RemoveObjectAction implements ActionInterface
      */
     public static function getDescription(ReflectionClass $class): string
     {
-        return 'Removes an instance of ' . $class->getShortName();
+        $description = 'Removes an instance of ' . $class->getShortName();
+        foreach ($class->getAttributes(Description::class) as $attribute) {
+            $description .= '. ' . $attribute->newInstance()->description;
+        }
+
+        return $description;
     }
     
     /**
