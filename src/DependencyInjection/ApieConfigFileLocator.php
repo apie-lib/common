@@ -13,6 +13,7 @@ use Apie\DoctrineEntityDatalayer\DoctrineEntityDatalayer;
 use Apie\Faker\ApieObjectFaker;
 use Apie\HtmlBuilders\FormBuildContext;
 use Apie\Maker\Utils;
+use Apie\McpServer\RunMcpServerCommand;
 use Apie\RestApi\OpenApi\OpenApiGenerator;
 use Apie\SchemaGenerator\ComponentsBuilderFactory;
 use Apie\Serializer\Serializer;
@@ -40,6 +41,7 @@ class ApieConfigFileLocator extends FileLocator
         'faker.yaml' => [ApieObjectFaker::class, '..', 'Apie\\Faker\\FakerServiceProvider'],
         'html_builders.yaml' => [FormBuildContext::class, '..', 'Apie\\HtmlBuilders\\HtmlBuilderServiceProvider'],
         'maker.yaml' => [Utils::class, '..', 'Apie\\Maker\\MakerServiceProvider'],
+        'mcp_server.yaml' => [RunMcpServerCommand::class, '..', 'Apie\\McpServer\\McpServerServiceProvider'],
         'rest_api.yaml' => [OpenApiGenerator::class, '../..', 'Apie\\RestApi\\RestApiServiceProvider'],
         'serializer.yaml' => [Serializer::class, '..', 'Apie\\Serializer\\SerializerServiceProvider'],
         'schema_generator.yaml' => [ComponentsBuilderFactory::class, '..', 'Apie\\SchemaGenerator\\SchemaGeneratorServiceProvider'],

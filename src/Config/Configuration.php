@@ -20,6 +20,7 @@ abstract class Configuration implements ConfigurationInterface
         'enable_doctrine_entity_datalayer' => 'Apie\DoctrineEntityDatalayer\DoctrineEntityDatalayer',
         'enable_faker' => 'Apie\Faker\ApieObjectFaker',
         'enable_maker' => 'Apie\Maker\Utils',
+        'enable_mcp_server' => 'Apie\McpServer\RunMcpServerCommand',
         'enable_rest_api' => 'Apie\RestApi\OpenApi\OpenApiGenerator',
         'enable_console' => 'Apie\Console\ConsoleCommandFactory',
         'enable_twig_template_layout_renderer' => 'Apie\TwigTemplateLayoutRenderer\TwigRenderer',
