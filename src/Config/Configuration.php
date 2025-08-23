@@ -131,6 +131,7 @@ abstract class Configuration implements ConfigurationInterface
         foreach (self::ENABLE_CONFIGS as $configKey => $classNameToExist) {
             $childNode->booleanNode($configKey)->defaultValue(class_exists($classNameToExist));
         }
+        $childNode->scalarNode('remote_mcp_path')->defaultValue(null)->end();
         return $treeBuilder;
     }
 }
