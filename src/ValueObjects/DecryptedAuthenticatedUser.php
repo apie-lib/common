@@ -56,6 +56,14 @@ final class DecryptedAuthenticatedUser implements StringValueObjectInterface
         return $this->className;
     }
 
+    /**
+     * @return class-string<T>
+     */
+    public function getEntityClassName(): string
+    {
+        return $this->className::getReferenceFor()->name;
+    }
+
     public function isExpired(): bool
     {
         return $this->expireTime <= time();
