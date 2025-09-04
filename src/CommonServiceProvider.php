@@ -43,7 +43,8 @@ class CommonServiceProvider extends ServiceProvider
             function ($app) {
                 return new \Apie\Common\ContextBuilders\AddTextEncrypterContextBuilder(
                     $app->make(\Psr\Cache\CacheItemPoolInterface::class),
-                    $this->parseArgument('%apie.encryption_key%', \Apie\Common\ContextBuilders\AddTextEncrypterContextBuilder::class, 1)
+                    $app->make(\Psr\Log\LoggerInterface::class),
+                    $this->parseArgument('%apie.encryption_key%', \Apie\Common\ContextBuilders\AddTextEncrypterContextBuilder::class, 2)
                 );
             }
         );
