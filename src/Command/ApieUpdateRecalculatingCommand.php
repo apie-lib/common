@@ -77,7 +77,7 @@ class ApieUpdateRecalculatingCommand extends Command
                             $this->apieDatalayer->persistExisting($item, $boundedContextId);
                             $output->writeln(' Done');
                         }
-                    } while ($stop || $limit !== null);
+                    } while (!$stop || $limit !== null);
                 }
             }
         }
