@@ -14,6 +14,7 @@ use Apie\Core\Context\ApieContext;
 use Apie\Core\ContextConstants;
 use Apie\Core\Entities\EntityInterface;
 use Apie\Core\Lists\StringList;
+use Apie\Core\ValueObjects\EntityReference;
 use Exception;
 use LogicException;
 use ReflectionClass;
@@ -120,7 +121,19 @@ final class RunAction implements MethodActionInterface
     public static function getTags(ReflectionClass $class, ?ReflectionMethod $method = null): StringList
     {
         $class = $method ? $method->getDeclaringClass() : $class;
-        return new StringList([$class->getShortName(), 'action']);
+        $list = [$class->getShortName(), 'action'];
+        if ($method) {
+            foreach ($method->getParameters() as $parameter) {
+                if (in_array(
+                    (string) $parameter->getType(),
+                    [EntityInterface::class, '?' . EntityInterface::class, EntityReference::class],
+                    true
+                )) {
+                    $list[] = 'all';
+                }
+            }
+        }
+        return new StringList($list);
     }
 
     public static function getInputType(ReflectionClass $class, ?ReflectionMethod $method = null): ReflectionMethod
