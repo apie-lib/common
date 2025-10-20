@@ -3,6 +3,7 @@ namespace Apie\Common\DependencyInjection;
 
 use Apie\AiInstructor\AiInstructor;
 use Apie\ApieCommonPlugin\ApieCommonPlugin;
+use Apie\ApieFileSystem\ApieFilesystemFactory;
 use Apie\Cms\RouteDefinitions\AbstractCmsRouteDefinition;
 use Apie\CmsApiDropdownOption\Lists\DropdownOptionList;
 use Apie\Common\ApieFacade;
@@ -31,6 +32,7 @@ class ApieConfigFileLocator extends FileLocator
     private array $predefined = [
         'ai_instructor.yaml' => [AiInstructor::class, '..', 'Apie\\AiInstructor\\AiInstructorServiceProvider'],
         'apie_common_plugin.yaml' => [ApieCommonPlugin::class, '..', 'Apie\\ApieCommonPlugin\\GeneratedApieCommonPluginServiceProvider'],
+        'apie_file_system.yaml' => [ApieFilesystemFactory::class, '..', 'Apie\\ApieFileSystem\\ApieFileSystemServiceProvider'],
         'cms.yaml' => [AbstractCmsRouteDefinition::class, '../..', 'Apie\\Cms\\CmsServiceProvider'],
         'cms_dropdown.yaml' => [DropdownOptionList::class, '../..', 'Apie\\CmsApiDropdownOption\\CmsDropdownServiceProvider'],
         'common.yaml' => [ApieFacade::class, '..', 'Apie\\Common\\CommonServiceProvider'],
