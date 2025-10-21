@@ -25,6 +25,7 @@ abstract class Configuration implements ConfigurationInterface
         'enable_console' => 'Apie\Console\ConsoleCommandFactory',
         'enable_twig_template_layout_renderer' => 'Apie\TwigTemplateLayoutRenderer\TwigRenderer',
         'enable_typescript_client_builder' => 'Apie\TypescriptClientBuilder\RouteDefinitions\CodeRouteDefinitionProvider',
+        'enable_webdav' => 'Apie\Webdav\Controller\WebdavController',
     ];
 
     abstract protected function addCmsOptions(ArrayNodeDefinition $arrayNode): void;

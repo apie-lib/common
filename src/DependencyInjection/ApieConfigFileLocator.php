@@ -20,6 +20,7 @@ use Apie\SchemaGenerator\ComponentsBuilderFactory;
 use Apie\Serializer\Serializer;
 use Apie\TwigTemplateLayoutRenderer\TwigRenderer;
 use Apie\TypescriptClientBuilder\RouteDefinitions\CodeRouteDefinitionProvider;
+use Apie\Webdav\Controller\WebdavController;
 use ReflectionClass;
 use ReflectionException;
 use Symfony\Component\Config\FileLocator;
@@ -49,6 +50,7 @@ class ApieConfigFileLocator extends FileLocator
         'schema_generator.yaml' => [ComponentsBuilderFactory::class, '..', 'Apie\\SchemaGenerator\\SchemaGeneratorServiceProvider'],
         'twig_template_layout_renderer.yaml' => [TwigRenderer::class, '..', 'Apie\\TwigTemplateLayoutRenderer\\TwigTemplateLayoutRendererServiceProvider'],
         'typescript_client_builder.yaml' => [CodeRouteDefinitionProvider::class, '../..', 'Apie\\TypescriptClientBuilder\\TypescriptClientBuilderServiceProvider'],
+        'webdav.yaml' => [WebdavController::class, '../..', 'Apie\\Webdav\\WebdavServiceProvider'],
     ];
 
     public function __construct(string|array $paths = [])
