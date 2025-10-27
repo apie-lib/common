@@ -12,6 +12,7 @@ use Apie\Core\Attributes\Description;
 use Apie\Core\BoundedContext\BoundedContextId;
 use Apie\Core\Context\ApieContext;
 use Apie\Core\ContextConstants;
+use Apie\Core\Datalayers\Lists\EntityListInterface;
 use Apie\Core\Entities\EntityInterface;
 use Apie\Core\Lists\StringList;
 use Apie\Core\ValueObjects\EntityReference;
@@ -126,7 +127,14 @@ final class RunAction implements MethodActionInterface
             foreach ($method->getParameters() as $parameter) {
                 if (in_array(
                     (string) $parameter->getType(),
-                    [EntityInterface::class, '?' . EntityInterface::class, EntityReference::class],
+                    [
+                        EntityInterface::class,
+                        '?' . EntityInterface::class,
+                        EntityReference::class,
+                        '?' . EntityReference::class,
+                        EntityListInterface::class,
+                        '?' . EntityListInterface::class,
+                    ],
                     true
                 )) {
                     $list[] = 'all';

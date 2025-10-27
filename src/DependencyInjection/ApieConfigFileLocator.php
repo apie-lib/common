@@ -11,6 +11,7 @@ use Apie\Console\ConsoleCommandFactory;
 use Apie\Core\Context\ApieContext;
 use Apie\DoctrineEntityConverter\Factories\PersistenceLayerFactory;
 use Apie\DoctrineEntityDatalayer\DoctrineEntityDatalayer;
+use Apie\Export\ExportInterface;
 use Apie\Faker\ApieObjectFaker;
 use Apie\HtmlBuilders\FormBuildContext;
 use Apie\Maker\Utils;
@@ -41,6 +42,7 @@ class ApieConfigFileLocator extends FileLocator
         'core.yaml' => [ApieContext::class, '../..', 'Apie\\Core\\CoreServiceProvider'],
         'doctrine_entity_converter.yaml' => [PersistenceLayerFactory::class, '../..', 'Apie\\DoctrineEntityConverter\\DoctrineEntityConverterProvider'],
         'doctrine_entity_datalayer.yaml' => [DoctrineEntityDatalayer::class, '..', 'Apie\\DoctrineEntityDatalayer\\DoctrineEntityDatalayerServiceProvider'],
+        'export.yaml' => [ExportInterface::class, '..', 'Apie\\Export\\ExportServiceProvider'],
         'faker.yaml' => [ApieObjectFaker::class, '..', 'Apie\\Faker\\FakerServiceProvider'],
         'html_builders.yaml' => [FormBuildContext::class, '..', 'Apie\\HtmlBuilders\\HtmlBuilderServiceProvider'],
         'maker.yaml' => [Utils::class, '..', 'Apie\\Maker\\MakerServiceProvider'],
