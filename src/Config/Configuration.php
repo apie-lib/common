@@ -18,7 +18,7 @@ abstract class Configuration implements ConfigurationInterface
         'enable_cms_dropdown' => 'Apie\CmsApiDropdownOption\RouteDefinitions\DropdownOptionsForExistingObjectRouteDefinition',
         'enable_doctrine_entity_converter' => 'Apie\DoctrineEntityConverter\OrmBuilder',
         'enable_doctrine_entity_datalayer' => 'Apie\DoctrineEntityDatalayer\DoctrineEntityDatalayer',
-        'enable_export' => 'Apie\Export\ExportServiceProvider',
+        'enable_export' => 'Apie\Export\EntityExport',
         'enable_faker' => 'Apie\Faker\ApieObjectFaker',
         'enable_maker' => 'Apie\Maker\Utils',
         'enable_mcp_server' => 'Apie\McpServer\RunMcpServerCommand',
