@@ -94,6 +94,24 @@ class CommonServiceProvider extends ServiceProvider
         );
         $this->app->tag([\Apie\Common\ApieFacade::class], 'apie.context');
         $this->app->singleton(
+            \Apie\Common\LoginService::class,
+            function ($app) {
+                return new \Apie\Common\LoginService(
+                    $app->make(\Apie\Core\BoundedContext\BoundedContextHashmap::class),
+                    $app->make(\Apie\Common\ActionDefinitionProvider::class),
+                    $app->make(\Apie\Serializer\Serializer::class)
+                );
+            }
+        );
+        \Apie\ServiceProviderGenerator\TagMap::register(
+            $this->app,
+            \Apie\Common\LoginService::class,
+            array(
+              0 => 'apie.context',
+            )
+        );
+        $this->app->tag([\Apie\Common\LoginService::class], 'apie.context');
+        $this->app->singleton(
             \Apie\Common\Events\ResponseDispatcher::class,
             function ($app) {
                 return new \Apie\Common\Events\ResponseDispatcher(

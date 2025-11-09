@@ -29,6 +29,13 @@ services:
       - '@Apie\Core\Datalayers\ApieDatalayer'
     tags: [apie.context]
 
+  Apie\Common\LoginService:
+    arguments:
+      - '@Apie\Core\BoundedContext\BoundedContextHashmap'
+      - '@Apie\Common\ActionDefinitionProvider'
+      - '@Apie\Serializer\Serializer'
+    tags: [apie.context]
+
   Apie\Common\Events\ResponseDispatcher:
     arguments:
       - '@Psr\EventDispatcher\EventDispatcherInterface'
