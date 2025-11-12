@@ -7,6 +7,7 @@ use Apie\ApieFileSystem\ApieFilesystemFactory;
 use Apie\Cms\RouteDefinitions\AbstractCmsRouteDefinition;
 use Apie\CmsApiDropdownOption\Lists\DropdownOptionList;
 use Apie\Common\ApieFacade;
+use Apie\Common\BasicAuth\AddBasicAuthContextBuilder;
 use Apie\Console\ConsoleCommandFactory;
 use Apie\Core\Context\ApieContext;
 use Apie\DoctrineEntityConverter\Factories\PersistenceLayerFactory;
@@ -32,6 +33,7 @@ class ApieConfigFileLocator extends FileLocator
      * @var array<string, array{class-string<object>, string, class-string<object>}>
      */
     private array $predefined = [
+        'add_basic_auth.yaml' => [AddBasicAuthContextBuilder::class, '../..', 'Apie\\Common\\AddBasicAuthServiceProvider'],
         'ai_instructor.yaml' => [AiInstructor::class, '..', 'Apie\\AiInstructor\\AiInstructorServiceProvider'],
         'apie_common_plugin.yaml' => [ApieCommonPlugin::class, '..', 'Apie\\ApieCommonPlugin\\GeneratedApieCommonPluginServiceProvider'],
         'apie_file_system.yaml' => [ApieFilesystemFactory::class, '..', 'Apie\\ApieFileSystem\\ApieFileSystemServiceProvider'],

@@ -1,0 +1,5 @@
+services:
+  Apie\Common\BasicAuth\AddBasicAuthContextBuilder:
+    tags: ['apie.core.context_builder']
+
+    
