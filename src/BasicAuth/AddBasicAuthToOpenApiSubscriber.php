@@ -17,12 +17,18 @@ class AddBasicAuthToOpenApiSubscriber implements EventSubscriberInterface
     public function onOpenApiSchemaGenerated(OpenApiSchemaGeneratedEvent $event): void
     {
         $openApi = $event->openApi;
-
-        $openApi->components->securitySchemes['BasicAuth'] = new SecurityScheme([
+        $securitySchemes = $openApi->components->securitySchemes ?? [];
+        
+        $securitySchemes['BasicAuth'] = new SecurityScheme([
             'type' => 'http',
             'scheme' => 'basic',
         ]);
 
-        $openApi->security[] = ['BasicAuth' => []];
+        $openApi->components->securitySchemes = $securitySchemes;
+
+        $security = $openApi->security ?? [];
+        $security[] = ['BasicAuth' => []];
+        $security[] = []; // add anonymous security option as well....
+        $openApi->security = $security;
     }
 }
