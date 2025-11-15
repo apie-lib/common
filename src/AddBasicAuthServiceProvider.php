@@ -30,6 +30,22 @@ class AddBasicAuthServiceProvider extends ServiceProvider
             )
         );
         $this->app->tag([\Apie\Common\BasicAuth\AddBasicAuthContextBuilder::class], 'apie.core.context_builder');
+        $this->app->singleton(
+            \Apie\Common\BasicAuth\AddBasicAuthToOpenApiSubscriber::class,
+            function ($app) {
+                return new \Apie\Common\BasicAuth\AddBasicAuthToOpenApiSubscriber(
+                
+                );
+            }
+        );
+        \Apie\ServiceProviderGenerator\TagMap::register(
+            $this->app,
+            \Apie\Common\BasicAuth\AddBasicAuthToOpenApiSubscriber::class,
+            array(
+              0 => 'kernel.event_subscriber',
+            )
+        );
+        $this->app->tag([\Apie\Common\BasicAuth\AddBasicAuthToOpenApiSubscriber::class], 'kernel.event_subscriber');
         
     }
 }

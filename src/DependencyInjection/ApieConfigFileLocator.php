@@ -14,6 +14,7 @@ use Apie\DoctrineEntityConverter\Factories\PersistenceLayerFactory;
 use Apie\DoctrineEntityDatalayer\DoctrineEntityDatalayer;
 use Apie\Export\ExportInterface;
 use Apie\Faker\ApieObjectFaker;
+use Apie\FtpServer\FtpServerCommand;
 use Apie\HtmlBuilders\FormBuildContext;
 use Apie\Maker\Utils;
 use Apie\McpServer\RunMcpServerCommand;
@@ -46,6 +47,7 @@ class ApieConfigFileLocator extends FileLocator
         'doctrine_entity_datalayer.yaml' => [DoctrineEntityDatalayer::class, '..', 'Apie\\DoctrineEntityDatalayer\\DoctrineEntityDatalayerServiceProvider'],
         'export.yaml' => [ExportInterface::class, '..', 'Apie\\Export\\ExportServiceProvider'],
         'faker.yaml' => [ApieObjectFaker::class, '..', 'Apie\\Faker\\FakerServiceProvider'],
+        'ftp.yaml' => [FtpServerCommand::class, '..', 'Apie\\FtpServer\\FtpServerServiceProvider'],
         'html_builders.yaml' => [FormBuildContext::class, '..', 'Apie\\HtmlBuilders\\HtmlBuilderServiceProvider'],
         'maker.yaml' => [Utils::class, '..', 'Apie\\Maker\\MakerServiceProvider'],
         'mcp_server.yaml' => [RunMcpServerCommand::class, '..', 'Apie\\McpServer\\McpServerServiceProvider'],

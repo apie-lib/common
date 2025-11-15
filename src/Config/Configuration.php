@@ -21,6 +21,7 @@ abstract class Configuration implements ConfigurationInterface
         'enable_doctrine_entity_datalayer' => 'Apie\DoctrineEntityDatalayer\DoctrineEntityDatalayer',
         'enable_export' => 'Apie\Export\EntityExport',
         'enable_faker' => 'Apie\Faker\ApieObjectFaker',
+        'enable_ftp' => 'Apie\FtpServer\FtpServerCommand',
         'enable_maker' => 'Apie\Maker\Utils',
         'enable_mcp_server' => 'Apie\McpServer\RunMcpServerCommand',
         'enable_rest_api' => 'Apie\RestApi\OpenApi\OpenApiGenerator',
@@ -52,6 +53,11 @@ abstract class Configuration implements ConfigurationInterface
           ->scalarNode('base_url')->defaultValue('/api')->end()
         ->end();
         $this->addApiOptions($apiConfig);
+
+        $ftpConfig = $children->arrayNode('ftp_server');
+        $ftpConfig->children()
+          ->scalarNode('public_ip')->defaultValue('127.0.0.1')->end()
+        ->end();
 
         $aiConfig = $children->arrayNode('ai')
           ->addDefaultsIfNotSet();
