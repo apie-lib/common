@@ -57,6 +57,8 @@ abstract class Configuration implements ConfigurationInterface
         $ftpConfig = $children->arrayNode('ftp_server');
         $ftpConfig->children()
           ->scalarNode('public_ip')->defaultValue('127.0.0.1')->end()
+          ->scalarNode('passive_min_port')->defaultValue('49152')->end()
+          ->scalarNode('passive_max_port')->defaultValue('65534')->end()
         ->end();
 
         $aiConfig = $children->arrayNode('ai')
