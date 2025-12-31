@@ -15,6 +15,7 @@ use Apie\DoctrineEntityDatalayer\DoctrineEntityDatalayer;
 use Apie\Export\ExportInterface;
 use Apie\Faker\ApieObjectFaker;
 use Apie\FtpServer\FtpServerCommand;
+use Apie\Graphql\Factories\GraphqlSchemaFactory;
 use Apie\HtmlBuilders\FormBuildContext;
 use Apie\Maker\Utils;
 use Apie\McpServer\RunMcpServerCommand;
@@ -49,6 +50,7 @@ class ApieConfigFileLocator extends FileLocator
         'faker.yaml' => [ApieObjectFaker::class, '..', 'Apie\\Faker\\FakerServiceProvider'],
         'ftp.yaml' => [FtpServerCommand::class, '..', 'Apie\\FtpServer\\FtpServerServiceProvider'],
         'html_builders.yaml' => [FormBuildContext::class, '..', 'Apie\\HtmlBuilders\\HtmlBuilderServiceProvider'],
+        'graphql.yaml' => [GraphqlSchemaFactory::class, '../..', 'Apie\\Graphql\\GraphqlServiceProvider'],
         'maker.yaml' => [Utils::class, '..', 'Apie\\Maker\\MakerServiceProvider'],
         'mcp_server.yaml' => [RunMcpServerCommand::class, '..', 'Apie\\McpServer\\McpServerServiceProvider'],
         'rest_api.yaml' => [OpenApiGenerator::class, '../..', 'Apie\\RestApi\\RestApiServiceProvider'],

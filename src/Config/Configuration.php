@@ -22,6 +22,7 @@ abstract class Configuration implements ConfigurationInterface
         'enable_export' => 'Apie\Export\EntityExport',
         'enable_faker' => 'Apie\Faker\ApieObjectFaker',
         'enable_ftp' => 'Apie\FtpServer\FtpServerCommand',
+        'enable_graphql' => 'Apie\Graphql\Factories\GraphqlSchemaFactory',
         'enable_maker' => 'Apie\Maker\Utils',
         'enable_mcp_server' => 'Apie\McpServer\RunMcpServerCommand',
         'enable_rest_api' => 'Apie\RestApi\OpenApi\OpenApiGenerator',
@@ -59,6 +60,11 @@ abstract class Configuration implements ConfigurationInterface
           ->scalarNode('public_ip')->defaultValue('127.0.0.1')->end()
           ->scalarNode('passive_min_port')->defaultValue('49152')->end()
           ->scalarNode('passive_max_port')->defaultValue('65534')->end()
+        ->end();
+
+        $ftpConfig = $children->arrayNode('graphql');
+        $ftpConfig->children()
+          ->scalarNode('base_url')->defaultValue('graphql')->end()
         ->end();
 
         $aiConfig = $children->arrayNode('ai')

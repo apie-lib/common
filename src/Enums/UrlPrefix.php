@@ -5,4 +5,5 @@ enum UrlPrefix: string
 {
     case CMS = 'cms';
     case API = 'api';
+    case GRAPHQL = 'graphql';
 }
