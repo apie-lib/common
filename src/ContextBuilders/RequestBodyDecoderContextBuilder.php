@@ -36,6 +36,9 @@ class RequestBodyDecoderContextBuilder implements ContextBuilderInterface
                 );
             }
             if (!$context->hasContext(ContextConstants::RAW_CONTENTS)) {
+                $rawContents = $this->requestBodyDecoder->decodeBody(
+                    $context->getContext(ServerRequestInterface::class)
+                );
                 return $context
                     ->withContext(
                         DecoderInterface::class,
@@ -44,10 +47,12 @@ class RequestBodyDecoderContextBuilder implements ContextBuilderInterface
                         )
                     )
                     ->withContext(
+                        ServerRequestInterface::class,
+                        $request->withParsedBody($rawContents)
+                    )
+                    ->withContext(
                         ContextConstants::RAW_CONTENTS,
-                        $this->requestBodyDecoder->decodeBody(
-                            $context->getContext(ServerRequestInterface::class)
-                        )
+                        $rawContents
                     );
             }
         }
