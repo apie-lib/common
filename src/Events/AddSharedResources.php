@@ -19,8 +19,8 @@ class AddSharedResources implements EventSubscriberInterface
             /** @var BoundedContext $boundedContext */
             $lists = $boundedContext->findRelatedClasses()->toStringArray();
             if (in_array(SequentialBackgroundProcess::class, $lists)) {
-                // @phpstan-ignore property.readOnlyAssignOutOfClass
-                $boundedContext->resources[] = new ReflectionClass(SequentialBackgroundProcess::class);
+                $resources = $boundedContext->resources;
+                $resources[] = new ReflectionClass(SequentialBackgroundProcess::class);
             }
         }
     }

@@ -75,6 +75,7 @@ final class BoundedContextHashmapFactory
         $map = new BoundedContextHashmap($result);
         $event = new RegisterBoundedContexts($map);
         $this->eventDispatcher->dispatch($event);
+        
         return $event->hashmap;
     }
 }
