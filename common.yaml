@@ -95,7 +95,9 @@ services:
       - '@Apie\Core\Datalayers\Search\LazyLoadedListFilterer'
     tags:
       - apie.datalayer
+      - always-singleton
 
   apie:
     alias: Apie\Common\ApieFacade
     public: true
+

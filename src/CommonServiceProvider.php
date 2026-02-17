@@ -14,7 +14,7 @@ class CommonServiceProvider extends ServiceProvider
 
     public function register()
     {
-        $this->app->singleton(
+        $this->registerSingleton(
             \Apie\Common\ActionDefinitionProvider::class,
             function ($app) {
                 return new \Apie\Common\ActionDefinitionProvider(
@@ -22,7 +22,7 @@ class CommonServiceProvider extends ServiceProvider
                 );
             }
         );
-        $this->app->singleton(
+        $this->registerSingleton(
             \Apie\Common\ContextBuilders\AddEventDispatcherContextBuilder::class,
             function ($app) {
                 return new \Apie\Common\ContextBuilders\AddEventDispatcherContextBuilder(
@@ -38,7 +38,7 @@ class CommonServiceProvider extends ServiceProvider
             )
         );
         $this->app->tag([\Apie\Common\ContextBuilders\AddEventDispatcherContextBuilder::class], 'apie.core.context_builder');
-        $this->app->singleton(
+        $this->registerSingleton(
             \Apie\Common\ContextBuilders\AddTextEncrypterContextBuilder::class,
             function ($app) {
                 return new \Apie\Common\ContextBuilders\AddTextEncrypterContextBuilder(
@@ -56,7 +56,7 @@ class CommonServiceProvider extends ServiceProvider
             )
         );
         $this->app->tag([\Apie\Common\ContextBuilders\AddTextEncrypterContextBuilder::class], 'apie.core.context_builder');
-        $this->app->singleton(
+        $this->registerSingleton(
             \Apie\Common\Command\ApieUpdateRecalculatingCommand::class,
             function ($app) {
                 return new \Apie\Common\Command\ApieUpdateRecalculatingCommand(
@@ -74,7 +74,7 @@ class CommonServiceProvider extends ServiceProvider
             )
         );
         $this->app->tag([\Apie\Common\Command\ApieUpdateRecalculatingCommand::class], 'console.command');
-        $this->app->singleton(
+        $this->registerSingleton(
             \Apie\Common\ApieFacade::class,
             function ($app) {
                 return new \Apie\Common\ApieFacade(
@@ -93,7 +93,7 @@ class CommonServiceProvider extends ServiceProvider
             )
         );
         $this->app->tag([\Apie\Common\ApieFacade::class], 'apie.context');
-        $this->app->singleton(
+        $this->registerSingleton(
             \Apie\Common\LoginService::class,
             function ($app) {
                 return new \Apie\Common\LoginService(
@@ -111,7 +111,7 @@ class CommonServiceProvider extends ServiceProvider
             )
         );
         $this->app->tag([\Apie\Common\LoginService::class], 'apie.context');
-        $this->app->singleton(
+        $this->registerSingleton(
             \Apie\Common\Events\ResponseDispatcher::class,
             function ($app) {
                 return new \Apie\Common\Events\ResponseDispatcher(
@@ -119,7 +119,7 @@ class CommonServiceProvider extends ServiceProvider
                 );
             }
         );
-        $this->app->singleton(
+        $this->registerSingleton(
             \Apie\Common\RouteDefinitions\PossibleRoutePrefixProvider::class,
             function ($app) {
                 return new \Apie\Common\RouteDefinitions\PossibleRoutePrefixProvider(
@@ -128,7 +128,7 @@ class CommonServiceProvider extends ServiceProvider
                 );
             }
         );
-        $this->app->singleton(
+        $this->registerSingleton(
             \Apie\Common\RequestBodyDecoder::class,
             function ($app) {
                 return new \Apie\Common\RequestBodyDecoder(
@@ -136,7 +136,7 @@ class CommonServiceProvider extends ServiceProvider
                 );
             }
         );
-        $this->app->singleton(
+        $this->registerSingleton(
             'apie.bounded_context.hashmap_factory',
             function ($app) {
                 return new \Apie\Common\Wrappers\BoundedContextHashmapFactory(
@@ -148,7 +148,7 @@ class CommonServiceProvider extends ServiceProvider
         );
         $this->app->bind(\Apie\Common\Interfaces\RouteDefinitionProviderInterface::class, 'apie.route_definitions.provider');
         
-        $this->app->singleton(
+        $this->registerSingleton(
             'apie.route_definitions.provider',
             function ($app) {
                 return \Apie\Common\Wrappers\GeneralServiceFactory::createRoutedDefinitionProvider(
@@ -157,7 +157,7 @@ class CommonServiceProvider extends ServiceProvider
                 
             }
         );
-        $this->app->singleton(
+        $this->registerSingleton(
             \Apie\Common\ErrorHandler\ApiErrorRenderer::class,
             function ($app) {
                 return new \Apie\Common\ErrorHandler\ApiErrorRenderer(
@@ -165,7 +165,7 @@ class CommonServiceProvider extends ServiceProvider
                 );
             }
         );
-        $this->app->singleton(
+        $this->registerSingleton(
             \Apie\Common\ContextBuilders\ServiceContextBuilder::class,
             function ($app) {
                 return new \Apie\Common\ContextBuilders\ServiceContextBuilder(
@@ -181,7 +181,7 @@ class CommonServiceProvider extends ServiceProvider
             )
         );
         $this->app->tag([\Apie\Common\ContextBuilders\ServiceContextBuilder::class], 'apie.core.context_builder');
-        $this->app->singleton(
+        $this->registerSingleton(
             \Apie\Common\ContextBuilders\CheckAuthenticatedContextBuilder::class,
             function ($app) {
                 return new \Apie\Common\ContextBuilders\CheckAuthenticatedContextBuilder(
@@ -201,7 +201,7 @@ class CommonServiceProvider extends ServiceProvider
             )
         );
         $this->app->tag([\Apie\Common\ContextBuilders\CheckAuthenticatedContextBuilder::class], 'apie.core.context_builder');
-        $this->app->singleton(
+        $this->registerSingleton(
             \Apie\Common\Events\AddAuthenticationCookie::class,
             function ($app) {
                 return new \Apie\Common\Events\AddAuthenticationCookie(
@@ -217,7 +217,7 @@ class CommonServiceProvider extends ServiceProvider
             )
         );
         $this->app->tag([\Apie\Common\Events\AddAuthenticationCookie::class], 'kernel.event_subscriber');
-        $this->app->singleton(
+        $this->registerSingleton(
             \Apie\Common\Events\AddSharedResources::class,
             function ($app) {
                 return new \Apie\Common\Events\AddSharedResources(
@@ -233,7 +233,7 @@ class CommonServiceProvider extends ServiceProvider
             )
         );
         $this->app->tag([\Apie\Common\Events\AddSharedResources::class], 'kernel.event_subscriber');
-        $this->app->singleton(
+        $this->registerSingleton(
             \Apie\Common\ContextBuilders\AddLockManagerContextBuilder::class,
             function ($app) {
                 return new \Apie\Common\ContextBuilders\AddLockManagerContextBuilder(
@@ -263,9 +263,11 @@ class CommonServiceProvider extends ServiceProvider
             \Apie\Common\Wrappers\RequestAwareInMemoryDatalayer::class,
             array(
               0 => 'apie.datalayer',
+              1 => 'always-singleton',
             )
         );
         $this->app->tag([\Apie\Common\Wrappers\RequestAwareInMemoryDatalayer::class], 'apie.datalayer');
+        $this->app->tag([\Apie\Common\Wrappers\RequestAwareInMemoryDatalayer::class], 'always-singleton');
         $this->app->bind('apie', \Apie\Common\ApieFacade::class);
         
         

@@ -14,7 +14,7 @@ class AddBasicAuthServiceProvider extends ServiceProvider
 
     public function register()
     {
-        $this->app->singleton(
+        $this->registerSingleton(
             \Apie\Common\BasicAuth\AddBasicAuthContextBuilder::class,
             function ($app) {
                 return new \Apie\Common\BasicAuth\AddBasicAuthContextBuilder(
@@ -30,7 +30,7 @@ class AddBasicAuthServiceProvider extends ServiceProvider
             )
         );
         $this->app->tag([\Apie\Common\BasicAuth\AddBasicAuthContextBuilder::class], 'apie.core.context_builder');
-        $this->app->singleton(
+        $this->registerSingleton(
             \Apie\Common\BasicAuth\AddBasicAuthToOpenApiSubscriber::class,
             function ($app) {
                 return new \Apie\Common\BasicAuth\AddBasicAuthToOpenApiSubscriber(
