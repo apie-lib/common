@@ -3,8 +3,11 @@ namespace Apie\Common\Wrappers;
 
 use Apie\Common\Config\Configuration;
 use Apie\Common\Events\RegisterBoundedContexts;
+use Apie\Common\Other\AuditLog;
 use Apie\Common\ValueObjects\EntityNamespace;
 use Apie\Core\ApieLib;
+use Apie\Core\Attributes\Auditable;
+use Apie\Core\BackgroundProcess\SequentialBackgroundProcess;
 use Apie\Core\BoundedContext\BoundedContext;
 use Apie\Core\BoundedContext\BoundedContextHashmap;
 use Apie\Core\BoundedContext\BoundedContextId;
@@ -74,8 +77,30 @@ final class BoundedContextHashmapFactory
         }
         $map = new BoundedContextHashmap($result);
         $event = new RegisterBoundedContexts($map);
+        $this->addSharedResources($event); // Laravel workaround, but in hindsight: the event should be deprecated
         $this->eventDispatcher->dispatch($event);
         
         return $event->hashmap;
+    }
+
+    public function addSharedResources(RegisterBoundedContexts $registerBoundedContexts): void
+    {
+        foreach ($registerBoundedContexts->hashmap as $boundedContext) {
+            $resources = $boundedContext->resources;
+            /** @var BoundedContext $boundedContext */
+            $lists = $boundedContext->findRelatedClasses()->toStringArray();
+            if (in_array(SequentialBackgroundProcess::class, $lists)) {
+                $resources[] = new \ReflectionClass(SequentialBackgroundProcess::class);
+            }
+            $auditLogAdded = false;
+            foreach ($boundedContext->resources as $resource) {
+                foreach ($resource->getAttributes(Auditable::class) as $auditable) {
+                    $auditLogAdded = true;
+                }
+            }
+            if ($auditLogAdded) {
+                $resources[] = new \ReflectionClass(AuditLog::class);
+            }
+        }
     }
 }

@@ -49,6 +49,12 @@ services:
     arguments:
       - '@Apie\Serializer\DecoderHashmap'
 
+  Apie\Common\Events\AddAuditLog:
+    arguments:
+      - '@Apie\Core\Datalayers\ApieDatalayer'
+      - '@Apie\Serializer\PropertySerializer\PropertySerializer'
+    tags: ['kernel.event_subscriber']
+
   apie.bounded_context.hashmap_factory:
       class: Apie\Common\Wrappers\BoundedContextHashmapFactory
       arguments:
@@ -79,9 +85,6 @@ services:
       - { name: 'apie.core.context_builder', priority: -1 }
 
   Apie\Common\Events\AddAuthenticationCookie:
-    tags: ['kernel.event_subscriber']
-
-  Apie\Common\Events\AddSharedResources:
     tags: ['kernel.event_subscriber']
 
   Apie\Common\ContextBuilders\AddLockManagerContextBuilder:
