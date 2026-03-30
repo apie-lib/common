@@ -7,8 +7,10 @@ use Apie\Core\Attributes\FakeCount;
 use Apie\Core\Attributes\Not;
 use Apie\Core\Attributes\Requires;
 use Apie\Core\Attributes\StaticCheck;
+use Apie\Core\Attributes\StoreOptions;
 use Apie\Core\Entities\EntityInterface;
 use Apie\Core\ValueObjects\EntityReference;
+use Apie\Core\ValueObjects\IdFriendlyEntityReference;
 use Apie\Serializer\PropertySerializer\SerializedProperties;
 
 #[FakeCount(0)]
@@ -18,8 +20,9 @@ class AuditLog implements EntityInterface
 
     #[StaticCheck(new AlwaysDisabled())]
     public function __construct(
-        private readonly EntityReference $reference,
+        private readonly IdFriendlyEntityReference $reference,
         #[Context()]
+        #[StoreOptions(alwaysMixedData: true)]
         private readonly SerializedProperties $serializedProperties,
     ) {
         $this->id = new AuditLogIdentifier($reference, microtime(true));
@@ -30,7 +33,7 @@ class AuditLog implements EntityInterface
         return $this->id;
     }
 
-    public function getReference(): EntityReference
+    public function getReference(): IdFriendlyEntityReference
     {
         return $this->reference;
     }

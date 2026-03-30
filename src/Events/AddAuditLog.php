@@ -7,6 +7,7 @@ use Apie\Core\BoundedContext\BoundedContextId;
 use Apie\Core\ContextConstants;
 use Apie\Core\Datalayers\ApieDatalayer;
 use Apie\Core\ValueObjects\EntityReference;
+use Apie\Core\ValueObjects\IdFriendlyEntityReference;
 use Apie\Serializer\PropertySerializer\PropertySerializer;
 use ReflectionClass;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -27,9 +28,9 @@ class AddAuditLog implements EventSubscriberInterface
     public function onApieResourceCreated(ApieResourceCreated $event): void
     {
         foreach ((new ReflectionClass($event->resource))->getAttributes(Auditable::class) as $auditable) {
-            $reference = EntityReference::createFromContext($event->context);
+            $reference = IdFriendlyEntityReference::createFromContext($event->context);
 
-            if ($reference instanceof EntityReference) {
+            if ($reference instanceof IdFriendlyEntityReference) {
                 $auditLog = new AuditLog(
                     $reference,
                     $this->propertySerializer->toJson($event->resource)

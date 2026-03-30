@@ -3,6 +3,7 @@ namespace Apie\Common\Other;
 
 use Apie\Core\Identifiers\IdentifierInterface;
 use Apie\Core\ValueObjects\EntityReference;
+use Apie\Core\ValueObjects\IdFriendlyEntityReference;
 use Apie\Core\ValueObjects\SnowflakeIdentifier;
 use ReflectionClass;
 
@@ -12,12 +13,12 @@ use ReflectionClass;
 class AuditLogIdentifier extends SnowflakeIdentifier implements IdentifierInterface
 {
     public function __construct(
-        private EntityReference $entityReference,
+        private IdFriendlyEntityReference $entityReference,
         private float $microtime
     ) {
     }
 
-    public function getEntityReference(): EntityReference
+    public function getEntityReference(): IdFriendlyEntityReference
     {
         return $this->entityReference;
     }
@@ -29,7 +30,7 @@ class AuditLogIdentifier extends SnowflakeIdentifier implements IdentifierInterf
 
     protected static function getSeparator(): string
     {
-        return '.';
+        return '.-.';
     }
 
     public static function getReferenceFor(): ReflectionClass
