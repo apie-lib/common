@@ -2,7 +2,6 @@
 namespace Apie\Common\Other;
 
 use Apie\Core\Identifiers\IdentifierInterface;
-use Apie\Core\ValueObjects\EntityReference;
 use Apie\Core\ValueObjects\IdFriendlyEntityReference;
 use Apie\Core\ValueObjects\SnowflakeIdentifier;
 use ReflectionClass;

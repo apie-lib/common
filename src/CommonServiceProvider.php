@@ -140,8 +140,7 @@ class CommonServiceProvider extends ServiceProvider
             \Apie\Common\Events\AddAuditLog::class,
             function ($app) {
                 return new \Apie\Common\Events\AddAuditLog(
-                    $app->make(\Apie\Core\Datalayers\ApieDatalayer::class),
-                    $app->make(\Apie\Serializer\PropertySerializer\PropertySerializer::class)
+                    $app->make(\Apie\Core\Datalayers\ApieDatalayer::class)
                 );
             }
         );

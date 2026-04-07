@@ -6,17 +6,15 @@ use Apie\Core\Attributes\Auditable;
 use Apie\Core\BoundedContext\BoundedContextId;
 use Apie\Core\ContextConstants;
 use Apie\Core\Datalayers\ApieDatalayer;
-use Apie\Core\ValueObjects\EntityReference;
 use Apie\Core\ValueObjects\IdFriendlyEntityReference;
-use Apie\Serializer\PropertySerializer\PropertySerializer;
+use Apie\Serializer\ValueObjects\SerializedPhpObject;
 use ReflectionClass;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class AddAuditLog implements EventSubscriberInterface
 {
     public function __construct(
-        private readonly ApieDatalayer $datalayer,
-        private readonly PropertySerializer $propertySerializer,
+        private readonly ApieDatalayer $datalayer
     ) {
     }
 
@@ -33,7 +31,7 @@ class AddAuditLog implements EventSubscriberInterface
             if ($reference instanceof IdFriendlyEntityReference) {
                 $auditLog = new AuditLog(
                     $reference,
-                    $this->propertySerializer->toJson($event->resource)
+                    SerializedPhpObject::createFromPhpObject($event->resource)
                 );
                 $this->datalayer->persistNew(
                     $auditLog,
