@@ -1,6 +1,7 @@
 <?php
 namespace Apie\Common\Actions;
 
+use Apie\Common\Events\ApieResourceModified;
 use Apie\Common\IntegrationTestLogger;
 use Apie\Common\Other\LockUtil;
 use Apie\Core\Actions\ActionInterface;
@@ -88,6 +89,7 @@ final class ModifyObjectAction implements ActionInterface
         } finally {
             $lock->release();
         }
+        $context->dispatchEvent(new ApieResourceModified($resource, $context));
         return ActionResponse::createRunSuccess($this->apieFacade, $context, $resource, $resource);
     }
 

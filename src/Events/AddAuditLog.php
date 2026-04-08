@@ -1,6 +1,7 @@
 <?php
 namespace Apie\Common\Events;
 
+use Apie\Common\Enums\AuditLogEvent;
 use Apie\Common\Other\AuditLog;
 use Apie\Core\Attributes\Auditable;
 use Apie\Core\BoundedContext\BoundedContextId;
@@ -20,7 +21,10 @@ class AddAuditLog implements EventSubscriberInterface
 
     public static function getSubscribedEvents(): array
     {
-        return [ApieResourceCreated::class => 'onApieResourceCreated'];
+        return [
+            ApieResourceCreated::class => 'onApieResourceCreated',
+            ApieResourceModified::class => 'OnApieResourceModified',
+        ];
     }
 
     public function onApieResourceCreated(ApieResourceCreated $event): void
@@ -31,7 +35,29 @@ class AddAuditLog implements EventSubscriberInterface
             if ($reference instanceof IdFriendlyEntityReference) {
                 $auditLog = new AuditLog(
                     $reference,
-                    SerializedPhpObject::createFromPhpObject($event->resource)
+                    SerializedPhpObject::createFromPhpObject($event->resource),
+                    AuditLogEvent::Created
+                );
+                $this->datalayer->persistNew(
+                    $auditLog,
+                    new BoundedContextId($event->context->getContext(ContextConstants::BOUNDED_CONTEXT_ID))
+                );
+            }
+        }
+    }
+
+    public function onApieResourceModified(ApieResourceModified $event): void
+    {
+        foreach ((new ReflectionClass($event->resource))->getAttributes(Auditable::class) as $auditable) {
+            $reference = IdFriendlyEntityReference::createFromContext($event->context);
+            $content = $event->context->getContext(ContextConstants::RAW_CONTENTS, false);
+
+            if ($reference instanceof IdFriendlyEntityReference) {
+                $auditLog = new AuditLog(
+                    $reference,
+                    SerializedPhpObject::createFromPhpObject($event->resource),
+                    AuditLogEvent::Modified,
+                    $content
                 );
                 $this->datalayer->persistNew(
                     $auditLog,

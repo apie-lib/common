@@ -1,10 +1,12 @@
 <?php
 namespace Apie\Common\Other;
 
+use Apie\Common\Enums\AuditLogEvent;
 use Apie\Core\Attributes\AlwaysDisabled;
 use Apie\Core\Attributes\Context;
 use Apie\Core\Attributes\FakeCount;
 use Apie\Core\Attributes\StaticCheck;
+use Apie\Core\ContextConstants;
 use Apie\Core\Entities\EntityInterface;
 use Apie\Core\Lists\PermissionList;
 use Apie\Core\Permissions\RequiresPermissionsInterface;
@@ -25,12 +27,25 @@ class AuditLog implements EntityInterface, RequiresPermissionsInterface
         private readonly IdFriendlyEntityReference $reference,
         #[Context()]
         private readonly SerializedPhpObject $serializedProperties,
+        private readonly AuditLogEvent $event,
+        #[Context(ContextConstants::RAW_CONTENTS)]
+        private readonly mixed $contents = null
     ) {
         $this->id = new AuditLogIdentifier($reference, microtime(true));
         $object = $serializedProperties->toPhpObject();
 
         $this->snapshot = EntitySnapshot::createFrom($object);
         $this->permissionSnapshot = $object instanceof RequiresPermissionsInterface ? $object->getRequiredPermissions() : new PermissionList();
+    }
+
+    public function getEvent(): AuditLogEvent
+    {
+        return $this->event;
+    }
+
+    public function getContents(): mixed
+    {
+        return $this->contents;
     }
 
     public function getRequiredPermissions(): PermissionList
