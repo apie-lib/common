@@ -1,6 +1,7 @@
 <?php
 namespace Apie\Common\Actions;
 
+use Apie\Common\Events\ApieResourceRemoved;
 use Apie\Common\IntegrationTestLogger;
 use Apie\Common\Other\LockUtil;
 use Apie\Core\Actions\ActionInterface;
@@ -91,6 +92,8 @@ final class RemoveObjectAction implements ActionInterface
         } finally {
             $lock->release();
         }
+        
+        $context->dispatchEvent(new ApieResourceRemoved($resource, $context));
 
         return ActionResponse::createRemovedSuccess($this->apieFacade, $context);
     }

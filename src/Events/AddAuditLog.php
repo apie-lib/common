@@ -24,6 +24,7 @@ class AddAuditLog implements EventSubscriberInterface
         return [
             ApieResourceCreated::class => 'onApieResourceCreated',
             ApieResourceModified::class => 'OnApieResourceModified',
+            ApieResourceRemoved::class => 'onApieResourceRemoved',
         ];
     }
 
@@ -58,6 +59,25 @@ class AddAuditLog implements EventSubscriberInterface
                     SerializedPhpObject::createFromPhpObject($event->resource),
                     AuditLogEvent::Modified,
                     $content
+                );
+                $this->datalayer->persistNew(
+                    $auditLog,
+                    new BoundedContextId($event->context->getContext(ContextConstants::BOUNDED_CONTEXT_ID))
+                );
+            }
+        }
+    }
+
+    public function onApieResourceRemoved(ApieResourceRemoved $event): void
+    {
+        foreach ((new ReflectionClass($event->resource))->getAttributes(Auditable::class) as $auditable) {
+            $reference = IdFriendlyEntityReference::createFromContext($event->context);
+            
+            if ($reference instanceof IdFriendlyEntityReference) {
+                $auditLog = new AuditLog(
+                    $reference,
+                    SerializedPhpObject::createFromPhpObject($event->resource),
+                    AuditLogEvent::Removed
                 );
                 $this->datalayer->persistNew(
                     $auditLog,

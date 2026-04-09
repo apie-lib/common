@@ -6,4 +6,5 @@ enum AuditLogEvent: string
     case Created = 'Created';
     case Modified = 'Modified';
     case Replaced = 'Replaced';
+    case Removed = 'Removed';
 }
