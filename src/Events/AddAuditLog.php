@@ -7,6 +7,7 @@ use Apie\Core\Attributes\Auditable;
 use Apie\Core\BoundedContext\BoundedContextId;
 use Apie\Core\ContextConstants;
 use Apie\Core\Datalayers\ApieDatalayer;
+use Apie\Core\Enums\RequestMethod;
 use Apie\Core\ValueObjects\IdFriendlyEntityReference;
 use Apie\Serializer\ValueObjects\SerializedPhpObject;
 use ReflectionClass;
@@ -32,12 +33,11 @@ class AddAuditLog implements EventSubscriberInterface
     {
         foreach ((new ReflectionClass($event->resource))->getAttributes(Auditable::class) as $auditable) {
             $reference = IdFriendlyEntityReference::createFromContext($event->context);
-
             if ($reference instanceof IdFriendlyEntityReference) {
                 $auditLog = new AuditLog(
                     $reference,
                     SerializedPhpObject::createFromPhpObject($event->resource),
-                    AuditLogEvent::Created
+                    $event->context->getContext(RequestMethod::class, false) === RequestMethod::PUT ? AuditLogEvent::Replaced : AuditLogEvent::Created
                 );
                 $this->datalayer->persistNew(
                     $auditLog,
