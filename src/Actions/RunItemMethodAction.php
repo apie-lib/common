@@ -1,6 +1,7 @@
 <?php
 namespace Apie\Common\Actions;
 
+use Apie\Common\Events\ApieResourceMethodCalled;
 use Apie\Common\IntegrationTestLogger;
 use Apie\Common\Other\LockUtil;
 use Apie\Core\Actions\ActionResponse;
@@ -130,6 +131,15 @@ final class RunItemMethodAction implements MethodActionInterface
         }
         if (self::shouldReturnResource($method)) {
             $result = $resource;
+        }
+        if ($resource !== null) {
+            $context->dispatchEvent(
+                new ApieResourceMethodCalled(
+                    $resource,
+                    $method->name,
+                    $context
+                )
+            );
         }
         return ActionResponse::createRunSuccess($this->apieFacade, $context, $result, $resource);
     }

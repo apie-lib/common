@@ -1,6 +1,7 @@
 <?php
 namespace Apie\Common\Actions;
 
+use Apie\Common\Events\ApieResourceReadList;
 use Apie\Core\Actions\ActionInterface;
 use Apie\Core\Actions\ActionResponse;
 use Apie\Core\Actions\ActionResponseStatus;
@@ -48,6 +49,10 @@ final class GetListAction implements ActionInterface
             new BoundedContextId($context->getContext(ContextConstants::BOUNDED_CONTEXT_ID))
         );
         $result = $resource->toPaginatedResult(QuerySearch::fromArray($rawContents, $context));
+        $context->dispatchEvent(new ApieResourceReadList(
+            $result,
+            $context
+        ));
         return ActionResponse::createRunSuccess($this->apieFacade, $context, $result, $resource);
     }
 

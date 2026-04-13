@@ -1,6 +1,7 @@
 <?php
 namespace Apie\Common\Actions;
 
+use Apie\Common\Events\ApieResourceRead;
 use Apie\Common\Other\LockUtil;
 use Apie\Core\Actions\ActionInterface;
 use Apie\Core\Actions\ActionResponse;
@@ -75,6 +76,7 @@ final class GetItemAction implements ActionInterface
         } finally {
             $lock->release();
         }
+        $context->dispatchEvent(new ApieResourceRead($result, $context));
         return ActionResponse::createRunSuccess($this->apieFacade, $context, $result, $result);
     }
 
