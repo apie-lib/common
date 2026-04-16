@@ -75,6 +75,24 @@ class CommonServiceProvider extends ServiceProvider
         );
         $this->app->tag([\Apie\Common\Command\ApieUpdateRecalculatingCommand::class], 'console.command');
         $this->registerSingleton(
+            \Apie\Common\Command\ApieAuditLogForMigrationCommand::class,
+            function ($app) {
+                return new \Apie\Common\Command\ApieAuditLogForMigrationCommand(
+                    $app->make(\Apie\Core\BoundedContext\BoundedContextHashmap::class),
+                    $app->make(\Apie\Core\Datalayers\ApieDatalayer::class),
+                    $app->make(\Apie\Core\ContextBuilders\ContextBuilderFactory::class)
+                );
+            }
+        );
+        \Apie\ServiceProviderGenerator\TagMap::register(
+            $this->app,
+            \Apie\Common\Command\ApieAuditLogForMigrationCommand::class,
+            array(
+              0 => 'console.command',
+            )
+        );
+        $this->app->tag([\Apie\Common\Command\ApieAuditLogForMigrationCommand::class], 'console.command');
+        $this->registerSingleton(
             \Apie\Common\ApieFacade::class,
             function ($app) {
                 return new \Apie\Common\ApieFacade(

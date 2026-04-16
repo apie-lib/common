@@ -5,6 +5,7 @@ use Apie\Common\Enums\AuditLogEvent;
 use Apie\Common\Other\Audit\AuditCreate;
 use Apie\Common\Other\Audit\AuditEvent;
 use Apie\Common\Other\Audit\AuditMethodCalled;
+use Apie\Common\Other\Audit\AuditMigration;
 use Apie\Common\Other\Audit\AuditModified;
 use Apie\Common\Other\Audit\AuditRead;
 use Apie\Common\Other\Audit\AuditRemoved;
@@ -39,13 +40,15 @@ class AuditLog implements EntityInterface, RequiresPermissionsInterface
     private readonly ?AuditRemoved $removedEvent;
     private readonly ?AuditRead $readEvent;
     private readonly ?AuditMethodCalled $methodCalledEvent;
+    private readonly ?AuditMigration $migrationEvent;
 
     private const EVENT_MAPPING = [
         AuditCreate::class => 'createEvent',
         AuditModified::class => 'modifiedEvent',
         AuditRemoved::class => 'removedEvent',
         AuditRead::class => 'readEvent',
-        AuditMethodCalled::class=> 'methodCalledEvent'
+        AuditMethodCalled::class=> 'methodCalledEvent',
+        AuditMigration::class => 'migrationEvent'
     ];
 
     #[StaticCheck(new AlwaysDisabled())]

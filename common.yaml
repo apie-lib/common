@@ -21,6 +21,14 @@ services:
     tags:
       - 'console.command'
 
+  Apie\Common\Command\ApieAuditLogForMigrationCommand:
+    arguments:
+      - '@Apie\Core\BoundedContext\BoundedContextHashmap'
+      - '@Apie\Core\Datalayers\ApieDatalayer'
+      - '@Apie\Core\ContextBuilders\ContextBuilderFactory'
+    tags:
+      - 'console.command'
+
   Apie\Common\ApieFacade:
     arguments:
       - '@apie.route_definitions.provider'

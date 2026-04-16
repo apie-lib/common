@@ -1,8 +1,10 @@
 <?php
 namespace Apie\Common\Events;
 
+use Apie\Common\Command\ApieUpdateRecalculatingCommand;
 use Apie\Common\Other\Audit\AuditCreate;
 use Apie\Common\Other\Audit\AuditMethodCalled;
+use Apie\Common\Other\Audit\AuditMigration;
 use Apie\Common\Other\Audit\AuditModified;
 use Apie\Common\Other\Audit\AuditRead;
 use Apie\Common\Other\Audit\AuditRemoved;
@@ -18,6 +20,7 @@ use Apie\Core\ValueObjects\IdFriendlyEntityReference;
 use Apie\Core\ValueObjects\Utils;
 use Apie\Serializer\ValueObjects\SerializedPhpObject;
 use ReflectionClass;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class AddAuditLog implements EventSubscriberInterface
@@ -126,12 +129,17 @@ class AddAuditLog implements EventSubscriberInterface
         foreach ((new ReflectionClass($event->resource))->getAttributes(Auditable::class) as $auditable) {
             $reference = IdFriendlyEntityReference::createFromContext($event->context);
             $content = $event->context->getContext(ContextConstants::RAW_CONTENTS, false);
+            $auditEvent = new AuditModified($content);
+            $command = $event->context->getContext(Command::class, false);
+            if ($command instanceof ApieUpdateRecalculatingCommand) {
+                $auditEvent = new AuditMigration();
+            }
 
             if ($reference instanceof IdFriendlyEntityReference) {
                 $auditLog = new AuditLog(
                     $reference,
                     SerializedPhpObject::createFromPhpObject($event->resource),
-                    new AuditModified($content),
+                    $auditEvent,
                     $this->createUser($event->context)
                 );
                 $this->datalayer->persistNew(

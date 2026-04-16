@@ -43,6 +43,7 @@ class ApieUpdateRecalculatingCommand extends Command
         $apieContext = $this->contextBuilderFactory->createGeneralContext([
             ConsoleCommand::class => ConsoleCommand::CONSOLE_COMMAND,
             ConsoleCommand::CONSOLE_COMMAND->value => true,
+            Command::class => $this,
             ContextConstants::DISABLE_CONTEXT_FILTER => true,
         ]);
         /** @var BoundedContext $boundedContext */

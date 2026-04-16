@@ -17,4 +17,6 @@ enum AuditLogEvent: string
     case Read = 'Read';
     #[Description('An action was performed on the object')]
     case MethodCalled = 'MethodCalled';
+    #[Description('A database migration was performed')]
+    case Migration = 'Migration';
 }
