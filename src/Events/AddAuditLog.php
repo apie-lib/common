@@ -99,15 +99,14 @@ class AddAuditLog implements EventSubscriberInterface
 
     public function onApieResourceReadList(ApieResourceReadList $event): void
     {
-        foreach ((new ReflectionClass($event->resource))->getAttributes(Auditable::class) as $auditable) {
+        foreach ($event->resource->id->getClass()->getAttributes(Auditable::class) as $auditable) {
             $attribute = $auditable->newInstance();
             if (!$attribute->readAllEvents) {
                 continue;
             }
             foreach ($event->resource as $entity) {
                 $context = $event->context->withContext(ContextConstants::RESOURCE_ID, Utils::toString($entity->getId()));
-                $reference = IdFriendlyEntityReference::createFromContext($event->context);
-
+                $reference = IdFriendlyEntityReference::createFromContext($context);
                 if ($reference instanceof IdFriendlyEntityReference) {
                     $auditLog = new AuditLog(
                         $reference,

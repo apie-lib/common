@@ -12,7 +12,6 @@ use Apie\Core\ContextConstants;
 use Apie\Core\Datalayers\ApieDatalayer;
 use Apie\Core\Datalayers\Search\QuerySearch;
 use Apie\Core\Entities\EntityInterface;
-use Apie\Core\Entities\RequiresRecalculatingInterface;
 use Apie\Core\Enums\ConsoleCommand;
 use Apie\Core\Lists\StringHashmap;
 use Apie\Core\ValueObjects\IdFriendlyEntityReference;
@@ -120,13 +119,14 @@ class ApieAuditLogForMigrationCommand extends Command
                                 new IdFriendlyEntityReference(
                                     $boundedContextId,
                                     NonEmptyString::fromNative($resource->getShortName()),
-                                    NonEmptyString::fromNative($createdResource->getId())),
-                                    SerializedPhpObject::createFromPhpObject($createdResource),
-                                    new AuditMigration(),
-                                    null
+                                    NonEmptyString::fromNative($createdResource->getId())
                                 ),
-                                $boundedContextId
-                            );
+                                SerializedPhpObject::createFromPhpObject($createdResource),
+                                new AuditMigration(),
+                                null
+                            ),
+                            $boundedContextId
+                        );
                         $output->writeln(' Done');
                     }
                 } while (!$stop || $limit !== null);
