@@ -180,6 +180,34 @@ class CommonServiceProvider extends ServiceProvider
                 );
             }
         );
+        $this->registerSingleton(
+            \Apie\Common\Wrappers\PolicyManagerFactory::class,
+            function ($app) {
+                return new \Apie\Common\Wrappers\PolicyManagerFactory(
+                    $this->parseArgument('%apie.bounded_contexts%', \Apie\Common\Wrappers\PolicyManagerFactory::class, 0),
+                    $this->parseArgument('%apie.scan_bounded_contexts%', \Apie\Common\Wrappers\PolicyManagerFactory::class, 1),
+                    false,
+                    $app
+                );
+            }
+        );
+        $this->registerSingleton(
+            \Apie\Core\Policies\PolicyManager::class,
+            function ($app) {
+                return $this->app->make(\Apie\Common\Wrappers\PolicyManagerFactory::class)->create(
+                
+                );
+                
+            }
+        );
+        \Apie\ServiceProviderGenerator\TagMap::register(
+            $this->app,
+            \Apie\Core\Policies\PolicyManager::class,
+            array(
+              0 => 'apie.context',
+            )
+        );
+        $this->app->tag([\Apie\Core\Policies\PolicyManager::class], 'apie.context');
         $this->app->bind(\Apie\Common\Interfaces\RouteDefinitionProviderInterface::class, 'apie.route_definitions.provider');
         
         $this->registerSingleton(

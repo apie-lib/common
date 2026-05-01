@@ -12,8 +12,8 @@ use ReflectionClass;
 class AuditLogIdentifier extends SnowflakeIdentifier implements IdentifierInterface
 {
     public function __construct(
+        private float $microtime,
         private IdFriendlyEntityReference $entityReference,
-        private float $microtime
     ) {
     }
 

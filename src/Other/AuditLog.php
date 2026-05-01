@@ -9,14 +9,19 @@ use Apie\Common\Other\Audit\AuditMigration;
 use Apie\Common\Other\Audit\AuditModified;
 use Apie\Common\Other\Audit\AuditRead;
 use Apie\Common\Other\Audit\AuditRemoved;
+use Apie\Core\ApieLib;
 use Apie\Core\Attributes\AlwaysDisabled;
 use Apie\Core\Attributes\Context;
 use Apie\Core\Attributes\FakeCount;
+use Apie\Core\Attributes\Policy;
+use Apie\Core\Attributes\RuntimeCheck;
 use Apie\Core\Attributes\SearchFilterOption;
 use Apie\Core\Attributes\StaticCheck;
+use Apie\Core\Attributes\StoreOptions;
 use Apie\Core\Context\ApieContext;
 use Apie\Core\Entities\EntityInterface;
 use Apie\Core\Lists\PermissionList;
+use Apie\Core\Lists\StringSet;
 use Apie\Core\Permissions\RequiresPermissionsInterface;
 use Apie\Core\Translator\ApieTranslatorInterface;
 use Apie\Core\Translator\ValueObjects\TranslationString;
@@ -26,12 +31,14 @@ use Apie\Core\ValueObjects\Utils;
 use Apie\Serializer\ValueObjects\SerializedPhpObject;
 
 #[FakeCount(0)]
+#[RuntimeCheck(new Policy('canView', 'canViewAny'))]
 class AuditLog implements EntityInterface, RequiresPermissionsInterface
 {
     private AuditLogIdentifier $id;
 
-    private PermissionList $permissionSnapshot;
+    private StringSet $permissionSnapshot;
 
+    #[StoreOptions(alwaysMixedData: true)]
     private EntitySnapshotInstance $snapshot;
 
     // separate properties for optimization in the database
@@ -59,17 +66,18 @@ class AuditLog implements EntityInterface, RequiresPermissionsInterface
         #[Context('_ignored')]
         private readonly ?SerializedPhpObject $createdBy = null,
     ) {
-        $this->id = new AuditLogIdentifier($reference, microtime(true));
+        $this->id = new AuditLogIdentifier((float) ApieLib::getPsrClock()->now()->format('U.u'), $reference);
         $object = $serializedProperties->toPhpObject();
 
         $this->snapshot = EntitySnapshot::createFrom($object);
-        $this->permissionSnapshot = $object instanceof RequiresPermissionsInterface ? $object->getRequiredPermissions() : new PermissionList();
+        $this->permissionSnapshot = $object instanceof RequiresPermissionsInterface ? $object->getRequiredPermissions()->toStringList() : new StringSet();
         foreach (self::EVENT_MAPPING as $class => $property) {
             $this->$property = ($event instanceof $class) ? $event : null;
         }
     }
 
     #[SearchFilterOption(enabled: false)]
+    #[RuntimeCheck(new Policy('readDescription'))]
     public function getDescription(
         ApieTranslatorInterface $translator,
         ApieContext $context
@@ -88,6 +96,7 @@ class AuditLog implements EntityInterface, RequiresPermissionsInterface
         );
     }
 
+    #[RuntimeCheck(new Policy('readEvent'))]
     public function getEvent(): AuditLogEvent
     {
         foreach (self::EVENT_MAPPING as $property) {
@@ -98,6 +107,7 @@ class AuditLog implements EntityInterface, RequiresPermissionsInterface
         throw new \LogicException('Unknown event type');
     }
 
+    #[RuntimeCheck(new Policy('readCreatedBy'))]
     public function getCreatedBy(): ?NonEmptyString
     {
         $object = $this->createdBy?->toPhpObject();
@@ -112,6 +122,7 @@ class AuditLog implements EntityInterface, RequiresPermissionsInterface
 
     }
 
+    #[RuntimeCheck(new Policy('readRequiredPermissions'))]
     public function getRequiredPermissions(): PermissionList
     {
         $object = $this->serializedProperties->toPhpObject();
@@ -119,7 +130,7 @@ class AuditLog implements EntityInterface, RequiresPermissionsInterface
             return $object->getRequiredPermissions();
         }
 
-        return $this->permissionSnapshot;
+        return new PermissionList($this->permissionSnapshot->toArray());
     }
 
     public function getId(): AuditLogIdentifier
@@ -127,17 +138,25 @@ class AuditLog implements EntityInterface, RequiresPermissionsInterface
         return $this->id;
     }
 
+    #[RuntimeCheck(new Policy('readReference'))]
     public function getReference(): IdFriendlyEntityReference
     {
         return $this->reference;
     }
 
+    #[RuntimeCheck(new Policy('readData'))]
     public function getData(): EntityInterface|EntitySnapshotInstance
     {
         $entity = $this->serializedProperties->toPhpObject();
         if ($entity instanceof EntityInterface) {
             return $entity;
         }
+        return $this->snapshot;
+    }
+
+    #[RuntimeCheck(new Policy('readSnapshot'))]
+    public function getSnapshot(): EntitySnapshotInstance
+    {
         return $this->snapshot;
     }
 }

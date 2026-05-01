@@ -63,11 +63,22 @@ services:
     tags: ['kernel.event_subscriber']
 
   apie.bounded_context.hashmap_factory:
-      class: Apie\Common\Wrappers\BoundedContextHashmapFactory
-      arguments:
-        - "%apie.bounded_contexts%"
-        - "%apie.scan_bounded_contexts%"
-        - '@Psr\EventDispatcher\EventDispatcherInterface'
+    class: Apie\Common\Wrappers\BoundedContextHashmapFactory
+    arguments:
+      - "%apie.bounded_contexts%"
+      - "%apie.scan_bounded_contexts%"
+      - '@Psr\EventDispatcher\EventDispatcherInterface'
+
+  Apie\Common\Wrappers\PolicyManagerFactory:
+    arguments:
+      - "%apie.bounded_contexts%"
+      - "%apie.scan_bounded_contexts%"
+      - false
+      - "@service_container"
+
+  Apie\Core\Policies\PolicyManager:
+    factory: ['@Apie\Common\Wrappers\PolicyManagerFactory', 'create']
+    tags: ['apie.context']
 
   Apie\Common\Interfaces\RouteDefinitionProviderInterface:
     alias: apie.route_definitions.provider

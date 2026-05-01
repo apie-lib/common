@@ -16,7 +16,7 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Finder\Finder;
 
 /**
- * Creates a BoundedContextHashmap instance from the ApieBundle configuration.
+ * Creates a BoundedContextHashmap instance from the Apie configuration.
  *
  * @see Configuration in apie/apie-bundle for Symfony
  * @see resources/apie.php in apie/laravel-apie for Laravel

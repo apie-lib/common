@@ -1,6 +1,7 @@
 <?php
 namespace Apie\Common\Config;
 
+use Apie\Common\ValueObjects\EntityNamespace;
 use Apie\DoctrineEntityDatalayer\IndexStrategy\DirectIndexStrategy;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
@@ -130,11 +131,28 @@ abstract class Configuration implements ConfigurationInterface
             ->arrayNode('bounded_contexts')
                 ->useAttributeAsKey('name')
                 ->arrayPrototype()
+                ->beforeNormalization()
+                    ->always(
+                        function (array $v) {
+                            if (empty($v['policy_folder']) && !empty($v['entities_folder'])) {
+                                $v['policy_folder'] = rtrim($v['entities_folder'], '/\\') . '/../Policies';
+                            }
+
+                            if (empty($v['policy_namespace']) && !empty($v['entities_namespace'])) {
+                                $entityNamespace = EntityNamespace::fromNative($v['entities_namespace']);
+                                $v['policy_namespace'] = $entityNamespace->getParentNamespace()->getChildNamespace('Policies')->toNative();
+                            }
+
+                            return $v;
+                        }
+                    )->end()
                     ->children()
                         ->scalarNode('entities_folder')->isRequired()->end()
                         ->scalarNode('entities_namespace')->isRequired()->end()
                         ->scalarNode('actions_folder')->isRequired()->end()
                         ->scalarNode('actions_namespace')->isRequired()->end()
+                        ->scalarNode('policy_folder')->defaultNull()->end()
+                        ->scalarNode('policy_namespace')->defaultNull()->end()
                     ->end()
                 ->end()
             ->end()
