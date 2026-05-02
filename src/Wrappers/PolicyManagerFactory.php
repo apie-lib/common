@@ -48,7 +48,7 @@ final class PolicyManagerFactory
         }
         return new ResourcePolicyProvider(
             new ItemHashmap($classPolicies),
-            new FallbackPolicy($this->defaultAllowIfNoPolicy)
+            new FallbackPolicy()
         );
     }
 
@@ -78,7 +78,7 @@ final class PolicyManagerFactory
         }
         return new BoundedContextPolicyProvider(
             new PolicyProviderHashmap($blocks),
-            new FallbackPolicy($this->defaultAllowIfNoPolicy)
+            new FallbackPolicy()
         );
     }
 

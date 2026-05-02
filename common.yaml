@@ -1,5 +1,7 @@
 services:
   Apie\Common\ActionDefinitionProvider:
+    arguments:
+      - !tagged_locator { tag: 'apie.context' }
 
   Apie\Common\ContextBuilders\AddEventDispatcherContextBuilder:
     arguments:

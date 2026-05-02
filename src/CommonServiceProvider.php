@@ -18,7 +18,7 @@ class CommonServiceProvider extends ServiceProvider
             \Apie\Common\ActionDefinitionProvider::class,
             function ($app) {
                 return new \Apie\Common\ActionDefinitionProvider(
-                
+                    $this->getTaggedServicesServiceLocator('apie.context')
                 );
             }
         );

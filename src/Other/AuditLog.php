@@ -31,6 +31,7 @@ use Apie\Core\ValueObjects\Utils;
 use Apie\Serializer\ValueObjects\SerializedPhpObject;
 
 #[FakeCount(0)]
+#[StaticCheck(new Policy('staticCanViewAny', enabledOnMissingRule: true))]
 #[RuntimeCheck(new Policy('canView', 'canViewAny'))]
 class AuditLog implements EntityInterface, RequiresPermissionsInterface
 {
@@ -77,6 +78,7 @@ class AuditLog implements EntityInterface, RequiresPermissionsInterface
     }
 
     #[SearchFilterOption(enabled: false)]
+    #[StaticCheck(new Policy('staticReadDescription', enabledOnMissingRule: true))]
     #[RuntimeCheck(new Policy('readDescription'))]
     public function getDescription(
         ApieTranslatorInterface $translator,
@@ -97,6 +99,7 @@ class AuditLog implements EntityInterface, RequiresPermissionsInterface
     }
 
     #[RuntimeCheck(new Policy('readEvent'))]
+    #[StaticCheck(new Policy('staticReadEvent', enabledOnMissingRule: true))]
     public function getEvent(): AuditLogEvent
     {
         foreach (self::EVENT_MAPPING as $property) {
@@ -108,6 +111,7 @@ class AuditLog implements EntityInterface, RequiresPermissionsInterface
     }
 
     #[RuntimeCheck(new Policy('readCreatedBy'))]
+    #[StaticCheck(new Policy('staticReadCreatedBy', enabledOnMissingRule: true))]
     public function getCreatedBy(): ?NonEmptyString
     {
         $object = $this->createdBy?->toPhpObject();
@@ -123,6 +127,7 @@ class AuditLog implements EntityInterface, RequiresPermissionsInterface
     }
 
     #[RuntimeCheck(new Policy('readRequiredPermissions'))]
+    #[StaticCheck(new Policy('staticReadRequiredPermissions', enabledOnMissingRule: true))]
     public function getRequiredPermissions(): PermissionList
     {
         $object = $this->serializedProperties->toPhpObject();
@@ -138,12 +143,14 @@ class AuditLog implements EntityInterface, RequiresPermissionsInterface
         return $this->id;
     }
 
+    #[StaticCheck(new Policy('staticReadReference', enabledOnMissingRule: true))]
     #[RuntimeCheck(new Policy('readReference'))]
     public function getReference(): IdFriendlyEntityReference
     {
         return $this->reference;
     }
 
+    #[StaticCheck(new Policy('staticReadData', enabledOnMissingRule: true))]
     #[RuntimeCheck(new Policy('readData'))]
     public function getData(): EntityInterface|EntitySnapshotInstance
     {
@@ -154,6 +161,7 @@ class AuditLog implements EntityInterface, RequiresPermissionsInterface
         return $this->snapshot;
     }
 
+    #[StaticCheck(new Policy('staticReadSnapshot', enabledOnMissingRule: true))]
     #[RuntimeCheck(new Policy('readSnapshot'))]
     public function getSnapshot(): EntitySnapshotInstance
     {
