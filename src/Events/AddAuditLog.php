@@ -9,6 +9,7 @@ use Apie\Common\Other\Audit\AuditModified;
 use Apie\Common\Other\Audit\AuditRead;
 use Apie\Common\Other\Audit\AuditRemoved;
 use Apie\Common\Other\AuditLog;
+use Apie\Common\Other\AuditOrigin;
 use Apie\Core\Attributes\Auditable;
 use Apie\Core\BoundedContext\BoundedContextId;
 use Apie\Core\Context\ApieContext;
@@ -63,6 +64,7 @@ class AddAuditLog implements EventSubscriberInterface
                     $reference,
                     SerializedPhpObject::createFromPhpObject($event->resource),
                     new AuditCreate($event->context->getContext(RequestMethod::class, false) === RequestMethod::PUT),
+                    AuditOrigin::createFromContext($event->context),
                     $this->createUser($event->context)
                 );
                 $this->datalayer->persistNew(
@@ -87,6 +89,7 @@ class AddAuditLog implements EventSubscriberInterface
                     $reference,
                     SerializedPhpObject::createFromPhpObject($event->resource),
                     new AuditRead(),
+                    AuditOrigin::createFromContext($event->context),
                     $this->createUser($event->context)
                 );
                 $this->datalayer->persistNew(
@@ -112,6 +115,7 @@ class AddAuditLog implements EventSubscriberInterface
                         $reference,
                         SerializedPhpObject::createFromPhpObject($entity),
                         new AuditRead(fromList: true),
+                        AuditOrigin::createFromContext($event->context),
                         $this->createUser($context)
                     );
                     $this->datalayer->persistNew(
@@ -139,6 +143,7 @@ class AddAuditLog implements EventSubscriberInterface
                     $reference,
                     SerializedPhpObject::createFromPhpObject($event->resource),
                     $auditEvent,
+                    AuditOrigin::createFromContext($event->context),
                     $this->createUser($event->context)
                 );
                 $this->datalayer->persistNew(
@@ -159,6 +164,7 @@ class AddAuditLog implements EventSubscriberInterface
                     $reference,
                     SerializedPhpObject::createFromPhpObject($event->resource),
                     new AuditMethodCalled($event->methodName, $event->context->getContext(ContextConstants::RAW_CONTENTS, false)),
+                    AuditOrigin::createFromContext($event->context),
                     $this->createUser($event->context)
                 );
                 $this->datalayer->persistNew(
@@ -179,6 +185,7 @@ class AddAuditLog implements EventSubscriberInterface
                     $reference,
                     SerializedPhpObject::createFromPhpObject($event->resource),
                     new AuditRemoved(),
+                    AuditOrigin::createFromContext($event->context),
                     $this->createUser($event->context)
                 );
                 $this->datalayer->persistNew(

@@ -29,10 +29,13 @@ use Apie\Core\ValueObjects\IdFriendlyEntityReference;
 use Apie\Core\ValueObjects\NonEmptyString;
 use Apie\Core\ValueObjects\Utils;
 use Apie\Serializer\ValueObjects\SerializedPhpObject;
+use Composer\Advisory\Auditor;
 
 #[FakeCount(0)]
 #[StaticCheck(new Policy('staticCanViewAny', enabledOnMissingRule: true))]
-#[RuntimeCheck(new Policy('canView', 'canViewAny'))]
+#[RuntimeCheck(
+    new Policy('canView', 'canViewAny')
+)]
 class AuditLog implements EntityInterface, RequiresPermissionsInterface
 {
     private AuditLogIdentifier $id;
@@ -64,6 +67,7 @@ class AuditLog implements EntityInterface, RequiresPermissionsInterface
         private readonly IdFriendlyEntityReference $reference,
         private readonly SerializedPhpObject $serializedProperties,
         AuditEvent $event,
+        private readonly AuditOrigin $origin,
         #[Context('_ignored')]
         private readonly ?SerializedPhpObject $createdBy = null,
     ) {
@@ -141,6 +145,13 @@ class AuditLog implements EntityInterface, RequiresPermissionsInterface
     public function getId(): AuditLogIdentifier
     {
         return $this->id;
+    }
+
+    #[StaticCheck(new Policy('staticReadOrigin', enabledOnMissingRule: true))]
+    #[RuntimeCheck(new Policy('readOrigin'))]
+    public function getOrigin(): AuditOrigin
+    {
+        return $this->origin;
     }
 
     #[StaticCheck(new Policy('staticReadReference', enabledOnMissingRule: true))]

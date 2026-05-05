@@ -3,6 +3,7 @@ namespace Apie\Common\Command;
 
 use Apie\Common\Other\Audit\AuditMigration;
 use Apie\Common\Other\AuditLog;
+use Apie\Common\Other\AuditOrigin;
 use Apie\Core\Attributes\Auditable;
 use Apie\Core\BoundedContext\BoundedContext;
 use Apie\Core\BoundedContext\BoundedContextHashmap;
@@ -109,6 +110,7 @@ class ApieAuditLogForMigrationCommand extends Command
                     );
                     $offset++;
                     $stop = true;
+                    $origin = AuditOrigin::createFromContext($subApieContext);
                     foreach ($chunk as $item) {
                         $output->write(sprintf('%40s', Utils::toString($item->getId())));
                         $stop = false;
@@ -123,6 +125,7 @@ class ApieAuditLogForMigrationCommand extends Command
                                 ),
                                 SerializedPhpObject::createFromPhpObject($createdResource),
                                 new AuditMigration(),
+                                $origin,
                                 null
                             ),
                             $boundedContextId
