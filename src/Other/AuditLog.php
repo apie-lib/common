@@ -29,12 +29,12 @@ use Apie\Core\ValueObjects\IdFriendlyEntityReference;
 use Apie\Core\ValueObjects\NonEmptyString;
 use Apie\Core\ValueObjects\Utils;
 use Apie\Serializer\ValueObjects\SerializedPhpObject;
-use Composer\Advisory\Auditor;
 
 #[FakeCount(0)]
 #[StaticCheck(new Policy('staticCanViewAny', enabledOnMissingRule: true))]
 #[RuntimeCheck(
-    new Policy('canView', 'canViewAny')
+    new Policy('canView', 'canViewAny'),
+    new ShouldApplyAuditablePermission()
 )]
 class AuditLog implements EntityInterface, RequiresPermissionsInterface
 {
@@ -91,7 +91,7 @@ class AuditLog implements EntityInterface, RequiresPermissionsInterface
         $context = $context->withContext(AuditLog::class, $this);
         foreach (self::EVENT_MAPPING as $property) {
             if ($this->$property !== null) {
-                return $this->$property->getTranslation($translator, $context);
+                return $this->$property->getDescription($translator, $context, $this->reference->getEntityClass()->toNative());
             }
         }
         return NonEmptyString::fromNative(

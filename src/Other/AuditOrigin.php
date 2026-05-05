@@ -54,27 +54,15 @@ class AuditOrigin implements ValueObjectInterface
             if (class_exists(Request::class)) {
                 $trustedProxies = Request::getTrustedProxies();
             }
-            $ip = new class(
-                checkProxyHeaders: true,
-                trustedProxies: $trustedProxies,
-                headersToInspect: [
-                    'CF-Connecting-IP',
-                    'True-Client-IP',
-                    'X-Real-IP',
-                    'Forwarded',
-                    'X-Forwarded-For',
-                    'X-Forwarded',
-                    'X-Cluster-Client-Ip',
-                    'Client-Ip',
-                ]
-            ) extends IpAddress {
+            $ip = new class(checkProxyHeaders: true, trustedProxies: $trustedProxies, headersToInspect: [ 'CF-Connecting-IP', 'True-Client-IP', 'X-Real-IP', 'Forwarded', 'X-Forwarded-For', 'X-Forwarded', 'X-Cluster-Client-Ip', 'Client-Ip', ]) extends IpAddress {
                 public function determineClientIpAddress($request): ?string
                 {
                     return parent::determineClientIpAddress($request);
                 }
             };
             $clientIp = $ip->determineClientIpAddress($request);
-            $clientUserAgent = $request->getHeaderLine('User-Agent') ? : null;;
+            $clientUserAgent = $request->getHeaderLine('User-Agent') ? : null;
+            ;
         } else {
             $serverName = gethostname();
             $terminalUserName = get_current_user();
