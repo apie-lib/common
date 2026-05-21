@@ -40,6 +40,7 @@ class CheckAuthenticatedContextBuilder implements ContextBuilderInterface
                         $authenticated = $datalayer->find($decryptedUserId->getId());
                         $context = $context
                             ->withContext(ContextConstants::AUTHENTICATED_USER, $authenticated)
+                            ->registerInstance($authenticated)
                             ->registerInstance($decryptedUserId);
                     } catch (Exception $error) {
                         $this->logger->error(
