@@ -57,8 +57,8 @@ final class PolicyManagerFactory
         $blocks = [];
         foreach ($this->boundedContexts as $boundedContextId => $boundedContextConfig) {
             $contextId = new BoundedContextId($boundedContextId);
-            $namespace = new EntityNamespace($boundedContextConfig['policy_namespace']);
-            $blocks[$contextId->toNative()] = $this->createResourcePolicyProvider($namespace, $boundedContextConfig['policy_folder']);
+            $namespace = new EntityNamespace($boundedContextConfig['policies_namespace']);
+            $blocks[$contextId->toNative()] = $this->createResourcePolicyProvider($namespace, $boundedContextConfig['policies_folder']);
         }
         if (!empty($this->scanBoundedContexts['search_path'])
             && !empty($this->scanBoundedContexts['search_namespace'])

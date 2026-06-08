@@ -134,13 +134,13 @@ abstract class Configuration implements ConfigurationInterface
                 ->beforeNormalization()
                     ->always(
                         function (array $v) {
-                            if (empty($v['policy_folder']) && !empty($v['entities_folder'])) {
-                                $v['policy_folder'] = rtrim($v['entities_folder'], '/\\') . '/../Policies';
+                            if (empty($v['policies_folder']) && !empty($v['entities_folder'])) {
+                                $v['policies_folder'] = rtrim($v['entities_folder'], '/\\') . '/../Policies';
                             }
 
-                            if (empty($v['policy_namespace']) && !empty($v['entities_namespace'])) {
+                            if (empty($v['policies_namespace']) && !empty($v['entities_namespace'])) {
                                 $entityNamespace = EntityNamespace::fromNative($v['entities_namespace']);
-                                $v['policy_namespace'] = $entityNamespace->getParentNamespace()->getChildNamespace('Policies')->toNative();
+                                $v['policies_namespace'] = $entityNamespace->getParentNamespace()->getChildNamespace('Policies')->toNative();
                             }
 
                             return $v;
@@ -151,8 +151,8 @@ abstract class Configuration implements ConfigurationInterface
                         ->scalarNode('entities_namespace')->isRequired()->end()
                         ->scalarNode('actions_folder')->isRequired()->end()
                         ->scalarNode('actions_namespace')->isRequired()->end()
-                        ->scalarNode('policy_folder')->defaultNull()->end()
-                        ->scalarNode('policy_namespace')->defaultNull()->end()
+                        ->scalarNode('policies_folder')->defaultNull()->end()
+                        ->scalarNode('policies_namespace')->defaultNull()->end()
                     ->end()
                 ->end()
             ->end()
