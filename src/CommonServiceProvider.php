@@ -295,6 +295,22 @@ class CommonServiceProvider extends ServiceProvider
             )
         );
         $this->app->tag([\Apie\Common\ContextBuilders\AddLockManagerContextBuilder::class], 'apie.core.context_builder');
+        $this->registerSingleton(
+            \Apie\Common\ContextBuilders\LocaleContextBuilder::class,
+            function ($app) {
+                return new \Apie\Common\ContextBuilders\LocaleContextBuilder(
+                
+                );
+            }
+        );
+        \Apie\ServiceProviderGenerator\TagMap::register(
+            $this->app,
+            \Apie\Common\ContextBuilders\LocaleContextBuilder::class,
+            array(
+              0 => 'apie.core.context_builder',
+            )
+        );
+        $this->app->tag([\Apie\Common\ContextBuilders\LocaleContextBuilder::class], 'apie.core.context_builder');
         $this->app->singleton(
             \Apie\Common\Wrappers\RequestAwareInMemoryDatalayer::class,
             function ($app) {
