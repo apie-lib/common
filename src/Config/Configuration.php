@@ -56,6 +56,11 @@ abstract class Configuration implements ConfigurationInterface
         ->end();
         $this->addApiOptions($apiConfig);
 
+        $openApiConfig = $children->arrayNode('open_api');
+        $openApiConfig->children()
+            ->integerNode('max_enum_size')->defaultValue(100)->end()
+        ->end();
+
         $ftpConfig = $children->arrayNode('ftp_server');
         $ftpConfig->children()
           ->scalarNode('public_ip')->defaultValue('127.0.0.1')->end()
