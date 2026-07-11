@@ -5,6 +5,9 @@ use Apie\Core\Context\ApieContext;
 use Apie\Core\ContextBuilders\ContextBuilderInterface;
 use Apie\Core\ContextConstants;
 use Apie\Core\Utils\LanguageParser;
+use Apie\Core\ValueObjects\Utils;
+use Apie\Serializer\Exceptions\NotAcceptedException;
+use Apie\TypeConverter\ReflectionTypeFactory;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
@@ -12,6 +15,11 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class LocaleContextBuilder implements ContextBuilderInterface
 {
+    public function __construct(
+        private readonly ?string $languageTypehint
+    ) {
+    }
+
     public function process(ApieContext $context): ApieContext
     {
         $request = $context->getContext(ServerRequestInterface::class, false);
@@ -20,7 +28,11 @@ class LocaleContextBuilder implements ContextBuilderInterface
             if ($acceptLanguage) {
                 $locales = LanguageParser::parseLanguageHeader($acceptLanguage);
                 if (!empty($locales)) {
-                    $context = $context->withContext(ContextConstants::ACCEPT_LOCALE, $locales[0]);
+                    $locale = $this->pickLocale($locales, 'Accept-Language');
+                    if (is_object($locale)) {
+                        $context = $context->registerInstance($locale);
+                    }
+                    $context = $context->withContext(ContextConstants::ACCEPT_LOCALE, Utils::toString($locale));
                     $context = $context->withContext(ContextConstants::ACCEPTED_LOCALES, $locales);
                 }
             }
@@ -29,11 +41,38 @@ class LocaleContextBuilder implements ContextBuilderInterface
             if ($contentLanguage) {
                 $locales = LanguageParser::parseLanguageHeader($contentLanguage);
                 if (!empty($locales)) {
-                    $context = $context->withContext(ContextConstants::LOCALE, $locales[0]);
-                    $context = $context->withContext(ContextConstants::DATA_LOCALE, $locales[0]);
+                    $locale = $this->pickLocale($locales, 'Content-Language');
+                    if (is_object($locale)) {
+                        $context = $context->registerInstance($locale);
+                    }
+                    $context = $context->withContext(ContextConstants::LOCALE, Utils::toString($locale));
+                    $context = $context->withContext(ContextConstants::DATA_LOCALE, Utils::toString($locale));
                 }
             }
         }
         return $context;
+    }
+
+    /**
+     * @param array<int, string> $locales
+     */
+    private function pickLocale(array $locales, string $headerName): mixed
+    {
+        if ($this->languageTypehint === null) {
+            return $locales[0];
+        }
+        $last = null;
+        foreach ($locales as $locale) {
+            try {
+                return Utils::toTypehint(
+                    // @phpstan-ignore-next-line argument.type
+                    ReflectionTypeFactory::createReflectionType($this->languageTypehint),
+                    $locale
+                );
+            } catch (\Throwable $err) {
+                $last = $err;
+            }
+        }
+        throw new NotAcceptedException($headerName, $last);
     }
 }

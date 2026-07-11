@@ -3,6 +3,8 @@ namespace Apie\Common\Config;
 
 use Apie\Common\ValueObjects\EntityNamespace;
 use Apie\DoctrineEntityDatalayer\IndexStrategy\DirectIndexStrategy;
+use Apie\IanaValueObjects\LanguageAndRegion;
+use PrinsFrank\Standards\Language\LanguageAlpha2;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
@@ -79,6 +81,7 @@ abstract class Configuration implements ConfigurationInterface
             ->scalarNode('base_url')->defaultValue('https://api.openai.com/v1')->end()
             ->scalarNode('api_key')->defaultValue('no-value')->end()
         ->end();
+
         $children->arrayNode('datalayers')
                 ->children()
                     ->scalarNode('default_datalayer')->isRequired()->end()
@@ -133,6 +136,7 @@ abstract class Configuration implements ConfigurationInterface
                   ->scalarNode('target_namespace')->defaultValue('App\Apie')->end()
                 ->end()
             ->end()
+            ->scalarNode('language_typehint')->defaultValue(self::getDefaultLanguageTypehint())->end()
             ->arrayNode('bounded_contexts')
                 ->useAttributeAsKey('name')
                 ->arrayPrototype()
@@ -173,5 +177,17 @@ abstract class Configuration implements ConfigurationInterface
         }
         $childNode->scalarNode('remote_mcp_path')->defaultValue(null)->end();
         return $treeBuilder;
+    }
+
+    public static function getDefaultLanguageTypehint(): ?string
+    {
+        $languageTypehint = null;
+        if (class_exists(LanguageAlpha2::class)) {
+            $languageTypehint = LanguageAlpha2::class;
+        }
+        if (class_exists(LanguageAndRegion::class)) {
+            $languageTypehint = LanguageAndRegion::class;
+        }
+        return $languageTypehint;
     }
 }

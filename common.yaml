@@ -113,6 +113,8 @@ services:
     tags: ['apie.core.context_builder']
 
   Apie\Common\ContextBuilders\LocaleContextBuilder:
+    arguments:
+      - '%apie.language_typehint%'
     tags: ['apie.core.context_builder']
 
   Apie\Common\Wrappers\RequestAwareInMemoryDatalayer:

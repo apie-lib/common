@@ -299,7 +299,7 @@ class CommonServiceProvider extends ServiceProvider
             \Apie\Common\ContextBuilders\LocaleContextBuilder::class,
             function ($app) {
                 return new \Apie\Common\ContextBuilders\LocaleContextBuilder(
-                
+                    $this->parseArgument('%apie.language_typehint%', \Apie\Common\ContextBuilders\LocaleContextBuilder::class, 0)
                 );
             }
         );
