@@ -21,10 +21,19 @@
   },
   "extra": {
     "apie-objects": [
-      "Apie\\Common\\Enums\\UrlPrefix",
-      "Apie\\Common\\ValueObjects\\EntityNamespace",
-      "Apie\\Common\\ValueObjects\\PossibleRoutePrefixes"
-    ]
+    "Apie\\Common\\MenuStructure\\MenuNode",
+    "Apie\\Common\\MenuStructure\\MenuNodeChildren",
+    "Apie\\Common\\Lists\\UrlPrefixList",
+    "Apie\\Common\\Enums\\AuditLogEvent",
+    "Apie\\Common\\Enums\\AccessDenied",
+    "Apie\\Common\\Enums\\UrlPrefix",
+    "Apie\\Common\\Enums\\HiddenField",
+    "Apie\\Common\\ValueObjects\\PossibleRoutePrefixes",
+    "Apie\\Common\\ValueObjects\\EntityNamespace",
+    "Apie\\Common\\ValueObjects\\DecryptedAuthenticatedUser",
+    "Apie\\Common\\Other\\AuditLogIdentifier",
+    "Apie\\Common\\Other\\AuditOrigin"
+]
   },
   "require": {
     "php": ">=8.3",
