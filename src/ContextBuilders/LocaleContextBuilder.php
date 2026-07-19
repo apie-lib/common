@@ -50,6 +50,22 @@ class LocaleContextBuilder implements ContextBuilderInterface
                 }
             }
         }
+
+        if (!$context->getContext(ContextConstants::DATA_LOCALE, false)) {
+            $acceptLanguage = $context->getContext(ContextConstants::ACCEPT_LOCALE, false);
+            $contentLanguage = $context->getContext(ContextConstants::DATA_LOCALE, false);
+            if ($acceptLanguage) {
+                $localeObject = $this->pickLocale(
+                    [$acceptLanguage],
+                    'framework locale'
+                );
+                if (is_object($localeObject)) {
+                    $context = $context->registerInstance($localeObject);
+                }
+            }
+        }
+
+
         return $context;
     }
 
