@@ -31,6 +31,13 @@ services:
     tags:
       - 'console.command'
 
+  Apie\Common\Command\ApieMakeTranslationFileCommand:
+    arguments:
+      - '@Apie\Common\Translator\TranslationCollector'
+      - '@Apie\Core\Other\FileWriterInterface'
+    tags:
+      - 'console.command'
+
   Apie\Common\ApieFacade:
     arguments:
       - '@apie.route_definitions.provider'
@@ -45,6 +52,17 @@ services:
       - '@Apie\Common\ActionDefinitionProvider'
       - '@Apie\Serializer\Serializer'
     tags: [apie.context]
+
+  Apie\Common\Translator\TranslationCollector:
+    factory: ['Apie\Common\Translator\TranslationCollector', 'create']
+    arguments:
+      - '@Apie\Core\ContextBuilders\ContextBuilderFactory'
+      - !tagged_iterator apie.translation_collector
+
+  Apie\Common\Translator\ResourceNameTranslationProvider:
+    arguments:
+      - '@Apie\Core\BoundedContext\BoundedContextHashmap'
+    tags: [apie.translation_collector]
 
   Apie\Common\Events\ResponseDispatcher:
     arguments:

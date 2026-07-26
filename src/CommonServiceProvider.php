@@ -93,6 +93,23 @@ class CommonServiceProvider extends ServiceProvider
         );
         $this->app->tag([\Apie\Common\Command\ApieAuditLogForMigrationCommand::class], 'console.command');
         $this->registerSingleton(
+            \Apie\Common\Command\ApieMakeTranslationFileCommand::class,
+            function ($app) {
+                return new \Apie\Common\Command\ApieMakeTranslationFileCommand(
+                    $app->make(\Apie\Common\Translator\TranslationCollector::class),
+                    $app->make(\Apie\Core\Other\FileWriterInterface::class)
+                );
+            }
+        );
+        \Apie\ServiceProviderGenerator\TagMap::register(
+            $this->app,
+            \Apie\Common\Command\ApieMakeTranslationFileCommand::class,
+            array(
+              0 => 'console.command',
+            )
+        );
+        $this->app->tag([\Apie\Common\Command\ApieMakeTranslationFileCommand::class], 'console.command');
+        $this->registerSingleton(
             \Apie\Common\ApieFacade::class,
             function ($app) {
                 return new \Apie\Common\ApieFacade(
@@ -129,6 +146,32 @@ class CommonServiceProvider extends ServiceProvider
             )
         );
         $this->app->tag([\Apie\Common\LoginService::class], 'apie.context');
+        $this->registerSingleton(
+            \Apie\Common\Translator\TranslationCollector::class,
+            function ($app) {
+                return \Apie\Common\Translator\TranslationCollector::create(
+                    $app->make(\Apie\Core\ContextBuilders\ContextBuilderFactory::class),
+                    $this->getTaggedServicesIterator('apie.translation_collector')
+                );
+                
+            }
+        );
+        $this->registerSingleton(
+            \Apie\Common\Translator\ResourceNameTranslationProvider::class,
+            function ($app) {
+                return new \Apie\Common\Translator\ResourceNameTranslationProvider(
+                    $app->make(\Apie\Core\BoundedContext\BoundedContextHashmap::class)
+                );
+            }
+        );
+        \Apie\ServiceProviderGenerator\TagMap::register(
+            $this->app,
+            \Apie\Common\Translator\ResourceNameTranslationProvider::class,
+            array(
+              0 => 'apie.translation_collector',
+            )
+        );
+        $this->app->tag([\Apie\Common\Translator\ResourceNameTranslationProvider::class], 'apie.translation_collector');
         $this->registerSingleton(
             \Apie\Common\Events\ResponseDispatcher::class,
             function ($app) {
