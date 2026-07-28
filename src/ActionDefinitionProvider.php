@@ -14,7 +14,9 @@ use Apie\Common\ActionDefinitions\RunResourceMethodDefinition;
 use Apie\Common\ContextBuilders\ServiceContextBuilder;
 use Apie\Common\Lists\ActionDefinitionList;
 use Apie\Core\BoundedContext\BoundedContext;
+use Apie\Core\BoundedContext\BoundedContextId;
 use Apie\Core\Context\ApieContext;
+use Apie\Core\ContextConstants;
 use Symfony\Component\DependencyInjection\ServiceLocator;
 
 class ActionDefinitionProvider
@@ -46,7 +48,10 @@ class ActionDefinitionProvider
     
     public function provideActionDefinitions(BoundedContext $boundedContext, ApieContext $apieContext, bool $runtimeChecks = false): ActionDefinitionList
     {
-        $apieContext = $this->serviceContextBuilder->process($apieContext);
+        $apieContext = $this->serviceContextBuilder->process($apieContext)
+            ->withContext(BoundedContext::class, $boundedContext)
+            ->withContext(BoundedContextId::class, $boundedContext->getId())
+            ->withContext(ContextConstants::BOUNDED_CONTEXT_ID, $boundedContext->getId()->toNative());
         $actionDefinitions = [];
         foreach (self::ACTION_DEFINITION_CLASSES as $actionDefinitionClass) {
             foreach ($actionDefinitionClass::provideActionDefinitions($boundedContext, $apieContext, $runtimeChecks) as $actionDefinition) {

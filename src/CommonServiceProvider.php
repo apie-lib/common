@@ -160,7 +160,7 @@ class CommonServiceProvider extends ServiceProvider
             \Apie\Common\Translator\ResourceNameTranslationProvider::class,
             function ($app) {
                 return new \Apie\Common\Translator\ResourceNameTranslationProvider(
-                    $app->make(\Apie\Core\BoundedContext\BoundedContextHashmap::class)
+                
                 );
             }
         );
@@ -172,6 +172,22 @@ class CommonServiceProvider extends ServiceProvider
             )
         );
         $this->app->tag([\Apie\Common\Translator\ResourceNameTranslationProvider::class], 'apie.translation_collector');
+        $this->registerSingleton(
+            \Apie\Common\Translator\ResourceActionTranslationProvider::class,
+            function ($app) {
+                return new \Apie\Common\Translator\ResourceActionTranslationProvider(
+                    $app->make(\Apie\Common\ActionDefinitionProvider::class)
+                );
+            }
+        );
+        \Apie\ServiceProviderGenerator\TagMap::register(
+            $this->app,
+            \Apie\Common\Translator\ResourceActionTranslationProvider::class,
+            array(
+              0 => 'apie.translation_collector',
+            )
+        );
+        $this->app->tag([\Apie\Common\Translator\ResourceActionTranslationProvider::class], 'apie.translation_collector');
         $this->registerSingleton(
             \Apie\Common\Events\ResponseDispatcher::class,
             function ($app) {

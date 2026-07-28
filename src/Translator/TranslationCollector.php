@@ -20,7 +20,7 @@ final class TranslationCollector
 
     /**
      * For Symfony tagged_iterator can not be variadic
-     * 
+     *
      * @param iterable<string|int, TranslationStringProviderInterface> $translationStringProviders
      */
     public static function create(

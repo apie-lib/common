@@ -60,8 +60,11 @@ services:
       - !tagged_iterator apie.translation_collector
 
   Apie\Common\Translator\ResourceNameTranslationProvider:
+    tags: [apie.translation_collector]
+
+  Apie\Common\Translator\ResourceActionTranslationProvider:
     arguments:
-      - '@Apie\Core\BoundedContext\BoundedContextHashmap'
+      -  '@Apie\Common\ActionDefinitionProvider'
     tags: [apie.translation_collector]
 
   Apie\Common\Events\ResponseDispatcher:

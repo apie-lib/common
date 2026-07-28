@@ -35,7 +35,7 @@ class ApieMakeTranslationFileCommand extends Command
         } else {
             $ext = pathinfo($filename, PATHINFO_EXTENSION);
             if ($ext) {
-                 $method = match($ext) {
+                $method = match($ext) {
                     'php' => 'renderPhpFile',
                     'json' => 'renderJsonFile',
                     'yml' => 'renderYamlFile',

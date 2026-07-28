@@ -56,15 +56,15 @@ final class RunResourceMethodDefinition implements ActionDefinitionInterface
             $resourceList = [$resource];
             if (in_array(PolymorphicEntityInterface::class, $resource->getInterfaceNames())) {
                 if ($runtimeChecks) {
-                    if ($apieContext->hasContext(ContextConstants::RESOURCE)) {
-                        $resourceList = [new ReflectionClass($apieContext->getContext(ContextConstants::RESOURCE))];
+                    if ($resourceActionContext->hasContext(ContextConstants::RESOURCE)) {
+                        $resourceList = [new ReflectionClass($resourceActionContext->getContext(ContextConstants::RESOURCE))];
                     }
                 } else {
                     $resourceList = EntityUtils::getDiscriminatorClasses($resource);
                 }
             }
             foreach ($resourceList as $actualClass) {
-                foreach ($resourceActionContext->getApplicableMethods($actualClass, $runtimeChecks) as $method) {
+                foreach ($resourceActionContext->withContext(ContextConstants::RESOURCE_NAME, $actualClass->name)->getApplicableMethods($actualClass, $runtimeChecks) as $method) {
                     $definition = new RunResourceMethodDefinition(
                         $resource,
                         $method,

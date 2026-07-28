@@ -10,20 +10,18 @@ use Apie\Core\Translator\ValueObjects\TranslationStringSuffix;
 
 class ResourceNameTranslationProvider implements TranslationStringProviderInterface
 {
-    public function __construct(
-        private readonly BoundedContextHashmap $boundedContextHashmap
-    ) {
-    }
-
     public function provideStringTranslations(ApieContext $apieContext): TranslationStringSet
     {
         $items = [];
-        foreach ($this->boundedContextHashmap->getTupleIterator() as $tuple) {
-            $items[] = ResourceName::createFromTuple($tuple, new TranslationStringSuffix(Pluralization::Singular, false));
-            $items[] = ResourceName::createFromTuple($tuple, new TranslationStringSuffix(Pluralization::Singular, true));
-            
-            $items[] = ResourceName::createFromTuple($tuple, new TranslationStringSuffix(Pluralization::Plural, false));
-            $items[] = ResourceName::createFromTuple($tuple, new TranslationStringSuffix(Pluralization::Plural, true));
+        $boundedContextHashmap = $apieContext->getContext(BoundedContextHashmap::class, false);
+        if ($boundedContextHashmap instanceof BoundedContextHashmap) {
+            foreach ($boundedContextHashmap->getTupleIterator() as $tuple) {
+                $items[] = ResourceName::createFromTuple($tuple, new TranslationStringSuffix(Pluralization::Singular, false));
+                $items[] = ResourceName::createFromTuple($tuple, new TranslationStringSuffix(Pluralization::Singular, true));
+                
+                $items[] = ResourceName::createFromTuple($tuple, new TranslationStringSuffix(Pluralization::Plural, false));
+                $items[] = ResourceName::createFromTuple($tuple, new TranslationStringSuffix(Pluralization::Plural, true));
+            }
         }
         return new TranslationStringSet($items);
     }
