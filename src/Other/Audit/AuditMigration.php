@@ -5,7 +5,7 @@ use Apie\Common\Enums\AuditLogEvent;
 use Apie\Core\Context\ApieContext;
 use Apie\Core\Entities\EntityInterface;
 use Apie\Core\Translator\ApieTranslatorInterface;
-use Apie\Core\Translator\ValueObjects\TranslationString;
+use Apie\Core\Translator\ValueObjects\AuditLogEventMessage;
 use Apie\Core\ValueObjects\NonEmptyString;
 
 class AuditMigration implements AuditEvent
@@ -26,7 +26,7 @@ class AuditMigration implements AuditEvent
         return NonEmptyString::fromNative(
             $translator->getGeneralTranslation(
                 $context,
-                new TranslationString('audit_log.migration.' . $refl->getShortName())
+                AuditLogEventMessage::createMigrationEvent($context)
             )
         );
     }

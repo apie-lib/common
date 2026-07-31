@@ -1,6 +1,7 @@
 <?php
 namespace Apie\Common\Other;
 
+use Apie\Common\ActionDefinitions\RunResourceMethodDefinition;
 use Apie\Common\Enums\AuditLogEvent;
 use Apie\Common\Other\Audit\AuditCreate;
 use Apie\Common\Other\Audit\AuditEvent;
@@ -13,18 +14,22 @@ use Apie\Core\ApieLib;
 use Apie\Core\Attributes\AlwaysDisabled;
 use Apie\Core\Attributes\Context;
 use Apie\Core\Attributes\FakeCount;
+use Apie\Core\Attributes\Internal;
 use Apie\Core\Attributes\Policy;
+use Apie\Core\Attributes\ProvideTranslationMethod;
 use Apie\Core\Attributes\RuntimeCheck;
 use Apie\Core\Attributes\SearchFilterOption;
 use Apie\Core\Attributes\StaticCheck;
 use Apie\Core\Attributes\StoreOptions;
+use Apie\Core\BoundedContext\BoundedContextHashmap;
 use Apie\Core\Context\ApieContext;
+use Apie\Core\ContextConstants;
 use Apie\Core\Entities\EntityInterface;
 use Apie\Core\Lists\PermissionList;
 use Apie\Core\Lists\StringSet;
 use Apie\Core\Permissions\RequiresPermissionsInterface;
 use Apie\Core\Translator\ApieTranslatorInterface;
-use Apie\Core\Translator\ValueObjects\TranslationString;
+use Apie\Core\Translator\ValueObjects\AuditLogEventMessage;
 use Apie\Core\ValueObjects\IdFriendlyEntityReference;
 use Apie\Core\ValueObjects\NonEmptyString;
 use Apie\Core\ValueObjects\Utils;
@@ -36,6 +41,7 @@ use Apie\Serializer\ValueObjects\SerializedPhpObject;
     new Policy('canView', 'canViewAny'),
     new ShouldApplyAuditablePermission()
 )]
+#[ProvideTranslationMethod('createTranslations')]
 class AuditLog implements EntityInterface, RequiresPermissionsInterface
 {
     private AuditLogIdentifier $id;
@@ -97,7 +103,7 @@ class AuditLog implements EntityInterface, RequiresPermissionsInterface
         return NonEmptyString::fromNative(
             $translator->getGeneralTranslation(
                 $context,
-                new TranslationString('audit_log.unknown_event')
+                AuditLogEventMessage::createUnknownEvent($context)
             )
         );
     }
@@ -177,5 +183,36 @@ class AuditLog implements EntityInterface, RequiresPermissionsInterface
     public function getSnapshot(): EntitySnapshotInstance
     {
         return $this->snapshot;
+    }
+
+    /**
+     * @param ApieContext $context
+     * @return array<int, AuditLogEventMessage>
+     */
+    #[Internal]
+    public static function createTranslations(ApieContext $context): array
+    {
+        $boundedContextHashmap = $context->getContext(BoundedContextHashmap::class, false);
+        $boundedContextId = $context->getContext(ContextConstants::BOUNDED_CONTEXT_ID, false);
+        $methodCalls = [];
+        if ($boundedContextId && $boundedContextHashmap instanceof BoundedContextHashmap) {
+            $boundedContext = $boundedContextHashmap[$boundedContextId] ?? null;
+            if ($boundedContext) {
+                foreach (RunResourceMethodDefinition::provideActionDefinitions($boundedContext, $context, false) as $definition) {
+                    $methodCalls[] = AuditLogEventMessage::createResourceMethodCalledEvent($context, $definition->getMethod()->name);
+                }
+            }
+        }
+        return [
+            AuditLogEventMessage::createUnknownEvent($context),
+            AuditLogEventMessage::createMigrationEvent($context),
+            ...$methodCalls,
+            AuditLogEventMessage::createResourceCreatedEvent($context),
+            AuditLogEventMessage::createResourceModifiedEvent($context),
+            AuditLogEventMessage::createResourceRemovedEvent($context),
+            AuditLogEventMessage::createResourceReplacedEvent($context),
+            AuditLogEventMessage::createResourceRetrievedEvent($context),
+            AuditLogEventMessage::createResourceRetrievedInListEvent($context),
+        ];
     }
 }

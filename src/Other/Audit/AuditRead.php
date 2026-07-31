@@ -5,7 +5,7 @@ use Apie\Common\Enums\AuditLogEvent;
 use Apie\Core\Context\ApieContext;
 use Apie\Core\Entities\EntityInterface;
 use Apie\Core\Translator\ApieTranslatorInterface;
-use Apie\Core\Translator\ValueObjects\TranslationString;
+use Apie\Core\Translator\ValueObjects\AuditLogEventMessage;
 use Apie\Core\ValueObjects\NonEmptyString;
 
 class AuditRead implements AuditEvent
@@ -30,7 +30,9 @@ class AuditRead implements AuditEvent
         return NonEmptyString::fromNative(
             $translator->getGeneralTranslation(
                 $context,
-                new TranslationString(($this->fromList ? 'audit_log.read_list.' : 'audit_log.read.') . $refl->getShortName())
+                $this->fromList
+                    ? AuditLogEventMessage::createResourceRetrievedEvent($context)
+                    : AuditLogEventMessage::createResourceRetrievedInListEvent($context)
             )
         );
     }

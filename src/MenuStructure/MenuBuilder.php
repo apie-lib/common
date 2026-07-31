@@ -2,6 +2,7 @@
 namespace Apie\Common\MenuStructure;
 
 use Apie\Core\Lists\StringList;
+use Apie\Core\Translator\ValueObjects\MenuHeader;
 
 class MenuBuilder
 {
@@ -9,7 +10,7 @@ class MenuBuilder
 
     public function __construct(private readonly string $prefix = '')
     {
-        $this->root = new MenuNode(rtrim($this->prefix, '.-'), '');
+        $this->root = new MenuNode(rtrim($this->prefix, '.-'), MenuHeader::createRoot());
     }
 
     public function getRoot(): MenuNode
@@ -28,7 +29,7 @@ class MenuBuilder
             $parent = $current;
             if (!isset($current->children[$part])) {
                 $children = $current->children;
-                $children[$part] = new MenuNode($this->prefix . $part, '');
+                $children[$part] = new MenuNode($this->prefix . $part, $current->name->createChildNode($part));
                 $current->children = $children;
             }
             $current = $current->children[$part];
@@ -42,7 +43,7 @@ class MenuBuilder
             $current->name = $leaf->name;
             $current->route = $leaf->route;
             $current->icon = $leaf->icon;
-        } elseif ($current->name && $current->id !== $leaf->id) {
+        } elseif ($current->id !== $leaf->id) {
             for ($i = 0; $i < 1000; $i++) {
                 if (!isset($parent->children[$lastKey . '-' . $i])) {
                     $parent->children[$lastKey . '-' . $i] = $leaf;

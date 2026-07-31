@@ -62,6 +62,9 @@ services:
   Apie\Common\Translator\ResourceNameTranslationProvider:
     tags: [apie.translation_collector]
 
+  Apie\Common\Translator\ReadAttributeTranslationProvider:
+    tags: [ apie.translation_collector ]
+
   Apie\Common\Translator\ResourceActionTranslationProvider:
     arguments:
       -  '@Apie\Common\ActionDefinitionProvider'

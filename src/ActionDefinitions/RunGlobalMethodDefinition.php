@@ -42,7 +42,7 @@ final class RunGlobalMethodDefinition implements ActionDefinitionInterface
         }
         foreach ($boundedContext->resources->filterOnApieContext($globalActionContext, $runtimeChecks) as $action) {
             foreach ($action->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
-                if ($method->isStatic() && $method->name !== 'getDiscriminatorMapping') {
+                if ($method->isStatic() && $method->name !== 'getDiscriminatorMapping' && $apieContext->appliesToContext($method, $runtimeChecks)) {
                     $actionDefinitions[] = new RunGlobalMethodDefinition($method, $boundedContext->getId());
                 }
             }

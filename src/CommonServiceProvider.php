@@ -173,6 +173,22 @@ class CommonServiceProvider extends ServiceProvider
         );
         $this->app->tag([\Apie\Common\Translator\ResourceNameTranslationProvider::class], 'apie.translation_collector');
         $this->registerSingleton(
+            \Apie\Common\Translator\ReadAttributeTranslationProvider::class,
+            function ($app) {
+                return new \Apie\Common\Translator\ReadAttributeTranslationProvider(
+                
+                );
+            }
+        );
+        \Apie\ServiceProviderGenerator\TagMap::register(
+            $this->app,
+            \Apie\Common\Translator\ReadAttributeTranslationProvider::class,
+            array(
+              0 => 'apie.translation_collector',
+            )
+        );
+        $this->app->tag([\Apie\Common\Translator\ReadAttributeTranslationProvider::class], 'apie.translation_collector');
+        $this->registerSingleton(
             \Apie\Common\Translator\ResourceActionTranslationProvider::class,
             function ($app) {
                 return new \Apie\Common\Translator\ResourceActionTranslationProvider(
