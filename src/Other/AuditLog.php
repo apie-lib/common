@@ -12,6 +12,7 @@ use Apie\Common\Other\Audit\AuditRead;
 use Apie\Common\Other\Audit\AuditRemoved;
 use Apie\Core\ApieLib;
 use Apie\Core\Attributes\AlwaysDisabled;
+use Apie\Core\Attributes\CmsIcon;
 use Apie\Core\Attributes\Context;
 use Apie\Core\Attributes\FakeCount;
 use Apie\Core\Attributes\Internal;
@@ -36,6 +37,7 @@ use Apie\Core\ValueObjects\Utils;
 use Apie\Serializer\ValueObjects\SerializedPhpObject;
 
 #[FakeCount(0)]
+#[CmsIcon('tabler:history')]
 #[StaticCheck(new Policy('staticCanViewAny', enabledOnMissingRule: true))]
 #[RuntimeCheck(
     new Policy('canView', 'canViewAny'),

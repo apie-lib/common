@@ -22,7 +22,6 @@ class AuditMigration implements AuditEvent
         string|EntityInterface|null $entity,
     ): NonEmptyString {
         assert(is_string($entity));
-        $refl = new \ReflectionClass($entity);
         return NonEmptyString::fromNative(
             $translator->getGeneralTranslation(
                 $context,

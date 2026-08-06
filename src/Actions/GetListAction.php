@@ -30,7 +30,15 @@ final class GetListAction implements ActionInterface
 
     public static function isAuthorized(ApieContext $context, bool $runtimeChecks, bool $throwError = false): bool
     {
-        $refl = new ReflectionClass($context->getContext(ContextConstants::RESOURCE_NAME, $throwError));
+        $resourceName = $context->getContext(ContextConstants::RESOURCE_NAME, $throwError);
+        if (!$resourceName) {
+            return false;
+        }
+        try {
+            $refl = new ReflectionClass($resourceName);
+        } catch (\ReflectionException) {
+            return false;
+        }
         return $context->appliesToContext($refl, $runtimeChecks, $throwError ? new LogicException("Class can not be accessed") : null);
     }
 

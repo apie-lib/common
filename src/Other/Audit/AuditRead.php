@@ -26,7 +26,6 @@ class AuditRead implements AuditEvent
         string|EntityInterface|null $entity,
     ): NonEmptyString {
         assert($entity !== null);
-        $refl = new \ReflectionClass($entity);
         return NonEmptyString::fromNative(
             $translator->getGeneralTranslation(
                 $context,

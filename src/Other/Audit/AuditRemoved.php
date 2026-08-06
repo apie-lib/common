@@ -20,8 +20,6 @@ class AuditRemoved implements AuditEvent
         ApieContext $context,
         string|EntityInterface|null $entity,
     ): NonEmptyString {
-
-        $refl = new \ReflectionClass($entity);
         return NonEmptyString::fromNative(
             $translator->getGeneralTranslation(
                 $context,
