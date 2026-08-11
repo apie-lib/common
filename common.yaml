@@ -149,7 +149,31 @@ services:
       - apie.datalayer
       - always-singleton
 
+  Apie\Common\Wrappers\UxIconFactory:
+    arguments:
+      - '@Psr\Log\LoggerInterface'
+      - '@Symfony\Contracts\Cache\CacheInterface'
+
+  apie.ux_icon.twig_runtime:
+    class: Symfony\UX\Icons\Twig\UXIconRuntime
+    factory: ['@Apie\Common\Wrappers\UxIconFactory', 'create']
+    arguments:
+      - '@?Symfony\UX\Icons\Twig\UXIconRuntime'
+      - '@apie.ux_icon.icon_renderer'
+
+  apie.ux_icon.icon_renderer:
+    class: Symfony\UX\Icons\IconRenderer
+    factory: ['@Apie\Common\Wrappers\UxIconFactory', 'createIconRenderer']
+    arguments:
+      - '@?Symfony\UX\Icons\IconRendererInterface'
+      - '@apie.ux_icon.icon_registry'
+
+  apie.ux_icon.icon_registry:
+    class: Symfony\UX\Icons\IconRegistryInterface
+    factory: ['@Apie\Common\Wrappers\UxIconFactory', 'createIconRegistry']
+    arguments:
+      - '@?Symfony\UX\Icons\IconRegistryInterface'
+
   apie:
     alias: Apie\Common\ApieFacade
     public: true
-

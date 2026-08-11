@@ -405,6 +405,44 @@ class CommonServiceProvider extends ServiceProvider
         );
         $this->app->tag([\Apie\Common\Wrappers\RequestAwareInMemoryDatalayer::class], 'apie.datalayer');
         $this->app->tag([\Apie\Common\Wrappers\RequestAwareInMemoryDatalayer::class], 'always-singleton');
+        $this->registerSingleton(
+            \Apie\Common\Wrappers\UxIconFactory::class,
+            function ($app) {
+                return new \Apie\Common\Wrappers\UxIconFactory(
+                    $app->make(\Psr\Log\LoggerInterface::class),
+                    $app->make(\Symfony\Contracts\Cache\CacheInterface::class)
+                );
+            }
+        );
+        $this->registerSingleton(
+            'apie.ux_icon.twig_runtime',
+            function ($app) {
+                return $this->app->make(\Apie\Common\Wrappers\UxIconFactory::class)->create(
+                    $app->bound(\Symfony\UX\Icons\Twig\UXIconRuntime::class) ? $app->make(\Symfony\UX\Icons\Twig\UXIconRuntime::class) : null,
+                    $app->make('apie.ux_icon.icon_renderer')
+                );
+                
+            }
+        );
+        $this->registerSingleton(
+            'apie.ux_icon.icon_renderer',
+            function ($app) {
+                return $this->app->make(\Apie\Common\Wrappers\UxIconFactory::class)->createIconRenderer(
+                    $app->bound(\Symfony\UX\Icons\IconRendererInterface::class) ? $app->make(\Symfony\UX\Icons\IconRendererInterface::class) : null,
+                    $app->make('apie.ux_icon.icon_registry')
+                );
+                
+            }
+        );
+        $this->registerSingleton(
+            'apie.ux_icon.icon_registry',
+            function ($app) {
+                return $this->app->make(\Apie\Common\Wrappers\UxIconFactory::class)->createIconRegistry(
+                    $app->bound(\Symfony\UX\Icons\IconRegistryInterface::class) ? $app->make(\Symfony\UX\Icons\IconRegistryInterface::class) : null
+                );
+                
+            }
+        );
         $this->app->bind('apie', \Apie\Common\ApieFacade::class);
         
         

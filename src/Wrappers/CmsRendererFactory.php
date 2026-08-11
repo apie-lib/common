@@ -8,9 +8,7 @@ use Apie\Core\Context\ApieContext;
 use Apie\HtmlBuilders\Assets\AssetManager;
 use Apie\HtmlBuilders\Interfaces\ComponentInterface;
 use Apie\HtmlBuilders\Interfaces\ComponentRendererInterface;
-use Symfony\Component\DependencyInjection\Container;
-use Twig\RuntimeLoader\ContainerRuntimeLoader;
-use Twig\RuntimeLoader\RuntimeLoaderInterface;
+use Symfony\UX\Icons\Twig\UXIconRuntime;
 
 final class CmsRendererFactory
 {
@@ -18,20 +16,10 @@ final class CmsRendererFactory
     {
     }
 
-    private static function createFallbackLoader(): RuntimeLoaderInterface
-    {
-        $container = new Container();
-        //$container->set()
-        return new ContainerRuntimeLoader($container);
-    }
-
     public static function createRenderer(
-        ?RuntimeLoaderInterface $runtimeLoader,
+        UXIconRuntime $runtimeLoader,
         ?AssetManager $assetManager,
     ): ComponentRendererInterface {
-        if ($runtimeLoader === null) {
-            $runtimeLoader = self::createFallbackLoader();
-        }
         if (class_exists(IonicDesignSystemLayout::class)) {
             return IonicDesignSystemLayout::createRenderer(
                 $runtimeLoader,
