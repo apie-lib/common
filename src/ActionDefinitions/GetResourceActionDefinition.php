@@ -14,7 +14,7 @@ use ReflectionClass;
 final class GetResourceActionDefinition implements ActionDefinitionInterface
 {
     /**
-     * @param ReflectionClass<EntityInterface> $resourceName
+     * @param ReflectionClass<covariant EntityInterface> $resourceName
      */
     public function __construct(
         private readonly ReflectionClass $resourceName,
@@ -23,7 +23,7 @@ final class GetResourceActionDefinition implements ActionDefinitionInterface
     }
 
     /**
-     * @return ReflectionClass<EntityInterface>
+     * @return ReflectionClass<covariant EntityInterface>
      */
     public function getResourceName(): ReflectionClass
     {

@@ -103,13 +103,13 @@ final class StreamItemMethodAction implements MethodActionInterface
         throw ValidationException::createFromArray(['' => new LogicException('There is nothing to stream')]);
     }
 
-    /** @param ReflectionClass<object> $class */
+    /** @param ReflectionClass<covariant object> $class */
     public static function getInputType(ReflectionClass $class, ?ReflectionMethod $method = null): ReflectionMethod
     {
         return $class->getConstructor() ?? new ReflectionMethod(DownloadFile::class, '__construct');
     }
 
-    /** @param ReflectionClass<object> $class */
+    /** @param ReflectionClass<covariant object> $class */
     public static function getOutputType(ReflectionClass $class, ?ReflectionMethod $method = null): ReflectionMethod
     {
         return new ReflectionMethod(DownloadFile::class, 'download');
@@ -125,7 +125,7 @@ final class StreamItemMethodAction implements MethodActionInterface
     }
 
     /**
-     * @param ReflectionClass<object> $class
+     * @param ReflectionClass<covariant object> $class
      */
     public static function getDescription(ReflectionClass $class, ?ReflectionMethod $method = null): string
     {
@@ -136,7 +136,7 @@ final class StreamItemMethodAction implements MethodActionInterface
     }
     
     /**
-     * @param ReflectionClass<object> $class
+     * @param ReflectionClass<covariant object> $class
      */
     public static function getTags(ReflectionClass $class, ?ReflectionMethod $method = null): StringList
     {
@@ -149,7 +149,7 @@ final class StreamItemMethodAction implements MethodActionInterface
     }
 
     /**
-     * @param ReflectionClass<object> $class
+     * @param ReflectionClass<covariant object> $class
      */
     public static function getRouteAttributes(ReflectionClass $class, ?ReflectionMethod $method = null): array
     {

@@ -34,7 +34,7 @@ final class EntityNamespace implements StringValueObjectInterface, HasRegexValue
     }
 
     /**
-     * @return ReflectionClass<object>
+     * @return ReflectionClass<covariant object>
      */
     public function toClass(string $className): ReflectionClass
     {

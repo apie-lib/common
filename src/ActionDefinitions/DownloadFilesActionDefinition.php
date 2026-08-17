@@ -15,7 +15,7 @@ use ReflectionNamedType;
 class DownloadFilesActionDefinition implements ActionDefinitionInterface
 {
     /**
-     * @param ReflectionClass<EntityInterface> $resourceName
+     * @param ReflectionClass<covariant EntityInterface> $resourceName
      */
     public function __construct(
         private readonly ReflectionClass $resourceName,
@@ -24,7 +24,7 @@ class DownloadFilesActionDefinition implements ActionDefinitionInterface
     }
 
     /**
-     * @return ReflectionClass<EntityInterface>
+     * @return ReflectionClass<covariant EntityInterface>
      */
     public function getResourceName(): ReflectionClass
     {

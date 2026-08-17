@@ -14,7 +14,7 @@ use ReflectionType;
 abstract class AbstractRestApiRouteDefinition implements RestApiRouteDefinition
 {
     /**
-     * @param ReflectionClass<object> $class
+     * @param ReflectionClass<covariant object> $class
      */
     public function __construct(
         protected readonly ReflectionClass $class,
@@ -24,7 +24,7 @@ abstract class AbstractRestApiRouteDefinition implements RestApiRouteDefinition
     }
 
     /**
-     * @return ReflectionClass<object>|ReflectionMethod|ReflectionType
+     * @return ReflectionClass<covariant object>|ReflectionMethod|ReflectionType
      */
     final public function getInputType(): ReflectionClass|ReflectionMethod|ReflectionType
     {
@@ -33,7 +33,7 @@ abstract class AbstractRestApiRouteDefinition implements RestApiRouteDefinition
     }
 
     /**
-     * @return ReflectionClass<object>|ReflectionMethod|ReflectionType|ListOf
+     * @return ReflectionClass<covariant object>|ReflectionMethod|ReflectionType|ListOf
      */
     final public function getOutputType(): ReflectionClass|ReflectionMethod|ReflectionType|ListOf
     {
@@ -48,7 +48,7 @@ abstract class AbstractRestApiRouteDefinition implements RestApiRouteDefinition
     }
 
     /**
-     * @return class-string<object>
+     * @return class-string<covariant object>
      */
     abstract public function getController(): string;
 

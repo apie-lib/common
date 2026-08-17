@@ -11,12 +11,12 @@ use ReflectionType;
 interface RestApiRouteDefinition extends HasRouteDefinition, HasActionDefinition
 {
     /**
-     * @return ReflectionClass<object>|ReflectionMethod|ReflectionType
+     * @return ReflectionClass<covariant object>|ReflectionMethod|ReflectionType
      */
     public function getInputType(): ReflectionClass|ReflectionMethod|ReflectionType;
 
     /**
-     * @return ReflectionClass<object>|ReflectionMethod|ReflectionType|ListOf
+     * @return ReflectionClass<covariant object>|ReflectionMethod|ReflectionType|ListOf
      */
     public function getOutputType(): ReflectionClass|ReflectionMethod|ReflectionType|ListOf;
 

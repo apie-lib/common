@@ -182,14 +182,14 @@ final class RunItemMethodAction implements MethodActionInterface
         return $method->name;
     }
 
-    /** @param ReflectionClass<object> $class */
+    /** @param ReflectionClass<covariant object> $class */
     public static function getInputType(ReflectionClass $class, ?ReflectionMethod $method = null): ReflectionMethod
     {
         assert($method instanceof ReflectionMethod);
         return $method;
     }
 
-    /** @param ReflectionClass<object> $class */
+    /** @param ReflectionClass<covariant object> $class */
     public static function getOutputType(ReflectionClass $class, ?ReflectionMethod $method = null): ReflectionMethod|ReflectionClass
     {
         assert($method instanceof ReflectionMethod);
@@ -214,7 +214,7 @@ final class RunItemMethodAction implements MethodActionInterface
     }
 
     /**
-     * @param ReflectionClass<object> $class
+     * @param ReflectionClass<covariant object> $class
      */
     public static function getDescription(ReflectionClass $class, ?ReflectionMethod $method = null): string
     {
@@ -233,7 +233,7 @@ final class RunItemMethodAction implements MethodActionInterface
     }
     
     /**
-     * @param ReflectionClass<object> $class
+     * @param ReflectionClass<covariant object> $class
      */
     public static function getTags(ReflectionClass $class, ?ReflectionMethod $method = null): StringList
     {
@@ -246,7 +246,7 @@ final class RunItemMethodAction implements MethodActionInterface
     }
 
     /**
-     * @param ReflectionClass<object> $class
+     * @param ReflectionClass<covariant object> $class
      */
     public static function getRouteAttributes(ReflectionClass $class, ?ReflectionMethod $method = null): array
     {

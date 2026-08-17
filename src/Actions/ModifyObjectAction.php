@@ -119,7 +119,7 @@ final class ModifyObjectAction implements ActionInterface
     }
 
     /**
-     * @param ReflectionClass<object> $class
+     * @param ReflectionClass<covariant object> $class
      */
     public static function getDescription(ReflectionClass $class): string
     {
@@ -132,7 +132,7 @@ final class ModifyObjectAction implements ActionInterface
     }
     
     /**
-     * @param ReflectionClass<object> $class
+     * @param ReflectionClass<covariant object> $class
      */
     public static function getTags(ReflectionClass $class): StringList
     {
@@ -140,7 +140,7 @@ final class ModifyObjectAction implements ActionInterface
     }
 
     /**
-     * @param ReflectionClass<object> $class
+     * @param ReflectionClass<covariant object> $class
      */
     public static function getRouteAttributes(ReflectionClass $class): array
     {

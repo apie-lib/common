@@ -75,7 +75,7 @@ final class RequestAwareInMemoryDatalayer implements ApieDatalayerWithFilters, A
     }
 
     /**
-     * @param ReflectionClass<object> $class
+     * @param ReflectionClass<covariant object> $class
      */
     private function getRepository(ReflectionClass $class, ?BoundedContextId $boundedContextId = null): InMemoryDatalayer
     {
