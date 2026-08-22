@@ -36,13 +36,13 @@
 ]
   },
   "require": {
-    "php": ">=8.3",
+    "php": ">=8.4",
     "apie/core": "self.version",
     "apie/serializer": "self.version",
     "defuse/php-encryption": "^2.4",
     "httpsoft/http-cookie": "^1.1.0",
-    "akrabat/ip-address-middleware": "^2.0",
-    "psr/http-message": "^1.1|^2.0",
+    "akrabat/ip-address-middleware": "^2.6.1",
+    "psr/http-message": "^2.0",
     "symfony/cache": "^7.4",
     "symfony/config": "^7.2",
     "symfony/finder": "^7.2",
@@ -55,7 +55,7 @@
     "apie/text-value-objects": "self.version",
     "illuminate/support": "*",
     "phpunit/phpunit": "^11.5.2",
-    "phpspec/prophecy-phpunit": "^2.2",
+    "phpspec/prophecy-phpunit": "^2.5",
     "symfony/event-dispatcher": "^7.2"
   },
   "minimum-stability": "dev",
