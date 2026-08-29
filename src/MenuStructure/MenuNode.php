@@ -22,10 +22,10 @@ final class MenuNode implements DtoInterface
     public function prune(): self
     {
         $newChildren = [];
-        foreach ($this->children as $child) {
+        foreach ($this->children as $key => $child) {
             $child->prune();
-            if ($child->allowed || $child->children->count() > 0) {
-                $newChildren[] = $child;
+            if (($child->allowed && $child->route !== null) || $child->children->count() > 0) {
+                $newChildren[$key] = $child;
             }
         }
         $this->children = new MenuNodeChildren($newChildren);

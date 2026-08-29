@@ -5,7 +5,6 @@ use Apie\Core\Attributes\FakeMethod;
 use Apie\Core\BoundedContext\BoundedContextId;
 use Apie\Core\Entities\EntityInterface;
 use Apie\Core\Identifiers\IdentifierInterface;
-use Apie\Core\Identifiers\Uuid;
 use Apie\Core\ValueObjects\Exceptions\InvalidStringForValueObjectException;
 use Apie\Core\ValueObjects\Interfaces\StringValueObjectInterface;
 use Apie\Core\ValueObjects\IsStringValueObject;
@@ -45,8 +44,7 @@ final class DecryptedAuthenticatedUser implements StringValueObjectInterface
         EntityInterface  $entity,
         BoundedContextId $boundedContextId,
         int              $time
-    ): self
-    {
+    ): self {
         return new self(
             get_class($entity->getId())
             . '/'
