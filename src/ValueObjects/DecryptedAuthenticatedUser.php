@@ -1,18 +1,27 @@
 <?php
 namespace Apie\Common\ValueObjects;
 
+use Apie\Core\Attributes\FakeMethod;
 use Apie\Core\BoundedContext\BoundedContextId;
 use Apie\Core\Entities\EntityInterface;
 use Apie\Core\Identifiers\IdentifierInterface;
+use Apie\Core\Identifiers\Uuid;
 use Apie\Core\ValueObjects\Exceptions\InvalidStringForValueObjectException;
 use Apie\Core\ValueObjects\Interfaces\StringValueObjectInterface;
 use Apie\Core\ValueObjects\IsStringValueObject;
+use Apie\Fixtures\Identifiers\CollectionItemOwnedIdentifier;
+use Apie\Fixtures\Identifiers\ImageFileIdentifier;
+use Apie\Fixtures\Identifiers\OrderIdentifier;
+use Apie\Fixtures\Identifiers\UserAutoincrementIdentifier;
+use Apie\Fixtures\Identifiers\UserWithAddressIdentifier;
+use Faker\Generator;
 use ReflectionClass;
 use ReflectionException;
 
 /**
  * @template T of EntityInterface
  */
+#[FakeMethod('createRandom')]
 final class DecryptedAuthenticatedUser implements StringValueObjectInterface
 {
     use IsStringValueObject;
@@ -33,10 +42,11 @@ final class DecryptedAuthenticatedUser implements StringValueObjectInterface
      * @return DecryptedAuthenticatedUser<U>
      */
     public static function createFromEntity(
-        EntityInterface $entity,
+        EntityInterface  $entity,
         BoundedContextId $boundedContextId,
-        int $time
-    ): self {
+        int              $time
+    ): self
+    {
         return new self(
             get_class($entity->getId())
             . '/'
@@ -99,10 +109,14 @@ final class DecryptedAuthenticatedUser implements StringValueObjectInterface
 
     protected function convert(string $input): string
     {
-        list($className, $boundedContextId, $id, $expireTime) = explode(
-            '/',
-            $input,
-            4
+        list($className, $boundedContextId, $id, $expireTime) = array_pad(
+            explode(
+                '/',
+                $input,
+                4
+            ),
+            4,
+            null
         );
         try {
             $refl = new ReflectionClass($className);
@@ -115,8 +129,27 @@ final class DecryptedAuthenticatedUser implements StringValueObjectInterface
         $this->className = $className;
         $this->boundedContextId = new BoundedContextId($boundedContextId);
         $this->id = new $className($id);
-        $this->expireTime = (int) $expireTime;
+        $this->expireTime = (int)$expireTime;
 
         return $input;
+    }
+
+    public static function createRandom(Generator $factory): static
+    {
+        $classes = [
+            CollectionItemOwnedIdentifier::class,
+            ImageFileIdentifier::class,
+            OrderIdentifier::class,
+            UserAutoincrementIdentifier::class,
+            UserWithAddressIdentifier::class,
+        ];
+        $class = $factory->randomElement($classes);
+        if (!class_exists($class)) {
+            throw new \LogicException('I need apie/fixtures to be able to make a random instance!');
+        }
+        $identifier = $class::createRandom($factory);
+        return new static(
+            get_class($identifier) . '/' . $factory->fakeClass(BoundedContextId::class) . '/' . $identifier->toNative() . '/' . (time() + 3600)
+        );
     }
 }

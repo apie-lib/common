@@ -86,6 +86,9 @@ final class ModifyObjectAction implements ActionInterface
                 throw new \LogicException('Lock was released before modification was finished!');
             }
             $resource = $this->apieFacade->persistExisting($resource, new BoundedContextId($context->getContext(ContextConstants::BOUNDED_CONTEXT_ID)));
+        } catch (\Exception $error) {
+            IntegrationTestLogger::logException($error);
+            return ActionResponse::createClientError($this->apieFacade, $context, $error);
         } finally {
             $lock->release();
         }

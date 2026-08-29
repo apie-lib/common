@@ -1,10 +1,13 @@
 <?php
 namespace Apie\Common\ValueObjects;
 
+use Apie\Core\Attributes\FakeMethod;
 use Apie\Core\ValueObjects\Interfaces\ValueObjectInterface;
 use Apie\Core\ValueObjects\Utils;
+use Faker\Generator;
 use Stringable;
 
+#[FakeMethod('createRandom')]
 final class PossibleRoutePrefixes implements ValueObjectInterface, Stringable
 {
     /**
@@ -14,6 +17,20 @@ final class PossibleRoutePrefixes implements ValueObjectInterface, Stringable
         private array $internal
     ) {
     }
+
+    public static function createRandom(Generator $faker): static
+    {
+        $val = [];
+        if ($faker->boolean()) {
+            $val[] = 'api';
+        }
+        if ($faker->boolean()) {
+            $val[] = 'cms';
+        }
+
+        return static::fromNative($val);
+    }
+
     /**
      * @return static
      */
