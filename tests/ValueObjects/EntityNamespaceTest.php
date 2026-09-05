@@ -12,6 +12,11 @@ class EntityNamespaceTest extends ValueObjectTestCase
         return EntityNamespace::class;
     }
 
+    public static function createExampleObject(): object
+    {
+        return EntityNamespace::fromNative(__NAMESPACE__);
+    }
+
     public static function provideFromNative(): array
     {
         return [

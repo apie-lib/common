@@ -3,14 +3,24 @@
 namespace Apie\Tests\Common\ValueObjects;
 
 use Apie\Common\ValueObjects\DecryptedAuthenticatedUser;
+use Apie\Faker\ApieObjectFaker;
 use Apie\Fixtures\Identifiers\UserAutoincrementIdentifier;
 use Apie\Fixtures\TestHelpers\ValueObjectTestCase;
+use Faker\Factory;
 
 class DecryptedAuthenticatedUserTest extends ValueObjectTestCase
 {
     public static function className(): string
     {
         return DecryptedAuthenticatedUser::class;
+    }
+
+    public static function createExampleObject(): object
+    {
+        $generator = Factory::create();
+        $generator->addProvider(ApieObjectFaker::createWithDefaultFakers($generator));
+        
+        return DecryptedAuthenticatedUser::createRandom($generator);
     }
 
     public static function provideFromNative(): array

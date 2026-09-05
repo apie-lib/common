@@ -11,6 +11,11 @@ class AuditOriginTest extends ValueObjectTestCase
         return AuditOrigin::class;
     }
 
+    public static function createExampleObject(): object
+    {
+        return AuditOrigin::fromNative([]);
+    }
+
     public static function provideFromNative(): array
     {
         $emptyRequest = [

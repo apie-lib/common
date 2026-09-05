@@ -43,7 +43,7 @@ class GmpTest extends TestCase
             [
                 'type' => 'string',
                 'format' => 'bigint',
-                'regex' => true,
+                'pattern' => true,
                 'example' => true,
                 'description' => true,
             ]

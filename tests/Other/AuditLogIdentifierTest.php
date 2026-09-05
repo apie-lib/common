@@ -11,6 +11,11 @@ class AuditLogIdentifierTest extends ValueObjectTestCase
         return AuditLogIdentifier::class;
     }
 
+    public static function createExampleObject(): object
+    {
+        return AuditLogIdentifier::fromNative('123.-.domain_resource_123');
+    }
+
     public static function provideFromNative(): array
     {
         return [

@@ -43,7 +43,7 @@ class BcMathTest extends TestCase
             [
                 'type' => 'string',
                 'format' => 'bcmath-number',
-                'regex' => true,
+                'pattern' => true,
                 'example' => true,
                 'description' => true,
             ]
