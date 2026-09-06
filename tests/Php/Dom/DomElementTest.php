@@ -1,5 +1,5 @@
 <?php
-namespace Apie\Tests\Common;
+namespace Apie\Tests\Common\Php\Dom;
 
 use Apie\Core\Context\ApieContext;
 use Apie\Fixtures\TestHelpers\ObjectTestCase;
@@ -10,7 +10,7 @@ use PHPUnit\Framework\Attributes\RequiresPhpExtension;
 use PHPUnit\Framework\Attributes\Test;
 
 #[RequiresPhpExtension('dom')]
-class DOMElementTest extends ObjectTestCase
+class DomElementTest extends ObjectTestCase
 {
     public static function className(): string
     {
@@ -41,6 +41,10 @@ class DOMElementTest extends ObjectTestCase
 
     public static function getOpenApiSchemaForCreation(): array
     {
-        return ['type' => 'string'];
+        return [
+            'type' => 'string',
+            'format' => 'xml',
+            'description' => true,
+        ];
     }
 }

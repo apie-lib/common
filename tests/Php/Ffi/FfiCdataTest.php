@@ -1,9 +1,8 @@
 <?php
-namespace Apie\Tests\Common;
+namespace Apie\Tests\Common\Php\Ffi;
 
 use Apie\Core\Context\ApieContext;
 use Apie\Core\Lists\ItemList;
-use Apie\Fixtures\Attributes\DisableDatalayerTest;
 use Apie\Fixtures\TestHelpers\ObjectTestCase;
 use Apie\Serializer\Serializer;
 use FFI;
@@ -13,7 +12,6 @@ use PHPUnit\Framework\Attributes\RequiresPhpExtension;
 use PHPUnit\Framework\Attributes\Test;
 
 #[RequiresPhpExtension('ffi')]
-#[DisableDatalayerTest]
 class FfiCdataTest extends ObjectTestCase
 {
     public static function className(): string

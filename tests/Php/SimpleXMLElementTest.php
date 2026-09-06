@@ -1,5 +1,5 @@
 <?php
-namespace Apie\Tests\Common;
+namespace Apie\Tests\Common\Php;
 
 use Apie\Core\Context\ApieContext;
 use Apie\Fixtures\TestHelpers\ObjectTestCase;

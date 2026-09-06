@@ -1,5 +1,5 @@
 <?php
-namespace Apie\Tests\Common;
+namespace Apie\Tests\Common\Php\Dom;
 
 use Apie\Core\Context\ApieContext;
 use Apie\Fixtures\TestHelpers\ObjectTestCase;
@@ -9,7 +9,7 @@ use PHPUnit\Framework\Attributes\RequiresPhpExtension;
 use PHPUnit\Framework\Attributes\Test;
 
 #[RequiresPhpExtension('dom')]
-class DOMAttrTest extends ObjectTestCase
+class DomAttrTest extends ObjectTestCase
 {
     public static function className(): string
     {
@@ -19,7 +19,8 @@ class DOMAttrTest extends ObjectTestCase
     #[Test]
     public function it_can_be_normalized_with_serializer(): void
     {
-        $actual = Serializer::create()->normalize(new DOMAttr('title', 'Hello & goodbye'), new ApieContext());
+        $actual = Serializer::create()
+        ->normalize(new DOMAttr('title', 'Hello & goodbye'), new ApieContext());
 
         self::assertSame('title="Hello &amp; goodbye"', $actual);
     }
@@ -27,7 +28,8 @@ class DOMAttrTest extends ObjectTestCase
     #[Test]
     public function it_can_be_denormalized_with_serializer(): void
     {
-        $actual = Serializer::create()->denormalizeNewObject('title="Hello &amp; goodbye"', DOMAttr::class, new ApieContext());
+        $actual = Serializer::create()
+            ->denormalizeNewObject('title="Hello &amp; goodbye"', DOMAttr::class, new ApieContext());
 
         self::assertInstanceOf(DOMAttr::class, $actual);
         self::assertSame('title', $actual->name);
@@ -36,6 +38,10 @@ class DOMAttrTest extends ObjectTestCase
 
     public static function getOpenApiSchemaForCreation(): array
     {
-        return ['type' => 'string'];
+        return [
+            'type' => 'string',
+            'example' => true,
+            'pattern' => true,
+        ];
     }
 }
