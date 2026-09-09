@@ -12,12 +12,6 @@ class PossibleRoutePrefixesTest extends ValueObjectTestCase
         return PossibleRoutePrefixes::class;
     }
 
-    
-    public static function createExampleObject(): object
-    {
-        return PossibleRoutePrefixes::fromNative(['cms']);
-    }
-
     public static function provideFromNative(): array
     {
         return [

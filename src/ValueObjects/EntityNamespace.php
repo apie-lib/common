@@ -29,7 +29,6 @@ final class EntityNamespace implements StringValueObjectInterface, HasRegexValue
     use IsStringWithRegexValueObject;
     /** @var array<int, string> */
     private static array $list;
-
     public static function getRegularExpression(): string
     {
         return '/^([A-Z][a-zA-Z0-9]*\\\\)+$/';
