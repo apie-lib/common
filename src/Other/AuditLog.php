@@ -15,6 +15,7 @@ use Apie\Core\Attributes\AlwaysDisabled;
 use Apie\Core\Attributes\CmsIcon;
 use Apie\Core\Attributes\Context;
 use Apie\Core\Attributes\FakeCount;
+use Apie\Core\Attributes\HideIdOnOverview;
 use Apie\Core\Attributes\Internal;
 use Apie\Core\Attributes\Policy;
 use Apie\Core\Attributes\ProvideTranslationMethod;
@@ -43,6 +44,7 @@ use Apie\Serializer\ValueObjects\SerializedPhpObject;
     new Policy('canView', 'canViewAny'),
     new ShouldApplyAuditablePermission()
 )]
+#[HideIdOnOverview]
 #[ProvideTranslationMethod('createTranslations')]
 class AuditLog implements EntityInterface, RequiresPermissionsInterface
 {
