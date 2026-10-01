@@ -12,6 +12,7 @@ use Apie\Console\ConsoleCommandFactory;
 use Apie\Core\Context\ApieContext;
 use Apie\DoctrineEntityConverter\Factories\PersistenceLayerFactory;
 use Apie\DoctrineEntityDatalayer\DoctrineEntityDatalayer;
+use Apie\ExchangeRate\ExchangeRateService;
 use Apie\Export\ExportInterface;
 use Apie\Faker\ApieObjectFaker;
 use Apie\FtpServer\FtpServerCommand;
@@ -47,6 +48,7 @@ class ApieConfigFileLocator extends FileLocator
         'doctrine_entity_converter.yaml' => [PersistenceLayerFactory::class, '../..', 'Apie\\DoctrineEntityConverter\\DoctrineEntityConverterProvider'],
         'doctrine_entity_datalayer.yaml' => [DoctrineEntityDatalayer::class, '..', 'Apie\\DoctrineEntityDatalayer\\DoctrineEntityDatalayerServiceProvider'],
         'export.yaml' => [ExportInterface::class, '..', 'Apie\\Export\\ExportServiceProvider'],
+        'exchangerate.yaml' => [ExchangeRateService::class, '..', 'Apie\\ExchangeRate\\ExchangeRateServiceProvider'],
         'faker.yaml' => [ApieObjectFaker::class, '..', 'Apie\\Faker\\FakerServiceProvider'],
         'ftp.yaml' => [FtpServerCommand::class, '..', 'Apie\\FtpServer\\FtpServerServiceProvider'],
         'html_builders.yaml' => [FormBuildContext::class, '..', 'Apie\\HtmlBuilders\\HtmlBuilderServiceProvider'],

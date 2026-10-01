@@ -25,6 +25,7 @@ abstract class Configuration implements ConfigurationInterface
         'enable_export' => 'Apie\Export\EntityExport',
         'enable_faker' => 'Apie\Faker\ApieObjectFaker',
         'enable_ftp' => 'Apie\FtpServer\FtpServerCommand',
+        'enable_exchangerate' => 'Apie\ExchangeRate\ExchangeRateService',
         'enable_graphql' => 'Apie\Graphql\Factories\GraphqlSchemaFactory',
         'enable_maker' => 'Apie\Maker\Utils',
         'enable_mcp_server' => 'Apie\McpServer\RunMcpServerCommand',
