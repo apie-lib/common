@@ -1,6 +1,7 @@
 <?php
 namespace Apie\Common\ActionDefinitions;
 
+use Apie\Core\Attributes\ActionOptions;
 use Apie\Core\BoundedContext\BoundedContext;
 use Apie\Core\BoundedContext\BoundedContextId;
 use Apie\Core\Context\ApieContext;
@@ -22,7 +23,8 @@ final class RunResourceMethodDefinition implements ActionDefinitionInterface
     public function __construct(
         private readonly ReflectionClass $resourceName,
         private readonly ReflectionMethod $method,
-        private readonly BoundedContextId $boundedContextId
+        private readonly BoundedContextId $boundedContextId,
+        private readonly ?ActionOptions $actionOptions = null
     ) {
     }
 
@@ -42,6 +44,11 @@ final class RunResourceMethodDefinition implements ActionDefinitionInterface
     public function getMethod(): ReflectionMethod
     {
         return $this->method;
+    }
+
+    public function getActionOptions(): ?ActionOptions
+    {
+        return $this->actionOptions;
     }
 
     /**
@@ -65,12 +72,26 @@ final class RunResourceMethodDefinition implements ActionDefinitionInterface
             }
             foreach ($resourceList as $actualClass) {
                 foreach ($resourceActionContext->withContext(ContextConstants::RESOURCE_NAME, $actualClass->name)->getApplicableMethods($actualClass, $runtimeChecks) as $method) {
-                    $definition = new RunResourceMethodDefinition(
-                        $resource,
-                        $method,
-                        $boundedContext->getId()
-                    );
-                    $actionDefinitions[] = $definition;
+                    $attributes = $method->getAttributes(ActionOptions::class);
+                    if (empty($attributes)) {
+                        $definition = new RunResourceMethodDefinition(
+                            $resource,
+                            $method,
+                            $boundedContext->getId()
+                        );
+                        $actionDefinitions[] = $definition;
+                    } else {
+                        foreach ($attributes as $attribute) {
+                            $actionOptions = $attribute->newInstance();
+                            $definition = new RunResourceMethodDefinition(
+                                $resource,
+                                $method,
+                                $boundedContext->getId(),
+                                $actionOptions
+                            );
+                            $actionDefinitions[] = $definition;
+                        }
+                    }
                 }
             }
         }

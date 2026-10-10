@@ -3,6 +3,7 @@ namespace Apie\Common\RouteDefinitions;
 
 use Apie\Common\Interfaces\RestApiRouteDefinition;
 use Apie\Core\Actions\ActionResponseStatusList;
+use Apie\Core\Attributes\ActionOptions;
 use Apie\Core\BoundedContext\BoundedContextId;
 use Apie\Core\ContextConstants;
 use Apie\Core\Dto\ListOf;
@@ -64,10 +65,21 @@ abstract class AbstractRestApiRouteDefinition implements RestApiRouteDefinition
         return $actionClass::getTags($this->class, $this->method);
     }
 
+    public function getActionOptions(): ?ActionOptions
+    {
+        return null;
+    }
+
     final public function getRouteAttributes(): array
     {
         $actionClass = $this->getAction();
         $attributes = $actionClass::getRouteAttributes($this->class, $this->method);
+        $actionOptions = $this->getActionOptions();
+        if ($actionOptions) {
+            foreach ($actionOptions->placeholders as $key => $value) {
+                $attributes[$key] = $value;
+            }
+        }
         $attributes[ContextConstants::APIE_ACTION] = $this->getAction();
         $attributes[ContextConstants::OPERATION_ID] = $this->getOperationId();
         $attributes[ContextConstants::BOUNDED_CONTEXT_ID] = $this->boundedContextId->toNative();
