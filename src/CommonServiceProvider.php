@@ -414,6 +414,18 @@ class CommonServiceProvider extends ServiceProvider
                 );
             }
         );
+        $this->app->bind(\Apie\Common\StreamFactory\StreamFactoryInterface::class, \Apie\Common\StreamFactory\ChainedStreamFactory::class);
+        
+        $this->registerSingleton(
+            \Apie\Common\StreamFactory\ChainedStreamFactory::class,
+            function ($app) {
+                return \Apie\Common\StreamFactory\ChainedStreamFactory::create(
+                    $app->make(\Apie\Serializer\EncoderHashmap::class),
+                    $this->getTaggedServicesIterator(\Apie\Common\StreamFactory\StreamFactoryInterface::class)
+                );
+                
+            }
+        );
         $this->registerSingleton(
             'apie.ux_icon.twig_runtime',
             function ($app) {

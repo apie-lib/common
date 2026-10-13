@@ -154,6 +154,15 @@ services:
       - '@Psr\Log\LoggerInterface'
       - '@Symfony\Contracts\Cache\CacheInterface'
 
+  Apie\Common\StreamFactory\StreamFactoryInterface:
+    alias: Apie\Common\StreamFactory\ChainedStreamFactory
+
+  Apie\Common\StreamFactory\ChainedStreamFactory:
+    factory: ['Apie\Common\StreamFactory\ChainedStreamFactory', 'create']
+    arguments:
+      - '@Apie\Serializer\EncoderHashmap'
+      - !tagged_iterator Apie\Common\StreamFactory\StreamFactoryInterface
+
   apie.ux_icon.twig_runtime:
     class: Symfony\UX\Icons\Twig\UXIconRuntime
     factory: ['@Apie\Common\Wrappers\UxIconFactory', 'create']
