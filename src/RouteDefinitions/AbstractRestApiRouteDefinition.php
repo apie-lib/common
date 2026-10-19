@@ -4,10 +4,12 @@ namespace Apie\Common\RouteDefinitions;
 use Apie\Common\Interfaces\RestApiRouteDefinition;
 use Apie\Core\Actions\ActionResponseStatusList;
 use Apie\Core\Attributes\ActionOptions;
+use Apie\Core\Attributes\ActionResponseList;
 use Apie\Core\BoundedContext\BoundedContextId;
 use Apie\Core\ContextConstants;
 use Apie\Core\Dto\ListOf;
 use Apie\Core\Lists\StringList;
+use Apie\Core\Utils\ConverterUtils;
 use ReflectionClass;
 use ReflectionMethod;
 use ReflectionType;
@@ -45,6 +47,15 @@ abstract class AbstractRestApiRouteDefinition implements RestApiRouteDefinition
     final public function getPossibleActionResponseStatuses(): ActionResponseStatusList
     {
         $actionClass = $this->getAction();
+        $output = $actionClass::getOutputType($this->class, $this->method);
+        $target = $this->method ?? ConverterUtils::toReflectionClass(
+            $output instanceof ListOf ? $output->type : $output
+        );
+        if ($target) {
+            foreach ($target->getAttributes(ActionResponseList::class) as $attribute) {
+                return new ActionResponseStatusList($attribute->newInstance()->statuses);
+            }
+        }
         return $actionClass::getPossibleActionResponseStatuses($this->method);
     }
 
@@ -62,6 +73,7 @@ abstract class AbstractRestApiRouteDefinition implements RestApiRouteDefinition
     final public function getTags(): StringList
     {
         $actionClass = $this->getAction();
+        // @phpstan-ignore-next-line arguments.count
         return $actionClass::getTags($this->class, $this->method);
     }
 
