@@ -2,6 +2,7 @@
 namespace Apie\Common\Actions;
 
 use Apie\Common\Events\ApieResourceModified;
+use Apie\Common\Exceptions\EntityEtagConflictException;
 use Apie\Common\IntegrationTestLogger;
 use Apie\Common\Other\LockUtil;
 use Apie\Core\Actions\ActionInterface;
@@ -13,6 +14,7 @@ use Apie\Core\Attributes\Description;
 use Apie\Core\BoundedContext\BoundedContextId;
 use Apie\Core\Context\ApieContext;
 use Apie\Core\ContextConstants;
+use Apie\Core\Datalayers\ApieDatalayer;
 use Apie\Core\Entities\EntityInterface;
 use Apie\Core\Exceptions\EntityNotFoundException;
 use Apie\Core\Exceptions\InvalidTypeException;
@@ -23,6 +25,7 @@ use Apie\Core\Metadata\MetadataFactory;
 use Apie\Core\Utils\EntityUtils;
 use Apie\Core\ValueObjects\Exceptions\InvalidStringForValueObjectException;
 use LogicException;
+use Psr\Http\Message\ServerRequestInterface;
 use ReflectionClass;
 
 /**
@@ -68,13 +71,25 @@ final class ModifyObjectAction implements ActionInterface
         );
         try {
             try {
-                $resource = $this->apieFacade->find(
-                    IdentifierUtils::idStringToIdentifier($id, $context),
-                    new BoundedContextId($context->getContext(ContextConstants::BOUNDED_CONTEXT_ID))
-                );
+                $identifier = IdentifierUtils::idStringToIdentifier($id, $context);
+                $boundedContextId = new BoundedContextId($context->getContext(ContextConstants::BOUNDED_CONTEXT_ID));
+                $resource = $this->apieFacade->find($identifier, $boundedContextId);
             } catch (InvalidStringForValueObjectException|EntityNotFoundException $error) {
                 IntegrationTestLogger::logException($error);
                 return ActionResponse::createClientError($this->apieFacade, $context, $error);
+            }
+            $request = $context->getContext(ServerRequestInterface::class, false);
+            $ifMatch = $request instanceof ServerRequestInterface
+                ? $request->getHeaderLine('If-Match')
+                : '';
+            if ($context->getContext(ContextConstants::REST_API, false) && $ifMatch !== '') {
+                $metadata = $context->getContext(ApieDatalayer::class)
+                    ->getMetadata($identifier, $boundedContextId);
+                $currentEtag = '"' . $metadata->etag . '"';
+                $providedEtags = array_map('trim', explode(',', $ifMatch));
+                if (!in_array('*', $providedEtags, true) && !in_array($currentEtag, $providedEtags, true)) {
+                    throw new EntityEtagConflictException();
+                }
             }
             $context = $context->withContext(ContextConstants::RESOURCE, $resource);
             $resource = $this->apieFacade->denormalizeOnExistingObject(

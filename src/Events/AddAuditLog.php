@@ -37,7 +37,7 @@ class AddAuditLog implements EventSubscriberInterface
             ApieResourceCreated::class      => 'onApieResourceCreated',
             ApieResourceRead::class         => 'onApieResourceRead',
             ApieResourceReadList::class     => 'onApieResourceReadList',
-            ApieResourceModified::class     => 'OnApieResourceModified',
+            ApieResourceModified::class     => 'onApieResourceModified',
             ApieResourceRemoved::class      => 'onApieResourceRemoved',
             ApieResourceMethodCalled::class => 'onApieResourceMethodCalled'
         ];

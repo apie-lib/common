@@ -47,7 +47,7 @@ final class ReplaceResourceActionDefinition implements ActionDefinitionInterface
     public static function provideActionDefinitions(BoundedContext $boundedContext, ApieContext $apieContext, bool $runtimeChecks = false): array
     {
         $actionDefinitions = [];
-        $postContext = $apieContext->withContext(ContextConstants::CREATE_OBJECT, true)
+        $postContext = $apieContext->withContext(ContextConstants::REPLACE_OBJECT, true)
             ->registerInstance($boundedContext);
         foreach ($boundedContext->resources->filterOnApieContext($postContext, $runtimeChecks) as $resource) {
             if ($runtimeChecks && !CreateObjectAction::isAuthorized($postContext->withContext(ContextConstants::RESOURCE_NAME, $resource->name), true)) {

@@ -2,6 +2,7 @@
 namespace Apie\Common\Actions;
 
 use Apie\Common\Events\ApieResourceRead;
+use Apie\Common\Exceptions\EntityNotModifiedException;
 use Apie\Common\Other\LockUtil;
 use Apie\Core\Actions\ActionInterface;
 use Apie\Core\Actions\ActionResponse;
@@ -12,6 +13,8 @@ use Apie\Core\Attributes\Description;
 use Apie\Core\BoundedContext\BoundedContextId;
 use Apie\Core\Context\ApieContext;
 use Apie\Core\ContextConstants;
+use Apie\Core\Datalayers\ApieDatalayer;
+use Apie\Core\Datalayers\DataLayerMetadata;
 use Apie\Core\Entities\EntityInterface;
 use Apie\Core\Exceptions\InvalidTypeException;
 use Apie\Core\IdentifierUtils;
@@ -21,6 +24,7 @@ use Apie\Core\Permissions\PermissionInterface;
 use Apie\Core\Permissions\RequiresPermissionsInterface;
 use Apie\Core\Utils\EntityUtils;
 use LogicException;
+use Psr\Http\Message\ServerRequestInterface;
 use ReflectionClass;
 
 /**
@@ -67,10 +71,22 @@ final class GetItemAction implements ActionInterface
             [ContextConstants::BOUNDED_CONTEXT_ID, ContextConstants::RESOURCE_NAME, ContextConstants::RESOURCE_ID]
         );
         try {
-            $result = $this->apieFacade->find(
-                IdentifierUtils::idStringToIdentifier($id, $context),
-                new BoundedContextId($context->getContext(ContextConstants::BOUNDED_CONTEXT_ID))
-            );
+            $identifier = IdentifierUtils::idStringToIdentifier($id, $context);
+            $boundedContextId = new BoundedContextId($context->getContext(ContextConstants::BOUNDED_CONTEXT_ID));
+            $request = $context->getContext(ServerRequestInterface::class, false);
+            if (
+                $context->getContext(ContextConstants::REST_API, false)
+                && $request instanceof ServerRequestInterface
+                && $request->hasHeader('If-None-Match')
+            ) {
+                $metadata = $context->getContext(ApieDatalayer::class)
+                    ->getMetadata($identifier, $boundedContextId);
+                $context = $context->withContext(DataLayerMetadata::class, $metadata);
+                if ($this->ifNoneMatchIncludes($request->getHeaderLine('If-None-Match'), $metadata->etag)) {
+                    throw new EntityNotModifiedException('"' . $metadata->etag . '"');
+                }
+            }
+            $result = $this->apieFacade->find($identifier, $boundedContextId);
             $context = $context->withContext(ContextConstants::RESOURCE, $result);
             $context->withContext(ContextConstants::APIE_ACTION, __CLASS__)->checkAuthorization();
         } finally {
@@ -78,6 +94,19 @@ final class GetItemAction implements ActionInterface
         }
         $context->dispatchEvent(new ApieResourceRead($result, $context));
         return ActionResponse::createRunSuccess($this->apieFacade, $context, $result, $result);
+    }
+
+    private function ifNoneMatchIncludes(string $ifNoneMatch, string $etag): bool
+    {
+        preg_match_all('/(?:W\/)?"[^"]*"|\*/', $ifNoneMatch, $matches);
+        $currentEtag = '"' . $etag . '"';
+        foreach ($matches[0] as $candidate) {
+            if ($candidate === '*' || preg_replace('/^W\//', '', $candidate) === $currentEtag) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
