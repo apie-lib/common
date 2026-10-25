@@ -80,55 +80,25 @@ final class CreateObjectAction implements ActionInterface
             throw new InvalidTypeException($resource, EntityInterface::class);
         }
         $context = $context->withContext(ContextConstants::RESOURCE, $resource);
-        $isPut = $context->getContext(RequestMethod::class, false) === RequestMethod::PUT;
         $boundedContextId = new BoundedContextId($context->getContext(ContextConstants::BOUNDED_CONTEXT_ID));
-        $request = $context->getContext(ServerRequestInterface::class, false);
-        $ifMatch = $request instanceof ServerRequestInterface && $request->hasHeader('If-Match')
-            ? trim($request->getHeaderLine('If-Match'))
-            : null;
-        $id = Utils::toString($resource->getId()->toNative());
-        $putContext = $context
-            ->withContext(ContextConstants::RESOURCE_ID, $id)
-            ->withContext(ContextConstants::DISABLE_CONTEXT_FILTER, true);
-        $lock = LockUtil::createLock(
-            $putContext,
-            [ContextConstants::BOUNDED_CONTEXT_ID, ContextConstants::RESOURCE_NAME, ContextConstants::RESOURCE_ID],
-            write: true
-        );
-        try {
+
+        // only autoincrement integers should do this, but this means we can not make a lock
+        if ($resource->getId()->toNative() === null) {
+            $resource = $this->apieFacade->persistNew($resource, $boundedContextId);
+        } else {
+            $lock = LockUtil::createLock(
+                $context,
+                [ContextConstants::BOUNDED_CONTEXT_ID, ContextConstants::RESOURCE_NAME, ContextConstants::RESOURCE_ID],
+                write: true
+            );
             try {
-                $existing = $isPut ? $this->apieFacade->find($resource->getId(), $boundedContextId) : null;
-            } catch (EntityNotFoundException) {
-                $existing = null;
-            }
-            if ($existing === null) {
-                if ($context->getContext(ContextConstants::REST_API, false) && $ifMatch !== null) {
-                    throw new EntityEtagConflictException();
-                }
                 $resource = $this->apieFacade->persistNew($resource, $boundedContextId);
-            } else {
-                $resourceContext = $putContext
-                    ->withContext(ContextConstants::RESOURCE, $existing)
-                    ->withContext(ContextConstants::APIE_ACTION, GetItemAction::class);
-                if (!GetItemAction::isAuthorized($resourceContext, true)) {
-                    throw new EntityAlreadyPersisted($resource);
-                }
-                if ($context->getContext(ContextConstants::REST_API, false) && $ifMatch !== null) {
-                    $metadata = $context->getContext(ApieDatalayer::class)
-                        ->getMetadata($resource->getId(), $boundedContextId);
-                    $currentEtag = '"' . $metadata->etag . '"';
-                    $providedEtags = array_map('trim', explode(',', $ifMatch));
-                    if (!in_array('*', $providedEtags, true) && !in_array($currentEtag, $providedEtags, true)) {
-                        throw new EntityEtagConflictException();
-                    }
-                }
-                $resource = $this->apieFacade->persistExisting($resource, $boundedContextId);
+            } catch (Exception $error) {
+                IntegrationTestLogger::logException($error);
+                return ActionResponse::createClientError($this->apieFacade, $context, $error);
+            } finally {
+                $lock->release();
             }
-        } catch (Exception $error) {
-            IntegrationTestLogger::logException($error);
-            return ActionResponse::createClientError($this->apieFacade, $context, $error);
-        } finally {
-            $lock->release();
         }
         $context = $context->withContext(ContextConstants::RESOURCE, $resource);
         $context->dispatchEvent(new ApieResourceCreated($resource, $context));
