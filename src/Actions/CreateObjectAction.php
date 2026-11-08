@@ -2,7 +2,6 @@
 namespace Apie\Common\Actions;
 
 use Apie\Common\Events\ApieResourceCreated;
-use Apie\Common\Exceptions\EntityEtagConflictException;
 use Apie\Common\IntegrationTestLogger;
 use Apie\Common\Other\LockUtil;
 use Apie\Core\Actions\ActionInterface;
@@ -14,11 +13,7 @@ use Apie\Core\Attributes\Description;
 use Apie\Core\BoundedContext\BoundedContextId;
 use Apie\Core\Context\ApieContext;
 use Apie\Core\ContextConstants;
-use Apie\Core\Datalayers\ApieDatalayer;
 use Apie\Core\Entities\EntityInterface;
-use Apie\Core\Enums\RequestMethod;
-use Apie\Core\Exceptions\EntityAlreadyPersisted;
-use Apie\Core\Exceptions\EntityNotFoundException;
 use Apie\Core\Exceptions\IndexNotFoundException;
 use Apie\Core\Exceptions\InvalidTypeException;
 use Apie\Core\Lists\StringList;
@@ -26,7 +21,6 @@ use Apie\Core\Utils\EntityUtils;
 use Apie\Core\ValueObjects\Utils;
 use Exception;
 use LogicException;
-use Psr\Http\Message\ServerRequestInterface;
 use ReflectionClass;
 
 /**
