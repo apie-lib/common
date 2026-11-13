@@ -73,9 +73,9 @@ class DurationTest extends ObjectTestCase
     public static function provideDenormalize(): array
     {
         return [
-            'positive integer' => [Duration::fromMilliseconds(20), 20],
-            'negative integer' => [Duration::fromMilliseconds(20)->negate(), -20],
-            'floating point' => [Duration::fromMilliseconds(20), 20.5],
+            'positive integer' => [Duration::fromMicroseconds(20), 20],
+            'negative integer' => [Duration::fromMicroseconds(20)->negate(), -20],
+            'floating point' => [Duration::fromNanoseconds(20500), 20.5],
             'duration data structure' => [Duration::fromMilliseconds(20), [
                 'seconds' => 0,
                 'nanoseconds' => 20000000,
