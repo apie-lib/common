@@ -37,7 +37,10 @@ class CheckAuthenticatedContextBuilder implements ContextBuilderInterface
                         if ($decryptedUserId->isExpired()) {
                             throw new \LogicException('Token is expired!');
                         }
-                        $authenticated = $datalayer->find($decryptedUserId->getId());
+                        $authenticated = $datalayer->find(
+                            $decryptedUserId->getId(),
+                            $decryptedUserId->getBoundedContextId()
+                        );
                         $context = $context
                             ->withContext(ContextConstants::AUTHENTICATED_USER, $authenticated)
                             ->registerInstance($authenticated)
